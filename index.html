@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>RecebeMais</title>
+<!-- jsQR: leitura QR confiável via canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0b0f18;
+  --s1:#131c2b;
+  --s2:#192334;
+  --bd:#1d2e42;
+  --cy:#00cff5;
+  --gr:#00f09a;
+  --wa:#f57c00;
+  --re:#f03e5a;
+  --tx:#ddeeff;
+  --mu:#4e6e8a;
+  --font:'IBM Plex Mono',monospace;
+  --raj:'Rajdhani',sans-serif;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:var(--font);font-size:14px}
+
+/* ══ PÁGINAS ══ */
+.pg{position:fixed;inset:0;display:flex;flex-direction:column;
+  background:var(--bg);transition:transform .28s cubic-bezier(.4,0,.2,1),opacity .28s;
+  overflow:hidden}
+.pg.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
+.pg.slide-left{transform:translateX(-8%);opacity:0;pointer-events:none}
+
+/* ══ HEADER ══ */
+.hdr{background:var(--s1);border-bottom:1px solid var(--bd);
+  padding:11px 14px;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;position:relative;z-index:10}
+.hdr-back{background:none;border:none;color:var(--cy);font-family:var(--raj);
+  font-weight:600;font-size:.75rem;letter-spacing:1px;padding:4px 6px 4px 0;cursor:pointer}
+.logo{font-family:var(--raj);font-weight:700;font-size:1.3rem;
+  color:var(--cy);letter-spacing:2px;text-transform:uppercase}
+.logo b{color:var(--gr)}
+.hdr-right{text-align:right}
+#clock{font-size:.62rem;color:var(--cy);letter-spacing:1px}
+#sess-pill{font-size:.55rem;color:var(--mu);margin-top:1px}
+.pg-title{font-family:var(--raj);font-weight:700;font-size:1rem;
+  color:var(--tx);letter-spacing:1px;text-transform:uppercase}
+
+/* ══ SCROLL BODY ══ */
+.pg-body{flex:1;overflow-y:auto;padding:12px;
+  -webkit-overflow-scrolling:touch}
+.pg-body::-webkit-scrollbar{width:2px}
+.pg-body::-webkit-scrollbar-thumb{background:var(--bd)}
+
+/* ══ CARDS ══ */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;
+  padding:14px;margin-bottom:10px}
+.card-title{font-family:var(--raj);font-weight:700;font-size:.65rem;
+  letter-spacing:2px;text-transform:uppercase;color:var(--cy);margin-bottom:12px}
+
+/* ══ DASHBOARD ══ */
+.dash-head{padding:20px 12px 8px;text-align:center}
+.dash-logo{font-family:var(--raj);font-weight:700;font-size:2rem;
+  color:var(--cy);letter-spacing:4px;text-transform:uppercase}
+.dash-logo b{color:var(--gr)}
+.dash-sub{font-size:.6rem;color:var(--mu);letter-spacing:2px;margin-top:2px}
+.dash-clock{font-size:1.1rem;color:var(--tx);font-family:var(--raj);font-weight:600;
+  margin-top:6px;letter-spacing:2px}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 12px}
+.dash-btn{background:var(--s1);border:1px solid var(--bd);border-radius:12px;
+  padding:18px 10px;display:flex;flex-direction:column;align-items:center;
+  gap:8px;cursor:pointer;transition:border-color .2s,background .2s;
+  text-decoration:none;border:1px solid var(--bd)}
+.dash-btn:active{background:var(--s2);transform:scale(.97)}
+.dash-btn.accent{border-color:var(--cy);background:rgba(0,207,245,.07)}
+.dash-btn.green{border-color:var(--gr);background:rgba(0,240,154,.06)}
+.dash-btn.warn{border-color:var(--wa);background:rgba(245,124,0,.06)}
+.dash-icon{font-size:1.6rem;line-height:1}
+.dash-lbl{font-family:var(--raj);font-weight:700;font-size:.8rem;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--tx);text-align:center}
+.dash-sub2{font-size:.55rem;color:var(--mu);letter-spacing:.5px;text-align:center}
+
+/* Status da sessão no dashboard */
+.sess-status{margin:0 12px 10px;background:var(--s1);border:1px solid var(--bd);
+  border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px}
+.sess-dot{width:8px;height:8px;border-radius:50%;background:var(--mu);flex-shrink:0}
+.sess-dot.on{background:var(--gr);box-shadow:0 0 6px var(--gr)}
+.sess-info{flex:1;min-width:0}
+.sess-name{font-family:var(--raj);font-weight:700;font-size:.88rem;color:var(--tx);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sess-detail{font-size:.55rem;color:var(--mu);margin-top:1px}
+
+/* Contadores no dashboard */
+.dash-counters{display:flex;gap:8px;padding:0 12px 10px}
+.dcnt{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:8px;
+  padding:8px;text-align:center}
+.dcnt .n{font-family:var(--raj);font-size:1.5rem;font-weight:700;color:var(--cy);line-height:1}
+.dcnt .l{font-size:.5rem;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.dcnt.g .n{color:var(--gr)}
+.dcnt.o .n{color:var(--wa)}
+
+/* ══ FORMULÁRIO ══ */
+label{display:block;font-size:.57rem;color:var(--mu);letter-spacing:1px;
+  text-transform:uppercase;margin-bottom:3px}
+input,select{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:6px;
+  color:var(--tx);font-family:var(--font);font-size:.85rem;padding:10px 11px;
+  outline:none;transition:border-color .2s;margin-bottom:9px;-webkit-appearance:none}
+input:focus{border-color:var(--cy)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* ══ BOTÕES ══ */
+.btn{width:100%;padding:12px;border-radius:8px;border:none;
+  font-family:var(--raj);font-weight:700;font-size:.9rem;letter-spacing:2px;
+  text-transform:uppercase;cursor:pointer;transition:opacity .15s,transform .1s;
+  margin-bottom:8px;display:block;text-align:center}
+.btn:active{transform:scale(.97);opacity:.85}
+.btn:last-child{margin-bottom:0}
+.btn-cy{background:var(--cy);color:#000}
+.btn-gr{background:var(--gr);color:#000}
+.btn-re{background:var(--re);color:#fff}
+.btn-x{background:transparent;border:1px solid var(--bd);color:var(--mu)}
+.btn-x:active{border-color:var(--cy);color:var(--cy)}
+.btn-row{display:flex;gap:8px}
+.btn-row .btn{margin-bottom:0;flex:1}
+
+/* ══ CÂMERA / SCANNER ══ */
+#cam-wrap{position:relative;width:100%;aspect-ratio:4/3;background:#000;
+  border-radius:10px;overflow:hidden;margin-bottom:8px}
+#vid{width:100%;height:100%;object-fit:cover;display:block}
+.cam-ov{position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;pointer-events:none}
+.scan-frame{width:62%;aspect-ratio:1;border-radius:8px;position:relative;
+  box-shadow:0 0 0 9999px rgba(0,0,0,.52)}
+.scan-frame::before{content:'';position:absolute;inset:-2px;border:2px solid var(--cy);
+  border-radius:8px}
+.scan-line{position:absolute;left:4px;right:4px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cy),transparent);
+  animation:sweep 1.7s ease-in-out infinite;top:0}
+@keyframes sweep{0%{top:4px;opacity:1}88%{top:calc(100% - 6px);opacity:1}100%{top:calc(100% - 6px);opacity:0}}
+.corner{position:absolute;width:18px;height:18px;border-color:var(--gr);border-style:solid}
+.corner.tl{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.corner.tr{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+.corner.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+.corner.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+#cam-reads{position:absolute;bottom:7px;right:10px;font-size:.52rem;
+  color:rgba(0,207,245,.6);letter-spacing:1px;pointer-events:none}
+.cam-ph{position:absolute;inset:0;background:var(--s2);display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.cam-ph.off{display:none}
+.cam-ph-icon{font-size:2.5rem;opacity:.15}
+.cam-ph-txt{font-size:.58rem;color:var(--mu);letter-spacing:.5px}
+#cam-status{font-size:.65rem;text-align:center;padding:3px 0;min-height:20px;letter-spacing:.3px}
+#cam-status.ok{color:var(--gr)}
+#cam-status.err{color:var(--re)}
+#cam-status.warn{color:var(--wa)}
+
+/* ══ QR RESULT ══ */
+.qr-result{display:none;background:var(--s2);border:1px solid var(--gr);
+  border-radius:10px;padding:13px;margin-top:6px}
+.qr-result.on{display:block}
+.rrow{display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid var(--bd);font-size:.72rem}
+.rrow:last-of-type{border:none}
+.rk{color:var(--mu);font-size:.56rem;letter-spacing:1px;text-transform:uppercase}
+.rv{color:var(--tx);font-weight:500}
+.rv.big{font-size:1.3rem;color:var(--gr);font-family:var(--raj);font-weight:700}
+.rv.acc{font-size:1.1rem;color:var(--wa);font-family:var(--raj);font-weight:700}
+.rv.ref{color:var(--cy);font-family:var(--raj);font-weight:700;font-size:1rem}
+.accum-alert{display:none;background:rgba(245,124,0,.08);border:1px solid rgba(245,124,0,.3);
+  border-radius:5px;padding:7px 9px;font-size:.62rem;color:var(--wa);line-height:1.7;margin-bottom:8px}
+.accum-alert.on{display:block}
+
+/* ══ LISTA ITENS ══ */
+.ilist{display:flex;flex-direction:column;gap:7px}
+.icard{background:var(--s1);border:1px solid var(--bd);border-radius:9px;
+  padding:11px 13px;display:flex;align-items:center;gap:10px;animation:fin .18s ease}
+@keyframes fin{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.icard.multi{border-color:rgba(0,240,154,.3)}
+.iref{font-family:var(--raj);font-size:1rem;font-weight:700}
+.iqty{font-family:var(--raj);font-size:1.3rem;font-weight:700;color:var(--gr);
+  min-width:52px;text-align:right}
+.itag{font-size:.5rem;color:var(--wa);background:rgba(245,124,0,.1);
+  border-radius:3px;padding:1px 5px;display:inline-block;margin-top:2px;letter-spacing:.5px}
+.imeta{font-size:.56rem;color:var(--mu);margin-top:1px}
+.idel{background:none;border:none;color:var(--re);cursor:pointer;
+  font-size:.75rem;padding:5px;opacity:.6}
+.idel:active{opacity:1}
+
+/* ══ STATS BAR ══ */
+.stats{display:flex;gap:7px;margin-bottom:10px}
+.stat{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:8px;
+  padding:9px;text-align:center}
+.stat .n{font-family:var(--raj);font-size:1.7rem;font-weight:700;color:var(--cy);line-height:1}
+.stat .l{font-size:.52rem;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.stat.g .n{color:var(--gr)}
+.stat.o .n{color:var(--wa)}
+
+/* ══ EXPORT ══ */
+.exbox{background:var(--bg);border:1px solid var(--bd);border-radius:6px;
+  padding:10px;font-size:.62rem;color:var(--mu);white-space:pre;
+  overflow-x:auto;max-height:180px;margin-bottom:8px;line-height:1.9}
+
+/* ══ FORNECEDORES ══ */
+.forn-card{background:var(--s1);border:1px solid var(--bd);border-radius:9px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:7px;cursor:pointer}
+.forn-card:active{background:var(--s2)}
+.forn-dot{width:10px;height:10px;border-radius:50%;background:var(--cy);flex-shrink:0}
+.forn-dot.lp{background:var(--gr)}
+.forn-name{font-family:var(--raj);font-weight:700;font-size:.95rem;flex:1}
+.forn-meta{font-size:.55rem;color:var(--mu);margin-top:2px}
+.forn-badge{font-family:var(--raj);font-size:.65rem;font-weight:700;
+  color:var(--cy);letter-spacing:1px}
+
+.info-box{background:rgba(0,207,245,.04);border:1px solid rgba(0,207,245,.15);
+  border-radius:6px;padding:9px 11px;font-size:.62rem;color:var(--mu);
+  line-height:1.85;margin-bottom:8px}
+.info-box b{color:var(--cy)}
+.info-box code{color:var(--tx);background:rgba(255,255,255,.05);
+  padding:1px 4px;border-radius:3px;font-size:.6rem}
+
+/* ══ EMPTY ══ */
+.empty{text-align:center;padding:40px 20px;color:var(--mu)}
+.e-ico{letter-spacing:6px;opacity:.15;margin-bottom:10px;font-size:.85rem}
+.e-txt{font-size:.68rem;letter-spacing:1px}
+
+/* ══ WARN BOX ══ */
+.wbox{display:none;padding:8px 10px;background:rgba(240,62,90,.07);
+  border:1px solid rgba(240,62,90,.3);border-radius:6px;
+  font-size:.64rem;color:var(--re);margin-bottom:9px;line-height:1.6}
+.wbox.on{display:block}
+
+/* ══ TOAST ══ */
+#toast{position:fixed;bottom:20px;left:50%;
+  transform:translateX(-50%) translateY(60px);
+  background:var(--s2);border:1px solid var(--gr);color:var(--gr);
+  padding:9px 20px;border-radius:20px;font-size:.68rem;letter-spacing:.5px;
+  z-index:9999;transition:transform .25s;white-space:nowrap;max-width:90vw;
+  overflow:hidden;text-overflow:ellipsis}
+#toast.on{transform:translateX(-50%) translateY(0)}
+#toast.err{border-color:var(--re);color:var(--re)}
+
+/* ══ FLASH ══ */
+#flash{position:fixed;inset:0;background:rgba(0,240,154,.09);
+  pointer-events:none;z-index:9990;opacity:0;transition:opacity .12s}
+#flash.on{opacity:1}
+
+/* ══ MODAL ══ */
+.mdl-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);
+  z-index:800;align-items:center;justify-content:center;padding:16px}
+.mdl-bg.on{display:flex}
+.mdl{background:var(--s1);border:1px solid var(--bd);border-radius:12px;
+  padding:20px;width:100%;max-width:360px}
+.mdl h3{font-family:var(--raj);font-weight:700;font-size:.88rem;color:var(--cy);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.mdl p{font-size:.7rem;color:var(--mu);line-height:1.7}
+.mdl-btns{display:flex;gap:8px;margin-top:14px}
+.mdl-btns .btn{margin-bottom:0;flex:1}
+</style>
+</head>
+<body>
+
+<div id="flash"></div>
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════
+     MODAL CONFIRMAÇÃO
+══════════════════════════════════════ -->
+<div class="mdl-bg" id="mdl-bg">
+  <div class="mdl">
+    <h3 id="mdl-title"></h3>
+    <p id="mdl-msg"></p>
+    <div class="mdl-btns">
+      <button class="btn btn-x" onclick="mdlClose()">Cancelar</button>
+      <button class="btn btn-re" id="mdl-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PG 0 — DASHBOARD
+══════════════════════════════════════ -->
+<div class="pg" id="pg-dash">
+  <div class="dash-head">
+    <div class="dash-logo">Recebe<b>+</b></div>
+    <div class="dash-sub">Sistema de Recebimento</div>
+    <div class="dash-clock" id="dash-clock">--:--:--</div>
+  </div>
+
+  <!-- Status sessão -->
+  <div class="sess-status" id="dash-sess-status">
+    <div class="sess-dot" id="dash-dot"></div>
+    <div class="sess-info">
+      <div class="sess-name" id="dash-sess-name">Nenhuma sessão ativa</div>
+      <div class="sess-detail" id="dash-sess-detail">Inicie uma nova sessão para começar</div>
+    </div>
+  </div>
+
+  <!-- Contadores -->
+  <div class="dash-counters">
+    <div class="dcnt"><div class="n" id="d-refs">0</div><div class="l">Refs</div></div>
+    <div class="dcnt g"><div class="n" id="d-cxas">0</div><div class="l">Caixas</div></div>
+    <div class="dcnt o"><div class="n" id="d-scans">0</div><div class="l">Scans</div></div>
+  </div>
+
+  <!-- Botões de navegação -->
+  <div class="dash-grid">
+    <button class="dash-btn accent" onclick="goPage('pg-scanner')">
+      <div class="dash-icon">&#9654;</div>
+      <div class="dash-lbl">Iniciar Contagem</div>
+      <div class="dash-sub2">Escanear etiquetas</div>
+    </button>
+    <button class="dash-btn" onclick="goPage('pg-fornecedores')">
+      <div class="dash-icon">&#9776;</div>
+      <div class="dash-lbl">Fornecedores</div>
+      <div class="dash-sub2">Gerenciar padrões</div>
+    </button>
+    <button class="dash-btn green" onclick="goPage('pg-lista')">
+      <div class="dash-icon">&#9783;</div>
+      <div class="dash-lbl">Contagens</div>
+      <div class="dash-sub2">Itens registrados</div>
+    </button>
+    <button class="dash-btn warn" onclick="goPage('pg-resumo')">
+      <div class="dash-icon">&#9636;</div>
+      <div class="dash-lbl">Resumo</div>
+      <div class="dash-sub2">Exportar dados</div>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PG 1 — SCANNER / SESSÃO
+══════════════════════════════════════ -->
+<div class="pg hidden" id="pg-scanner">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goBack()">&#8592; Voltar</button>
+    <div class="pg-title">Contagem</div>
+    <div id="lp-pill" style="display:none;font-size:.5rem;background:rgba(0,207,245,.1);
+      border:1px solid rgba(0,207,245,.3);color:var(--cy);padding:1px 6px;
+      border-radius:2px;letter-spacing:1.5px">LINKPLAS</div>
+  </div>
+  <div class="pg-body" id="scan-body">
+
+    <!-- Sessão -->
+    <div class="card" id="card-sessao">
+      <div class="card-title">Nova Sessão</div>
+      <label>Fornecedor</label>
+      <input id="inp-forn" type="text" placeholder="Ex: LINKPLAS" autocomplete="off" autocorrect="off" autocapitalize="characters">
+      <label>NF / Pedido (opcional)</label>
+      <input id="inp-nf" type="text" placeholder="Ex: NF-001234">
+      <button class="btn btn-cy" onclick="sessStart()">Iniciar Sessão</button>
+    </div>
+
+    <!-- Câmera -->
+    <div class="card" id="card-cam" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div class="card-title" style="margin-bottom:0">Leitura QR</div>
+        <div id="sess-tag" style="font-size:.58rem;color:var(--gr);font-family:var(--raj);font-weight:600"></div>
+      </div>
+
+      <div id="cam-wrap">
+        <video id="vid" autoplay muted playsinline webkit-playsinline></video>
+        <div class="cam-ov">
+          <div class="scan-frame">
+            <div class="scan-line"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+        <div id="cam-reads"></div>
+        <div class="cam-ph" id="cam-ph">
+          <div class="cam-ph-icon">[ ]</div>
+          <div class="cam-ph-txt">Toque em Abrir Câmera</div>
+        </div>
+      </div>
+
+      <div id="cam-status"></div>
+
+      <div class="btn-row" style="margin-bottom:8px">
+        <button class="btn btn-cy" id="btn-open"  onclick="camStart()">Abrir Câmera</button>
+        <button class="btn btn-x"  id="btn-close" onclick="camStop()" style="display:none;flex:.5">Fechar</button>
+        <button class="btn btn-x"  id="btn-torch" onclick="torchToggle()" style="display:none;flex:.5;font-size:.75rem">Luz</button>
+      </div>
+
+      <!-- Resultado QR -->
+      <div class="qr-result" id="qr-box">
+        <div class="accum-alert" id="accum-bar"></div>
+        <div class="rrow"><span class="rk">Referência</span><span class="rv ref" id="r-ref">—</span></div>
+        <div class="rrow"><span class="rk">Qtd. desta leitura</span><span class="rv big" id="r-qty">—</span></div>
+        <div class="rrow" id="r-acc-row" style="display:none">
+          <span class="rk">Total acumulado</span><span class="rv acc" id="r-acc">—</span>
+        </div>
+        <div class="rrow"><span class="rk">Fornecedor</span><span class="rv" id="r-forn">—</span></div>
+        <div class="rrow">
+          <span class="rk">Dado bruto</span>
+          <span class="rv" id="r-raw" style="font-size:.54rem;color:var(--mu);text-align:right;max-width:58%;word-break:break-all">—</span>
+        </div>
+        <div class="btn-row" style="margin-top:10px">
+          <button class="btn btn-gr" onclick="itemConfirm()">Confirmar</button>
+          <button class="btn btn-x"  onclick="itemCancel()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entrada manual -->
+    <div class="card" id="card-manual" style="display:none">
+      <div class="card-title">Entrada Manual</div>
+      <label>Referência</label>
+      <input id="m-ref" type="text" placeholder="Ex: 4901974V000" autocomplete="off">
+      <div class="g2">
+        <div>
+          <label>Quantidade</label>
+          <input id="m-qty" type="number" placeholder="0" min="1">
+        </div>
+        <div>
+          <label>Fornecedor</label>
+          <input id="m-forn" type="text" placeholder="Auto">
+        </div>
+      </div>
+      <button class="btn btn-cy" onclick="manualAdd()">Adicionar</button>
+    </div>
+
+    <!-- Encerrar sessão -->
+    <div id="card-encerrar" style="display:none;padding:0 0 12px">
+      <button class="btn btn-re"
+        onclick="mdlConfirm('Encerrar Sessão','Todos os dados da sessão atual serão mantidos. Deseja encerrar?',sessEnd)">
+        Encerrar Sessão
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PG 2 — FORNECEDORES
+══════════════════════════════════════ -->
+<div class="pg hidden" id="pg-fornecedores">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goBack()">&#8592; Voltar</button>
+    <div class="pg-title">Fornecedores</div>
+    <div></div>
+  </div>
+  <div class="pg-body">
+
+    <div class="card">
+      <div class="card-title">Padrão LINKPLAS</div>
+      <div class="info-box">
+        <b>Detecção automática ao digitar LINKPLAS</b><br>
+        Referência: segmento <code>P{REF}</code> até o próximo espaço<br>
+        Quantidade: <code>Q000{QTY}000</code> — 3 dígitos centrais<br><br>
+        Exemplo de QR:<br>
+        <code>S049... P4901974V000 Q000010000 1T...</code><br><br>
+        Resultado: Ref <b>4901974V000</b> · Qtd <b>10</b>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Outros Formatos Aceitos</div>
+      <div class="info-box">
+        <b>Pipe</b><br><code>REF|DESCRICAO|QTD|FORNECEDOR</code>
+      </div>
+      <div class="info-box">
+        <b>Chave-Valor</b><br><code>REF=x;QTD=10;FORN=y</code>
+      </div>
+      <div class="info-box">
+        <b>JSON</b><br><code>{"ref":"x","qty":10,"forn":"y"}</code>
+      </div>
+      <div class="info-box" style="margin-bottom:0">
+        <b>Texto livre</b><br>Qualquer texto é aceito como referência com qtd = 1
+      </div>
+    </div>
+
+    <!-- Lista de fornecedores usados -->
+    <div class="card">
+      <div class="card-title">Usados nesta Sessão</div>
+      <div id="forn-list">
+        <div class="empty"><div class="e-ico">· · ·</div><div class="e-txt">Sem sessão ativa</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PG 3 — LISTA / CONTAGENS
+══════════════════════════════════════ -->
+<div class="pg hidden" id="pg-lista">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goBack()">&#8592; Voltar</button>
+    <div class="pg-title">Contagens</div>
+    <button class="btn-x" style="background:none;border:none;color:var(--re);
+      font-family:var(--raj);font-size:.65rem;letter-spacing:1px;cursor:pointer"
+      onclick="mdlConfirm('Limpar Lista','Todos os itens serão removidos.',listaClear)">Limpar</button>
+  </div>
+  <div class="pg-body">
+    <div class="stats">
+      <div class="stat"><div class="n" id="s-scans">0</div><div class="l">Scans</div></div>
+      <div class="stat g"><div class="n" id="s-cxas">0</div><div class="l">Caixas</div></div>
+      <div class="stat o"><div class="n" id="s-refs">0</div><div class="l">Refs</div></div>
+    </div>
+    <input id="search" type="text" placeholder="Buscar referência..." oninput="renderList()"
+      style="margin-bottom:10px">
+    <div class="ilist" id="ilist">
+      <div class="empty"><div class="e-ico">· · ·</div><div class="e-txt">Nenhum item registrado</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PG 4 — RESUMO / EXPORTAR
+══════════════════════════════════════ -->
+<div class="pg hidden" id="pg-resumo">
+  <div class="hdr">
+    <button class="hdr-back" onclick="goBack()">&#8592; Voltar</button>
+    <div class="pg-title">Resumo</div>
+    <div></div>
+  </div>
+  <div class="pg-body">
+    <div class="card">
+      <div class="card-title">Sessão Atual</div>
+      <div id="resumo-body">
+        <div class="empty"><div class="e-ico">· · ·</div><div class="e-txt">Sem dados</div></div>
+      </div>
+    </div>
+    <div class="card" id="exp-card" style="display:none">
+      <div class="card-title">Exportar</div>
+      <div class="exbox" id="exp-txt"></div>
+      <button class="btn btn-gr" onclick="exportCSV()">Baixar CSV</button>
+      <button class="btn btn-x"  onclick="copyTxt()">Copiar Texto</button>
+    </div>
+    <button class="btn btn-re"
+      onclick="mdlConfirm('Nova Sessão','Encerrará a sessão atual e limpará todos os dados. Exporte antes se necessário.',sessReset)">
+      Nova Sessão
+    </button>
+  </div>
+</div>
+
+<canvas id="cv" style="display:none"></canvas>
+
+<script>
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+let session  = null;
+let items    = [];
+let grouped  = {};
+let pending  = null;
+let camOn    = false;
+let camStream= null;
+let torchOn  = false;
+let readCnt  = 0;
+let mdlCb    = null;
+let pageStack= ['pg-dash'];
+
+/* ══════════════════════════════════════════
+   CLOCK
+══════════════════════════════════════════ */
+function tClock(){
+  const t = new Date().toLocaleTimeString('pt-BR');
+  document.getElementById('dash-clock').textContent = t;
+}
+tClock(); setInterval(tClock, 1000);
+
+/* ══════════════════════════════════════════
+   NAVEGAÇÃO POR PÁGINAS
+══════════════════════════════════════════ */
+function goPage(id){
+  const cur = pageStack[pageStack.length-1];
+  if(cur === id) return;
+
+  document.getElementById(cur).classList.add('slide-left');
+  document.getElementById(id).classList.remove('hidden');
+  document.getElementById(id).classList.remove('slide-left');
+  pageStack.push(id);
+
+  // Hooks
+  if(id === 'pg-lista')       renderList();
+  if(id === 'pg-resumo')      buildResumo();
+  if(id === 'pg-fornecedores') buildFornList();
+}
+
+function goBack(){
+  if(pageStack.length <= 1) return;
+  const cur  = pageStack.pop();
+  const prev = pageStack[pageStack.length-1];
+
+  if(cur === 'pg-scanner' && camOn) camStop();
+
+  document.getElementById(cur).classList.add('hidden');
+  document.getElementById(prev).classList.remove('slide-left');
+  updateDash();
+}
+
+/* ══════════════════════════════════════════
+   DASHBOARD UPDATE
+══════════════════════════════════════════ */
+function updateDash(){
+  const tot  = Object.values(grouped).reduce((s,r)=>s+r.qty, 0);
+  const refs = Object.keys(grouped).length;
+  const scns = items.length;
+  document.getElementById('d-refs').textContent  = refs;
+  document.getElementById('d-cxas').textContent  = tot;
+  document.getElementById('d-scans').textContent = scns;
+
+  const dot  = document.getElementById('dash-dot');
+  const name = document.getElementById('dash-sess-name');
+  const det  = document.getElementById('dash-sess-detail');
+
+  if(session){
+    dot.classList.add('on');
+    name.textContent = session.forn + (session.nf ? ' · '+session.nf : '');
+    det.textContent  = `Iniciada ${session.start} · ${scns} scan${scns!==1?'s':''}`;
+  } else {
+    dot.classList.remove('on');
+    name.textContent = 'Nenhuma sessão ativa';
+    det.textContent  = 'Inicie uma nova sessão para começar';
+  }
+}
+
+/* ══════════════════════════════════════════
+   SESSION
+══════════════════════════════════════════ */
+function isLP(n){ return (n||'').trim().toUpperCase() === 'LINKPLAS'; }
+
+function sessStart(){
+  const forn = document.getElementById('inp-forn').value.trim();
+  if(!forn){ toast('Informe o fornecedor', true); return; }
+  const nf = document.getElementById('inp-nf').value.trim();
+  session = { forn, nf, start: new Date().toLocaleString('pt-BR') };
+
+  document.getElementById('lp-pill').style.display = isLP(forn) ? 'block' : 'none';
+  document.getElementById('sess-tag').textContent  = forn.toUpperCase();
+  document.getElementById('card-sessao').style.display  = 'none';
+  document.getElementById('card-cam').style.display     = 'block';
+  document.getElementById('card-manual').style.display  = 'block';
+  document.getElementById('card-encerrar').style.display= 'block';
+  document.getElementById('m-forn').value = forn;
+
+  updateDash();
+  toast('Sessão iniciada — toque em Abrir Câmera');
+}
+
+function sessEnd(){
+  camStop();
+  document.getElementById('card-sessao').style.display  = 'block';
+  document.getElementById('card-cam').style.display     = 'none';
+  document.getElementById('card-manual').style.display  = 'none';
+  document.getElementById('card-encerrar').style.display= 'none';
+  document.getElementById('qr-box').classList.remove('on');
+  document.getElementById('inp-forn').value = '';
+  document.getElementById('inp-nf').value   = '';
+  document.getElementById('lp-pill').style.display = 'none';
+  session = null;
+  updateDash();
+  toast('Sessão encerrada');
+}
+
+function sessReset(){
+  sessEnd();
+  items = []; grouped = {};
+  badgeUpdate(); updateDash();
+  toast('Nova sessão iniciada');
+}
+
+/* ══════════════════════════════════════════
+   CÂMERA — getUserMedia + jsQR canvas loop
+══════════════════════════════════════════ */
+let raf = null;
+
+async function camStart(){
+  if(camOn) return;
+  if(!session){ toast('Inicie uma sessão primeiro', true); return; }
+  setStatus('Solicitando câmera...', 'warn');
+
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    setStatus('Navegador não suporta câmera. Use o Chrome atualizado.', 'err'); return;
+  }
+
+  // Tenta configurações em ordem até conseguir stream
+  const configs = [
+    { video:{ facingMode:{ideal:'environment'}, width:{ideal:1920}, height:{ideal:1080} } },
+    { video:{ facingMode:{ideal:'environment'}, width:{ideal:1280}, height:{ideal:720}  } },
+    { video:{ facingMode:'environment' } },
+    { video:{ facingMode:{exact:'environment'} } },
+    { video: true }
+  ];
+
+  let stream = null, lastErr = null;
+  for(const cfg of configs){
+    try{ stream = await navigator.mediaDevices.getUserMedia(cfg); break; }
+    catch(e){
+      lastErr = e;
+      if(e.name==='NotAllowedError'||e.name==='PermissionDeniedError') break;
+    }
+  }
+
+  if(!stream){
+    let msg = 'Câmera não disponível.';
+    if(lastErr){
+      if(lastErr.name==='NotAllowedError'||lastErr.name==='PermissionDeniedError')
+        msg = 'Permissão negada. Toque no cadeado do navegador → permita câmera → recarregue.';
+      else if(lastErr.name==='NotFoundError')
+        msg = 'Nenhuma câmera detectada no dispositivo.';
+      else if(lastErr.name==='NotReadableError')
+        msg = 'Câmera em uso por outro app. Feche-o e tente novamente.';
+      else
+        msg = 'Erro: ' + (lastErr.name||lastErr.message||'desconhecido');
+    }
+    setStatus(msg, 'err'); return;
+  }
+
+  camStream = stream;
+  const vid = document.getElementById('vid');
+  vid.srcObject = stream;
+  vid.setAttribute('playsinline','');
+  vid.setAttribute('webkit-playsinline','');
+  vid.muted = true;
+
+  // Foco contínuo
+  try{
+    const track = stream.getVideoTracks()[0];
+    const caps  = track.getCapabilities ? track.getCapabilities() : {};
+    const adv   = {};
+    if(caps.focusMode && caps.focusMode.includes('continuous')) adv.focusMode = 'continuous';
+    if(Object.keys(adv).length) await track.applyConstraints({advanced:[adv]});
+    if(caps.torch) document.getElementById('btn-torch').style.display = 'block';
+  }catch(e){}
+
+  vid.onloadedmetadata = async () => {
+    try{ await vid.play(); }catch(e){}
+    camOn = true;
+    readCnt = 0;
+    document.getElementById('cam-ph').classList.add('off');
+    document.getElementById('btn-open').style.display  = 'none';
+    document.getElementById('btn-close').style.display = 'block';
+    setStatus('Aponte o QR Code para a área de leitura', 'ok');
+    raf = requestAnimationFrame(scanLoop);
+  };
+}
+
+function camStop(){
+  camOn = false; torchOn = false;
+  if(raf){ cancelAnimationFrame(raf); raf = null; }
+  const vid = document.getElementById('vid');
+  vid.srcObject = null;
+  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream = null; }
+  document.getElementById('cam-ph').classList.remove('off');
+  document.getElementById('btn-open').style.display  = 'block';
+  document.getElementById('btn-close').style.display = 'none';
+  document.getElementById('btn-torch').style.display = 'none';
+  document.getElementById('cam-reads').textContent   = '';
+  setStatus('', '');
+}
+
+/* ── SCAN LOOP via canvas + jsQR ── */
+let frameN = 0;
+function scanLoop(){
+  if(!camOn) return;
+  frameN++;
+
+  const vid = document.getElementById('vid');
+  const cv  = document.getElementById('cv');
+
+  // Processa a cada 2 frames para não sobrecarregar CPU
+  if(frameN % 2 === 0 && vid.readyState >= vid.HAVE_ENOUGH_DATA && vid.videoWidth > 0){
+    cv.width  = vid.videoWidth;
+    cv.height = vid.videoHeight;
+    const ctx = cv.getContext('2d', {willReadFrequently:true});
+    ctx.drawImage(vid, 0, 0);
+
+    // Tenta recorte central 65% primeiro (mais rápido e preciso)
+    const cw = Math.floor(cv.width  * .65);
+    const ch = Math.floor(cv.height * .65);
+    const cx = Math.floor((cv.width  - cw) / 2);
+    const cy = Math.floor((cv.height - ch) / 2);
+    let img = ctx.getImageData(cx, cy, cw, ch);
+    let qr  = jsQR(img.data, img.width, img.height, {inversionAttempts:'attemptBoth'});
+
+    // Se não achou, tenta frame completo
+    if(!qr){
+      const full = ctx.getImageData(0, 0, cv.width, cv.height);
+      qr = jsQR(full.data, full.width, full.height, {inversionAttempts:'attemptBoth'});
+    }
+
+    if(qr){
+      readCnt++;
+      document.getElementById('cam-reads').textContent = readCnt + ' lidos';
+      handleQR(qr.data);
+    }
+  }
+
+  raf = requestAnimationFrame(scanLoop);
+}
+
+async function torchToggle(){
+  if(!camStream) return;
+  try{
+    const track = camStream.getVideoTracks()[0];
+    torchOn = !torchOn;
+    await track.applyConstraints({advanced:[{torch:torchOn}]});
+    const btn = document.getElementById('btn-torch');
+    btn.textContent = torchOn ? 'Luz OFF' : 'Luz';
+    btn.style.color = torchOn ? 'var(--wa)' : '';
+  }catch(e){ toast('Lanterna não disponível', true); }
+}
+
+function setStatus(msg, cls){
+  const el = document.getElementById('cam-status');
+  el.textContent = msg; el.className = cls;
+}
+
+/* ══════════════════════════════════════════
+   PARSERS
+══════════════════════════════════════════ */
+/*
+ * LINKPLAS
+ * Exemplo: S0499266400013510220292 P4901974V000 Q000010000 1T119611 12D20260325
+ * REF = tudo após 'P' até o próximo espaço  → 4901974V000
+ * QTY = Q + 9 dígitos → posições 3,4,5      → "010" → 10
+ */
+function parseLinkplas(raw){
+  const mR = raw.match(/\bP([^\s]+)/);  if(!mR) return null;
+  const mQ = raw.match(/\bQ(\d{9})/);   if(!mQ) return null;
+  const qty = parseInt(mQ[1].slice(3,6), 10);
+  if(!qty || qty<=0) return null;
+  return { ref: mR[1], qty };
+}
+
+function parseGeneric(raw){
+  raw = raw.trim();
+  if(raw.startsWith('{')){
+    try{
+      const j=JSON.parse(raw);
+      return{ ref:j.ref||j.referencia||j.codigo||Object.values(j)[0]||raw,
+              desc:j.desc||j.descricao||'',
+              qty:parseInt(j.qty||j.qtd||j.quantidade||1),
+              forn:j.forn||j.fornecedor||'' };
+    }catch(e){}
+  }
+  if(raw.includes('|')){
+    const p=raw.split('|');
+    return{ref:p[0]||raw,desc:p[1]||'',qty:parseInt(p[2])||1,forn:p[3]||''};
+  }
+  const sep = raw.includes(';') ? ';' : (raw.includes(',')&&raw.includes('=')) ? ',' : null;
+  if(sep && raw.includes('=')){
+    const o={};
+    raw.split(sep).forEach(s=>{const[k,v]=s.split('=');if(k&&v)o[k.trim().toLowerCase()]=v.trim();});
+    return{ ref:o.ref||o.referencia||o.codigo||raw, desc:o.desc||o.descricao||'',
+            qty:parseInt(o.qtd||o.qty||o.quantidade||1), forn:o.forn||o.fornecedor||'' };
+  }
+  if(raw.includes(';')){
+    const p=raw.split(';');
+    return{ref:p[0]||raw,desc:p[1]||'',qty:parseInt(p[2])||1,forn:p[3]||''};
+  }
+  return{ref:raw,desc:'',qty:1,forn:''};
+}
+
+/* ══════════════════════════════════════════
+   HANDLE QR
+══════════════════════════════════════════ */
+let lastQR = 0;
+function handleQR(raw){
+  if(!session){ return; }
+  if(Date.now() - lastQR < 2000) return;  // debounce
+  lastQR = Date.now();
+
+  let parsed;
+  if(isLP(session.forn)){
+    const lp = parseLinkplas(raw);
+    if(!lp){ setStatus('Padrão LINKPLAS não reconhecido', 'err'); return; }
+    parsed = { ref:lp.ref, desc:'', qty:lp.qty, forn:session.forn };
+  } else {
+    const g = parseGeneric(raw);
+    parsed  = { ...g, forn: g.forn || session.forn };
+  }
+
+  pending = { ...parsed, raw, time: new Date().toLocaleTimeString('pt-BR') };
+  showResult(pending);
+}
+
+function showResult(item){
+  const ex  = grouped[item.ref];
+  const acc = ex ? ex.qty + item.qty : item.qty;
+
+  document.getElementById('r-ref').textContent  = item.ref;
+  document.getElementById('r-qty').textContent  = item.qty;
+  document.getElementById('r-forn').textContent = item.forn;
+  document.getElementById('r-raw').textContent  =
+    item.raw.length > 55 ? item.raw.slice(0,55)+'…' : item.raw;
+
+  const accRow = document.getElementById('r-acc-row');
+  const accBar = document.getElementById('accum-bar');
+  if(ex){
+    document.getElementById('r-acc').textContent = acc;
+    accRow.style.display = 'flex';
+    accBar.textContent = `Ref já possui ${ex.scans} leitura${ex.scans>1?'s':''} · ${ex.qty} un. Esta será somada → ${acc} un total.`;
+    accBar.classList.add('on');
+  } else {
+    accRow.style.display = 'none';
+    accBar.classList.remove('on');
+  }
+
+  document.getElementById('qr-box').classList.add('on');
+  setStatus('QR lido — confirme ou cancele', 'ok');
+  doFlash();
+
+  // Scroll para o resultado
+  const body = document.getElementById('scan-body');
+  setTimeout(()=>{ body.scrollTo({top: body.scrollHeight, behavior:'smooth'}); }, 80);
+}
+
+function itemConfirm(){
+  if(!pending) return;
+  addItem(pending); pending = null;
+  document.getElementById('qr-box').classList.remove('on');
+  setStatus('Aponte para o próximo QR Code', 'ok');
+  lastQR = 0;
+}
+function itemCancel(){
+  pending = null;
+  document.getElementById('qr-box').classList.remove('on');
+  setStatus('Aponte para o QR Code da etiqueta', '');
+  lastQR = 0;
+}
+
+/* ══════════════════════════════════════════
+   ITEMS
+══════════════════════════════════════════ */
+function addItem(item){
+  items.push({...item, id:Date.now()});
+  if(!grouped[item.ref])
+    grouped[item.ref] = {ref:item.ref,desc:item.desc||'',qty:0,scans:0,forn:item.forn};
+  grouped[item.ref].qty   += item.qty;
+  grouped[item.ref].scans += 1;
+  badgeUpdate(); updateDash();
+  const g = grouped[item.ref];
+  toast(g.scans > 1
+    ? `${item.ref}  +${item.qty}  →  Total: ${g.qty} un`
+    : `${item.ref}  ·  ${item.qty} un`
+  );
+}
+
+function manualAdd(){
+  const ref  = document.getElementById('m-ref').value.trim();
+  const qty  = parseInt(document.getElementById('m-qty').value);
+  const forn = document.getElementById('m-forn').value.trim() || (session ? session.forn : '');
+  if(!ref)        { toast('Informe a referência', true); return; }
+  if(!qty||qty<1) { toast('Quantidade inválida', true); return; }
+  if(!session)    { toast('Inicie uma sessão primeiro', true); return; }
+  addItem({ref, desc:'', qty, forn, raw:'manual', time:new Date().toLocaleTimeString('pt-BR')});
+  document.getElementById('m-ref').value = '';
+  document.getElementById('m-qty').value = '';
+}
+
+function listaClear(){
+  items = []; grouped = {};
+  badgeUpdate(); updateDash(); renderList();
+  toast('Lista limpa');
+}
+
+function deleteRef(ref){
+  mdlConfirm(`Remover "${ref}"`, `Todos os registros desta referência serão removidos.`, ()=>{
+    items = items.filter(i => i.ref !== ref);
+    rebuildGrouped(); badgeUpdate(); updateDash(); renderList();
+  });
+}
+
+function rebuildGrouped(){
+  grouped = {};
+  items.forEach(item=>{
+    if(!grouped[item.ref])
+      grouped[item.ref]={ref:item.ref,desc:item.desc||'',qty:0,scans:0,forn:item.forn};
+    grouped[item.ref].qty   += item.qty;
+    grouped[item.ref].scans += 1;
+  });
+}
+
+function badgeUpdate(){
+  // sem badge visível no novo layout, updateDash faz o papel
+}
+
+/* ══════════════════════════════════════════
+   RENDER LIST
+══════════════════════════════════════════ */
+function renderList(){
+  const q = (document.getElementById('search').value||'').toLowerCase();
+  const tot  = Object.values(grouped).reduce((s,r)=>s+r.qty,0);
+  const refs = Object.keys(grouped).length;
+  const scns = items.length;
+  document.getElementById('s-scans').textContent = scns;
+  document.getElementById('s-cxas').textContent  = tot;
+  document.getElementById('s-refs').textContent  = refs;
+
+  const rows = Object.values(grouped)
+    .filter(r => !q || r.ref.toLowerCase().includes(q) || (r.desc||'').toLowerCase().includes(q))
+    .sort((a,b) => a.ref.localeCompare(b.ref));
+
+  const el = document.getElementById('ilist');
+  if(!rows.length){
+    el.innerHTML=`<div class="empty"><div class="e-ico">· · ·</div><div class="e-txt">${refs?'Nenhum resultado':'Nenhum item registrado'}</div></div>`;
+    return;
+  }
+  el.innerHTML = rows.map(r=>`
+    <div class="icard${r.scans>1?' multi':''}">
+      <div style="flex:1;min-width:0">
+        <div class="iref">${h(r.ref)}</div>
+        ${r.desc?`<div class="imeta">${h(r.desc)}</div>`:''}
+        <div class="imeta">${h(r.forn||'')}${r.scans>1?` · <span class="itag">${r.scans} leituras</span>`:''}</div>
+      </div>
+      <div class="iqty">${r.qty}</div>
+      <button class="idel" onclick="deleteRef('${ea(r.ref)}')">✕</button>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   FORNECEDORES
+══════════════════════════════════════════ */
+function buildFornList(){
+  const el = document.getElementById('forn-list');
+  if(!session){ el.innerHTML=`<div class="empty"><div class="e-ico">· · ·</div><div class="e-txt">Sem sessão ativa</div></div>`; return; }
+  const forns = [...new Set(items.map(i=>i.forn).filter(Boolean))];
+  if(!forns.length){ el.innerHTML=`<div class="empty"><div class="e-ico">· · ·</div><div class="e-txt">Nenhum fornecedor registrado</div></div>`; return; }
+  el.innerHTML = forns.map(f=>{
+    const cnt = Object.values(grouped).filter(r=>r.forn===f).length;
+    const qty = items.filter(i=>i.forn===f).reduce((s,i)=>s+i.qty,0);
+    return `<div class="forn-card">
+      <div class="forn-dot${isLP(f)?' lp':''}"></div>
+      <div style="flex:1">
+        <div class="forn-name">${h(f)}${isLP(f)?` <span style="font-size:.55rem;color:var(--gr)">PADRÃO LP</span>`:''}</div>
+        <div class="forn-meta">${cnt} ref${cnt!==1?'s':''} · ${qty} caixas</div>
+      </div>
+      <div class="forn-badge">${qty}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════
+   RESUMO
+══════════════════════════════════════════ */
+function buildResumo(){
+  const el  = document.getElementById('resumo-body');
+  const ec  = document.getElementById('exp-card');
+  const rows= Object.values(grouped).sort((a,b)=>b.qty-a.qty);
+  if(!rows.length){
+    el.innerHTML=`<div class="empty"><div class="e-ico">· · ·</div><div class="e-txt">Sem dados</div></div>`;
+    ec.style.display='none'; return;
+  }
+  const tot = rows.reduce((s,r)=>s+r.qty,0);
+  el.innerHTML=`
+    ${session?`<div style="font-size:.67rem;color:var(--mu);margin-bottom:12px;line-height:1.9">
+      <span style="color:var(--cy);font-family:var(--raj);font-weight:700">${h(session.forn)}</span>
+      ${session.nf?` · ${h(session.nf)}`:''}
+      <br>Início: ${session.start}</div>`:''}
+    <div class="stats" style="margin-bottom:12px">
+      <div class="stat"><div class="n">${items.length}</div><div class="l">Scans</div></div>
+      <div class="stat g"><div class="n">${tot}</div><div class="l">Caixas</div></div>
+      <div class="stat o"><div class="n">${rows.length}</div><div class="l">Refs</div></div>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:.68rem">
+      <thead><tr style="font-size:.55rem;letter-spacing:1px;color:var(--mu)">
+        <th style="text-align:left;padding:5px 0;border-bottom:1px solid var(--bd)">Referência</th>
+        <th style="text-align:right;padding:5px 8px;border-bottom:1px solid var(--bd)">Leit.</th>
+        <th style="text-align:right;padding:5px 0;border-bottom:1px solid var(--bd)">Caixas</th>
+      </tr></thead>
+      <tbody>${rows.map(r=>`<tr>
+        <td style="padding:5px 0;color:var(--cy);font-family:var(--raj);font-weight:700">${h(r.ref)}</td>
+        <td style="text-align:right;padding:5px 8px;color:var(--mu)">${r.scans}</td>
+        <td style="text-align:right;padding:5px 0;color:var(--gr);font-weight:700">${r.qty}</td>
+      </tr>`).join('')}</tbody>
+      <tfoot><tr style="border-top:1px solid var(--bd)">
+        <td style="padding:6px 0;font-size:.55rem;color:var(--mu)">TOTAL</td>
+        <td style="text-align:right;padding:6px 8px;color:var(--mu)">${items.length}</td>
+        <td style="text-align:right;padding:6px 0;color:var(--gr);font-weight:700">${tot}</td>
+      </tr></tfoot>
+    </table>`;
+  buildExport(rows, tot); ec.style.display='block';
+}
+
+function buildExport(rows, tot){
+  const s = session;
+  let t = 'RECEBIMENTO DE MERCADORIAS\n';
+  t += `Fornecedor : ${s?s.forn:''}\n`;
+  if(s&&s.nf) t += `NF / Pedido: ${s.nf}\n`;
+  t += `Inicio     : ${s?s.start:''}\n`;
+  t += `Exportado  : ${new Date().toLocaleString('pt-BR')}\n`;
+  t += `${'-'.repeat(44)}\n`;
+  t += `${'REFERENCIA'.padEnd(16)}${'LEIT'.padStart(6)}${'CAIXAS'.padStart(8)}\n`;
+  t += `${'-'.repeat(44)}\n`;
+  rows.forEach(r=>{ t+=`${r.ref.slice(0,15).padEnd(16)}${String(r.scans).padStart(6)}${String(r.qty).padStart(8)}\n`; });
+  t += `${'-'.repeat(44)}\n${'TOTAL'.padEnd(16)}${String(items.length).padStart(6)}${String(tot).padStart(8)}\n`;
+  document.getElementById('exp-txt').textContent = t;
+}
+
+function exportCSV(){
+  const rows=[['Referencia','Descricao','Leituras','Caixas_Total','Fornecedor','NF_Pedido','Data_Export']];
+  Object.values(grouped).forEach(r=>{
+    rows.push([r.ref,r.desc,r.scans,r.qty,r.forn,session?session.nf:'',new Date().toLocaleString('pt-BR')]);
+  });
+  const csv  = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href=url; a.download=`recebimento_${(session?session.forn:'export').replace(/\s/g,'_')}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url); toast('CSV exportado');
+}
+
+function copyTxt(){
+  navigator.clipboard.writeText(document.getElementById('exp-txt').textContent)
+    .then(()=>toast('Copiado')).catch(()=>toast('Erro ao copiar',true));
+}
+
+/* ══════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════ */
+function mdlConfirm(title, msg, cb){
+  document.getElementById('mdl-title').textContent = title;
+  document.getElementById('mdl-msg').textContent   = msg;
+  mdlCb = cb;
+  document.getElementById('mdl-bg').classList.add('on');
+  document.getElementById('mdl-ok').onclick = ()=>{ mdlClose(); if(mdlCb) mdlCb(); };
+}
+function mdlClose(){ document.getElementById('mdl-bg').classList.remove('on'); }
+
+/* ══════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════ */
+let tTmr;
+function toast(msg, err=false){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'on'+(err?' err':'');
+  clearTimeout(tTmr); tTmr = setTimeout(()=>t.className='', 2800);
+}
+function doFlash(){
+  const f = document.getElementById('flash');
+  f.classList.add('on'); setTimeout(()=>f.classList.remove('on'), 140);
+}
+function h(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function ea(s){ return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+updateDash();
+</script>
+</body>
+</html>
