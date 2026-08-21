@@ -2148,61 +2148,6 @@
       <button class="btn btn-x" onclick="fazerLogout()">Sair</button>
     </div>
 
-    <!-- ══ GOOGLE CLOUD VISION ══ -->
-    <div class="card hi">
-      <div class="ctit">&#9670; Google Cloud Vision
-        <span id="cfg-vision-status" class="key-src none">SEM CHAVE</span>
-      </div>
-      <div class="ibox" style="margin-bottom:10px">
-        OCR para leitura de etiquetas via câmera.<br>
-        <b>Free tier:</b> 1.000 leituras/mês gratuitas.<br>
-        Obtenha em: <code style="color:var(--cy)">console.cloud.google.com → Vision API → Credenciais</code>
-      </div>
-      <div id="cfg-emb-vision-info" style="display:none;font-size:.62rem;color:var(--cy);
-        padding:7px 10px;background:rgba(0,216,255,.07);border:1px solid rgba(0,216,255,.2);
-        border-radius:6px;margin-bottom:8px">
-        ✓ Chave embutida no código está ativa.
-      </div>
-      <label>API Key do Google Cloud Vision</label>
-      <input id="cfg-vision-key" type="password" placeholder="AIzaSy..."
-             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             style="font-family:monospace;font-size:.75rem;margin-bottom:8px"
-             oninput="cfgVisionStatusUpdate()">
-      <div class="row" style="margin-bottom:0">
-        <button class="btn btn-cy" onclick="cfgVisionSave()"  style="margin-bottom:0;font-size:.72rem;padding:9px">Salvar</button>
-        <button class="btn btn-x"  onclick="cfgVisionTest()"  style="margin-bottom:0;font-size:.72rem;padding:9px">Testar</button>
-        <button class="btn btn-re" onclick="cfgVisionClear()" style="margin-bottom:0;font-size:.72rem;padding:9px;max-width:72px">Limpar</button>
-      </div>
-      <div id="cfg-vision-test-result" style="display:none;margin-top:8px;font-size:.62rem;
-        color:var(--mu2);line-height:1.7;padding:8px 10px;background:var(--bg);
-        border:1px solid var(--bd);border-radius:6px"></div>
-    </div>
-
-    <!-- ══ OPENAI ══ -->
-    <div class="card hi">
-      <div class="ctit">&#9670; OpenAI
-        <span id="cfg-ai-status" class="key-src none">SEM CHAVE</span>
-      </div>
-      <div class="ibox" style="margin-bottom:10px">
-        Assistente IA para análise de etiquetas e sugestão de regras.<br>
-        Obtenha em: <code style="color:var(--cy)">platform.openai.com → API Keys</code>
-      </div>
-      <div id="cfg-emb-ai-info" style="display:none;font-size:.62rem;color:var(--cy);
-        padding:7px 10px;background:rgba(0,216,255,.07);border:1px solid rgba(0,216,255,.2);
-        border-radius:6px;margin-bottom:8px">
-        ✓ Chave embutida no código está ativa.
-      </div>
-      <label>API Key da OpenAI</label>
-      <input id="cfg-ai-key" type="password" placeholder="sk-..."
-             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-             style="font-family:monospace;font-size:.75rem;margin-bottom:8px"
-             oninput="cfgAiStatusUpdate()">
-      <div class="row" style="margin-bottom:0">
-        <button class="btn btn-cy" onclick="cfgAiSave()"  style="margin-bottom:0;font-size:.72rem;padding:9px">Salvar</button>
-        <button class="btn btn-re" onclick="cfgAiClear()" style="margin-bottom:0;font-size:.72rem;padding:9px;max-width:72px">Limpar</button>
-      </div>
-    </div>
-
     <!-- ══ SOBRE ══ -->
     <div class="card">
       <div class="ctit">Sobre</div>
@@ -2220,6 +2165,19 @@
           <span>Armazenamento</span><span style="color:var(--tx)">localStorage (local)</span>
         </div>
       </div>
+    </div>
+
+    <!-- ══ ATUALIZAR APP ══ -->
+    <div class="card">
+      <div class="ctit">&#9670; Atualizar</div>
+      <div class="ibox" style="margin-bottom:10px">
+        O app guarda uma cópia local dos arquivos para funcionar offline.
+        Se você sabe que existe uma versão mais nova publicada, use o
+        botão abaixo para reiniciar e buscar a versão mais atual — sem
+        precisar desinstalar nem reinstalar. Suas contagens salvas e o
+        histórico não são apagados.
+      </div>
+      <button class="btn btn-wa" onclick="reiniciarApp()">&#8635; Reiniciar e Buscar Atualização</button>
     </div>
 
   </div>
@@ -4388,7 +4346,7 @@
 
     let rows;
     if(isImport){
-      rows=[['Referencia','Descricao','Contado','Esperado','Status','Fornecedor','NF','Inicio']];
+      rows=[['Referencia','Descricao','Contado','Esperado','Status','Fornecedor','NF','Inicio','Observacao','Lotes']];
       const order  = session.expectedOrder || Object.keys(session.expected||{});
       const extras = Object.keys(grouped).filter(r=>!session.expected[r]);
       [...order,...extras].forEach(ref=>{
@@ -4396,12 +4354,12 @@
         const exp = session.expected[ref];
         const st  = computeStatus(session.expected, grouped, ref);
         const stLbl = {pend:'Pendente',conv:'Convergente',div:'Divergente',extra:'Fora da lista'}[st]||'';
-        rows.push([ref, g.desc||(exp&&exp.desc)||'', g.qty||0, exp?exp.qty:'', stLbl, session.forn, session.nf||'', session.start]);
+        rows.push([ref, g.desc||(exp&&exp.desc)||'', g.qty||0, exp?exp.qty:'', stLbl, session.forn, session.nf||'', session.start, g.obs||'', _lotesParaTexto(g.lotes)]);
       });
     } else {
-      rows=[['Referencia','Descricao','Leituras','Pecas','Fornecedor','NF','Inicio']];
+      rows=[['Referencia','Descricao','Leituras','Pecas','Fornecedor','NF','Inicio','Observacao','Lotes']];
       Object.values(grouped).forEach(r=>{
-        rows.push([r.ref,r.desc||'',r.scans,r.qty,r.forn,session.nf||'',session.start]);
+        rows.push([r.ref,r.desc||'',r.scans,r.qty,r.forn,session.nf||'',session.start,r.obs||'',_lotesParaTexto(r.lotes)]);
       });
     }
     const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -5907,6 +5865,16 @@
         info.append(ref, meta);
       }
 
+      // Lote(s)/Validade (se existir) — cada lote com sua quantidade
+      if(r.lotes && r.lotes.length){
+        const lotesEl=document.createElement('div');
+        lotesEl.style.cssText='font-size:.55rem;color:var(--cy);margin-top:2px;line-height:1.6';
+        lotesEl.innerHTML = '🏷 ' + r.lotes.map(l =>
+          `Lote ${h_(l.lote)}${l.validade?' · Val '+h_(l.validade):''} · ${Number(l.quantidade)||0} pç`
+        ).join('<br>');
+        info.append(lotesEl);
+      }
+
       // Qtd + volumes
       const qtyCol=document.createElement('div');
       qtyCol.style.cssText='text-align:right;flex-shrink:0';
@@ -6040,6 +6008,13 @@
     toast(`${ref} adicionado`);
   }
 
+  // Formata os lotes de uma referência como texto legível, para uso nas
+  // exportações (texto e CSV) do histórico.
+  function _lotesParaTexto(lotes){
+    if(!lotes || !lotes.length) return '';
+    return lotes.map(l => `Lote ${l.lote}${l.validade?' (Val '+l.validade+')':''}: ${Number(l.quantidade)||0}pc`).join(' | ');
+  }
+
   function buildHistExport(hs,rows,tot){
     const isImport = hs.tipo==='importado';
     let t='RECEBIMENTO DE MERCADORIAS\n';
@@ -6062,13 +6037,23 @@
         const exp=(hs.expected||{})[r.ref];
         const st = stLbl[computeStatus(hs.expected, hs.grouped, r.ref)||'pend']||'-';
         t+=`${r.ref.slice(0,15).padEnd(16)}${String(r.qty).padStart(9)}${String(exp?exp.qty:'-').padStart(10)}${st.padStart(14)}\n`;
+        if(r.obs) t+=`   Obs: ${r.obs}\n`;
+        if(r.lotes && r.lotes.length) r.lotes.forEach(l=>{
+          t+=`   Lote ${l.lote}${l.validade?' (Val '+l.validade+')':''}: ${Number(l.quantidade)||0} pc\n`;
+        });
       });
       t+=`${'-'.repeat(54)}\n${'TOTAL'.padEnd(16)}${String(tot).padStart(9)}\n`;
     } else {
       t+=`${'-'.repeat(44)}\n`;
       t+=`${'REFERENCIA'.padEnd(16)}${'LEIT'.padStart(6)}${'PECAS'.padStart(8)}\n`;
       t+=`${'-'.repeat(44)}\n`;
-      rows.forEach(r=>{t+=`${r.ref.slice(0,15).padEnd(16)}${String(r.scans).padStart(6)}${String(r.qty).padStart(8)}\n`;});
+      rows.forEach(r=>{
+        t+=`${r.ref.slice(0,15).padEnd(16)}${String(r.scans).padStart(6)}${String(r.qty).padStart(8)}\n`;
+        if(r.obs) t+=`   Obs: ${r.obs}\n`;
+        if(r.lotes && r.lotes.length) r.lotes.forEach(l=>{
+          t+=`   Lote ${l.lote}${l.validade?' (Val '+l.validade+')':''}: ${Number(l.quantidade)||0} pc\n`;
+        });
+      });
       t+=`${'-'.repeat(44)}\n${'TOTAL'.padEnd(16)}${String(hs.scans||0).padStart(6)}${String(tot).padStart(8)}\n`;
     }
     document.getElementById('hdet-exbox').textContent=t;
@@ -6079,7 +6064,7 @@
     const isImport = viewHist.tipo==='importado';
     let rows;
     if(isImport){
-      rows=[['Referencia','Descricao','Contado','Esperado','Status','Fornecedor','NF','Inicio','Fim']];
+      rows=[['Referencia','Descricao','Contado','Esperado','Status','Fornecedor','NF','Inicio','Fim','Observacao','Lotes']];
       const order  = viewHist.expectedOrder || Object.keys(viewHist.expected||{});
       const extras = Object.keys(viewHist.grouped||{}).filter(r=>!(viewHist.expected||{})[r]);
       const stLbl  = {pend:'Pendente',conv:'Convergente',div:'Divergente',extra:'Fora da lista'};
@@ -6087,12 +6072,12 @@
         const g   = (viewHist.grouped||{})[ref]||{};
         const exp = (viewHist.expected||{})[ref];
         const st  = stLbl[computeStatus(viewHist.expected, viewHist.grouped, ref)||'pend']||'';
-        rows.push([ref, g.desc||(exp&&exp.desc)||'', g.qty||0, exp?exp.qty:'', st, viewHist.forn, viewHist.nf||'', viewHist.start, viewHist.end||'']);
+        rows.push([ref, g.desc||(exp&&exp.desc)||'', g.qty||0, exp?exp.qty:'', st, viewHist.forn, viewHist.nf||'', viewHist.start, viewHist.end||'', g.obs||'', _lotesParaTexto(g.lotes)]);
       });
     } else {
-      rows=[['Referencia','Descricao','Leituras','Pecas','Fornecedor','NF','Inicio','Fim']];
+      rows=[['Referencia','Descricao','Leituras','Pecas','Fornecedor','NF','Inicio','Fim','Observacao','Lotes']];
       Object.values(viewHist.grouped||{}).forEach(r=>{
-        rows.push([r.ref,r.desc||'',r.scans,r.qty,r.forn,viewHist.nf||'',viewHist.start,viewHist.end||'']);
+        rows.push([r.ref,r.desc||'',r.scans,r.qty,r.forn,viewHist.nf||'',viewHist.start,viewHist.end||'',r.obs||'',_lotesParaTexto(r.lotes)]);
       });
     }
     const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -6847,6 +6832,44 @@
       _aiChatBusy = false;
       document.getElementById('ai-chat-send-btn').disabled = false;
     }
+  }
+
+  /* ═══════════════════════════════════════════════
+     REINICIAR / BUSCAR ATUALIZAÇÃO
+     Limpa o Service Worker e o cache offline do app (não mexe nas
+     contagens salvas nem no histórico, que ficam em localStorage,
+     separado do cache de arquivos) e recarrega forçando buscar tudo de
+     novo da web — é o jeito de garantir que o app pega a versão mais
+     nova publicada, mesmo já tendo uma cópia offline guardada.
+  ═══════════════════════════════════════════════ */
+  function reiniciarApp(){
+    mc(
+      'Reiniciar e Buscar Atualização',
+      'O app vai reiniciar e buscar a versão mais nova disponível na web. Suas contagens salvas e o histórico continuam guardados normalmente.',
+      _reiniciarAppExecutar
+    );
+  }
+
+  async function _reiniciarAppExecutar(){
+    toast('Buscando atualização…');
+    try{
+      if('serviceWorker' in navigator){
+        const regs = await navigator.serviceWorker.getRegistrations();
+        for(const reg of regs){ await reg.unregister(); }
+      }
+      if('caches' in window){
+        const keys = await caches.keys();
+        for(const key of keys){ await caches.delete(key); }
+      }
+    }catch(e){
+      console.warn('Falha ao limpar cache/Service Worker ao reiniciar:', e);
+    }
+    // Acrescenta um parâmetro único na URL pra garantir que o
+    // navegador/WebView não reaproveite uma cópia antiga guardada por
+    // fora do Service Worker (cache HTTP comum).
+    const url = new URL(window.location.href);
+    url.searchParams.set('_upd', Date.now());
+    window.location.replace(url.toString());
   }
 
   /* ═══════════════════════════════════════════════
