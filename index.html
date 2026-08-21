@@ -1114,15 +1114,6 @@
       NFs enviadas pelo extrator de nota fiscal, prontas para conferência às cegas.
       Escolha uma para revisar e iniciar a contagem.
     </div>
-    <div class="tgl-wrap" onclick="toggleRastrearLoteValidade()"
-         style="display:flex;align-items:center;justify-content:space-between;gap:8px;
-      padding:9px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;
-      margin-bottom:10px;cursor:pointer">
-      <span style="font-family:var(--R);font-weight:700;font-size:.66rem;letter-spacing:.3px" class="tgl-lbl">
-        Registrar lote e validade
-      </span>
-      <span class="tgl" id="tgl-lote-validade"></span>
-    </div>
     <div id="cloud-list"></div>
     <div class="mrow">
       <button class="btn btn-x" onclick="cloudModalClose()">Fechar</button>
@@ -1668,6 +1659,22 @@
           </div>
         </div>
 
+        <!-- Lote / Validade deste volume — só aparece em contagem às
+             cegas quando a sessão exige lote/validade. Preenchido e
+             confirmado JUNTO com a quantidade, numa ação só. -->
+        <div id="lv-box" style="display:none;background:rgba(0,216,255,.06);border:1px solid rgba(0,216,255,.2);
+          border-radius:10px;padding:10px 12px;margin:8px 0">
+          <div style="font-size:.5rem;color:var(--mu2);letter-spacing:1px;margin-bottom:8px">
+            LOTE E VALIDADE DESTE VOLUME (OPCIONAL)
+          </div>
+          <div class="g2" style="margin-bottom:0">
+            <div><label style="margin-bottom:3px;font-size:.54rem">Lote</label>
+              <input id="r-lote" type="text" placeholder="Ex: 2094" autocomplete="off" style="margin-bottom:0"></div>
+            <div><label style="margin-bottom:3px;font-size:.54rem">Validade</label>
+              <input id="r-validade" type="text" placeholder="Ex: 01/01/2027" autocomplete="off" style="margin-bottom:0"></div>
+          </div>
+        </div>
+
         <!-- Acumulado e fornecedor -->
         <div class="rr" id="r-acc-row" style="display:none">
           <span class="rk">Acumulado anterior</span><span class="rv tot" id="r-acc">—</span>
@@ -1749,7 +1756,6 @@
     <div id="card-acoes" style="display:none">
       <div class="sep"></div>
       <button class="btn btn-gr" onclick="sessFinalizeClick()">Finalizar e Salvar Contagem</button>
-      <button class="btn btn-cy" style="font-size:.75rem;padding:9px" onclick="exportSessAtiva()">Exportar Sessão Atual (CSV)</button>
       <button class="btn btn-re" style="font-size:.75rem;padding:9px"
               onclick="mc('Encerrar Sessão','A sessão será encerrada sem salvar. Os dados atuais serão perdidos.',sessCancel)">
         Descartar Sessão
@@ -3621,26 +3627,16 @@
 
   function openCloudModal(){
     _cloudRenderList();
-    _syncLoteValidadeToggleUI();
     document.getElementById('mdl-cloud').classList.add('on');
   }
   function cloudModalClose(){
     document.getElementById('mdl-cloud').classList.remove('on');
   }
 
-  /* Preferência "registrar lote e validade" — ligada no início da
-     contagem em nuvem (modal ☁), persiste entre sessões via
-     localStorage, e é transferida para a sessão ao ser iniciada. */
-  let rastrearLoteValidade = (localStorage.getItem('rcb_rastrear_lote_validade') === '1');
-  function toggleRastrearLoteValidade(){
-    rastrearLoteValidade = !rastrearLoteValidade;
-    try{ localStorage.setItem('rcb_rastrear_lote_validade', rastrearLoteValidade ? '1' : '0'); }catch(e){}
-    _syncLoteValidadeToggleUI();
-  }
-  function _syncLoteValidadeToggleUI(){
-    const el = document.getElementById('tgl-lote-validade');
-    if(el) el.classList.toggle('on', rastrearLoteValidade);
-  }
+  /* "Registrar lote e validade" agora é SEMPRE obrigatório, para todos
+     os fornecedores, em toda contagem vinda da nuvem — não é mais uma
+     preferência que liga/desliga. */
+  const rastrearLoteValidade = true;
 
   function _cloudRenderList(){
     const el = document.getElementById('cloud-list');
@@ -3804,69 +3800,127 @@
   }
 
   // Seção de lote/validade dentro do painel de contagem — só aparece
-  // quando "Registrar lote e validade" está ativado no início da
-  // contagem em nuvem. Permite adicionar MAIS DE UM lote/validade para a
-  // mesma referência (ex.: a carga trouxe duas caixas com lotes
-  // diferentes). A validade é sempre opcional: preencher só o lote nunca
-  // trava o registro nem o resumo final.
+  // quando "Registrar lote e validade" está ativado. Mostra os lotes já
+  // registrados (a quantidade de cada um vem automaticamente de cada
+  // "Confirmar" na tela de contagem — não se digita quantidade aqui).
+  // Só permite remover; para adicionar um novo lote, basta contar de
+  // novo (▶ Contar) preenchendo Lote/Validade na confirmação.
   function _blindLoteSectionHTML(ref){
+    const g = grouped[ref] || {};
+    const contado = g.qty || 0;
+    const alocado = _loteAlocado(ref);
+
+    let statusHTML;
+    if(contado <= 0){
+      statusHTML = `<div style="font-size:.58rem;color:var(--mu2);margin-bottom:8px">Conte a quantidade primeiro — o lote é informado na hora de confirmar.</div>`;
+    } else if(alocado > 0){
+      statusHTML = `<div style="font-size:.6rem;color:var(--cy);font-weight:600;margin-bottom:8px">🏷 ${alocado} de ${contado} pç com lote registrado</div>`;
+    } else {
+      statusHTML = `<div style="font-size:.58rem;color:var(--mu2);margin-bottom:8px">Nenhum lote registrado ainda (opcional).</div>`;
+    }
+
     return `
       <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd)">
-        <label style="margin-bottom:5px">Lote / Validade</label>
+        <label style="margin-bottom:5px">Lote / Validade (opcional)</label>
+        ${statusHTML}
         <div id="blind-lote-list">${_blindLoteListHTML(ref)}</div>
-        <div class="g2" style="margin-bottom:8px">
-          <div><label style="margin-bottom:3px;font-size:.54rem">Lote</label>
-            <input id="blind-lote-input" type="text" placeholder="Ex: 2094" autocomplete="off" style="margin-bottom:0"></div>
-          <div><label style="margin-bottom:3px;font-size:.54rem">Validade (opcional)</label>
-            <input id="blind-validade-input" type="text" placeholder="Ex: 01/01/2027" autocomplete="off" style="margin-bottom:0"></div>
-        </div>
-        <button class="btn btn-cy" style="margin-bottom:0" onclick="blindLoteAdd('${ea(ref)}')">＋ Adicionar lote</button>
       </div>
     `;
   }
+
+  // Soma a quantidade já alocada em lotes registrados para a referência.
+  function _loteAlocado(ref){
+    const lotes = (grouped[ref] && grouped[ref].lotes) || [];
+    return lotes.reduce((s,l)=>s+(Number(l.quantidade)||0), 0);
+  }
+
+  let _blindLoteEditing = null; // {ref, idx} do lote em edição no momento
 
   function _blindLoteListHTML(ref){
     const lotes = (grouped[ref] && grouped[ref].lotes) || [];
     if(!lotes.length){
       return '<div style="font-size:.56rem;color:var(--mu2);margin-bottom:8px">Nenhum lote registrado ainda.</div>';
     }
-    return lotes.map((l, idx) => `
+    return lotes.map((l, idx) => {
+      const editing = _blindLoteEditing && _blindLoteEditing.ref===ref && _blindLoteEditing.idx===idx;
+      if(editing){
+        return `
+          <div style="background:var(--s2);border:1px solid var(--cy);border-radius:6px;padding:8px;margin-bottom:5px">
+            <div class="g2" style="margin-bottom:6px">
+              <div><label style="margin-bottom:2px;font-size:.5rem">Lote</label>
+                <input id="blind-lote-edit-lote" type="text" value="${h_(l.lote)}"
+                       style="margin-bottom:0;font-size:.62rem;padding:5px 7px"></div>
+              <div><label style="margin-bottom:2px;font-size:.5rem">Validade</label>
+                <input id="blind-lote-edit-val" type="text" value="${h_(l.validade||'')}"
+                       style="margin-bottom:0;font-size:.62rem;padding:5px 7px"></div>
+            </div>
+            <label style="margin-bottom:2px;font-size:.5rem">Quantidade</label>
+            <input id="blind-lote-edit-qty" type="number" min="1" value="${Number(l.quantidade)||0}"
+                   style="margin-bottom:6px;font-size:.62rem;padding:5px 7px">
+            <div class="row" style="margin-bottom:0">
+              <button class="btn btn-x"  style="margin-bottom:0;padding:6px;font-size:.6rem" onclick="blindLoteEditCancel()">Cancelar</button>
+              <button class="btn btn-cy" style="margin-bottom:0;padding:6px;font-size:.6rem" onclick="blindLoteEditSave('${ea(ref)}',${idx})">Salvar</button>
+            </div>
+          </div>
+        `;
+      }
+      return `
       <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;
         background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:6px 8px;margin-bottom:5px">
         <span style="font-size:.62rem;color:var(--tx)">
-          <b>Lote:</b> ${h_(l.lote)}${l.validade ? ' &nbsp;·&nbsp; <b>Val:</b> '+h_(l.validade) : ''}
+          <b>Lote:</b> ${h_(l.lote)}${l.validade ? ' &nbsp;·&nbsp; <b>Val:</b> '+h_(l.validade) : ''} &nbsp;·&nbsp; <b>Qtd:</b> ${Number(l.quantidade)||0} pç
         </span>
-        <span onclick="blindLoteRemove('${ea(ref)}',${idx})" style="color:var(--re);cursor:pointer;font-size:.64rem;flex-shrink:0">✕</span>
+        <span style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+          <span onclick="blindLoteEditStart('${ea(ref)}',${idx})" style="color:var(--wa);cursor:pointer;font-size:.66rem" title="Editar lote">&#9998;</span>
+          <span onclick="blindLoteRemove('${ea(ref)}',${idx})" style="color:var(--re);cursor:pointer;font-size:.64rem" title="Remover lote">✕</span>
+        </span>
       </div>
-    `).join('');
+    `;
+    }).join('');
   }
 
-  // Adiciona um lote (com validade opcional) à referência — não exige
-  // que a referência já tenha sido contada; cria o registro em `grouped`
-  // se ainda não existir, com qty:0 (a contagem em si continua
-  // independente, pelo botão "▶ Contar").
-  function blindLoteAdd(ref){
-    const loteInp = document.getElementById('blind-lote-input');
-    const valInp  = document.getElementById('blind-validade-input');
-    const lote = loteInp ? loteInp.value.trim() : '';
-    const validade = valInp ? valInp.value.trim() : '';
-    if(!lote){ toast('Informe o lote', true); return; }
-
-    if(!grouped[ref]){
-      const exp = session.expected ? session.expected[ref] : null;
-      grouped[ref] = { ref, desc:(exp&&exp.desc)||'', qty:0, vols:0, scans:0, forn:session.forn, obs:'', lastTs:Date.now() };
-    }
-    if(!grouped[ref].lotes) grouped[ref].lotes = [];
-    // a validade é opcional — nunca bloqueia o registro do lote
-    grouped[ref].lotes.push({ lote, validade: validade || '' });
-    sessStateSave();
-    toast('Lote adicionado — '+ref);
+  function blindLoteEditStart(ref, idx){
+    _blindLoteEditing = { ref, idx };
     try{ renderBlindStatus(); }catch(e){ console.error('renderBlindStatus falhou:', e); }
   }
 
+  function blindLoteEditCancel(){
+    _blindLoteEditing = null;
+    try{ renderBlindStatus(); }catch(e){ console.error('renderBlindStatus falhou:', e); }
+  }
+
+  // Salva a edição de um lote já registrado (lote, validade e/ou
+  // quantidade). Lote continua sendo o único campo realmente exigido
+  // aqui — validade pode ficar em branco.
+  function blindLoteEditSave(ref, idx){
+    const loteInp = document.getElementById('blind-lote-edit-lote');
+    const valInp  = document.getElementById('blind-lote-edit-val');
+    const qtyInp  = document.getElementById('blind-lote-edit-qty');
+    const lote = loteInp ? loteInp.value.trim() : '';
+    const validade = valInp ? valInp.value.trim() : '';
+    const quantidade = qtyInp ? parseInt(qtyInp.value) : NaN;
+
+    if(!lote){ toast('Informe o lote', true); return; }
+    if(!quantidade || quantidade<1){ toast('Informe a quantidade deste lote', true); return; }
+
+    const lotes = grouped[ref] && grouped[ref].lotes;
+    if(!lotes || !lotes[idx]) return;
+    lotes[idx] = { lote, validade, quantidade };
+    sessStateSave();
+    _blindLoteEditing = null;
+    toast('Lote atualizado — '+ref);
+    try{ renderBlindStatus(); }catch(e){ console.error('renderBlindStatus falhou:', e); }
+  }
+
+  // Remove o lote — só tira a "etiqueta" (lote/validade/quantidade
+  // daquela parte); a quantidade TOTAL contada da referência nunca é
+  // alterada por isso, e não fica nenhuma pendência: a parte que ficar
+  // sem lote associado simplesmente continua contada normalmente, sem
+  // exigir nada.
   function blindLoteRemove(ref, idx){
     if(!grouped[ref] || !grouped[ref].lotes) return;
     grouped[ref].lotes.splice(idx, 1);
+    if(_blindLoteEditing && _blindLoteEditing.ref===ref) _blindLoteEditing = null;
     sessStateSave();
     try{ renderBlindStatus(); }catch(e){ console.error('renderBlindStatus falhou:', e); }
   }
@@ -4012,21 +4066,25 @@
 
       const info=document.createElement('div'); info.style.cssText='flex:1;min-width:0';
       const refEl=document.createElement('div'); refEl.className='iref'; refEl.textContent=ref;
-      const meta=document.createElement('div'); meta.className='imeta';
-      let metaText = exp && exp.desc ? exp.desc : '(fora da planilha)';
+      let metaText = exp && exp.desc ? exp.desc : '';
       if(pinnedMult) metaText += ' · 📌 '+pinnedMult+'/vol';
-      meta.textContent = metaText;
-      info.append(refEl, meta);
+      info.append(refEl);
+      if(metaText){
+        const meta=document.createElement('div'); meta.className='imeta';
+        meta.textContent = metaText;
+        info.append(meta);
+      }
       if(g && g.obs){
         const obsEl=document.createElement('div');
         obsEl.style.cssText='font-size:.55rem;color:var(--wa);margin-top:2px;font-style:italic';
         obsEl.textContent='📝 '+g.obs;
         info.appendChild(obsEl);
       }
-      if(session.rastrearLoteValidade && g && g.lotes && g.lotes.length){
+      if(session.rastrearLoteValidade && isCounted && g.lotes && g.lotes.length){
+        const alocado = _loteAlocado(ref);
         const loteEl=document.createElement('div');
-        loteEl.style.cssText='font-size:.55rem;color:var(--cy);margin-top:2px';
-        loteEl.textContent='🏷 '+g.lotes.length+' lote'+(g.lotes.length>1?'s':'')+' registrado'+(g.lotes.length>1?'s':'');
+        loteEl.style.cssText='font-size:.55rem;color:var(--cy);margin-top:2px;font-weight:600';
+        loteEl.textContent='🏷 '+g.lotes.length+' lote'+(g.lotes.length>1?'s':'')+' · '+alocado+' pç registrada'+(alocado!==1?'s':'');
         info.appendChild(loteEl);
       }
 
@@ -4152,6 +4210,7 @@
   function sessFinalizeClick(){
     if(!session){ toast('Nenhuma sessão ativa',true); return; }
     if(!Object.keys(grouped).length){ toast('Nenhum item para salvar',true); return; }
+
     if(session.tipo==='importado' && session.expected){
       openResumoModal();
     } else {
@@ -4186,11 +4245,10 @@
     return { conv, div, pend, extra, lotesAll };
   }
 
-  // Mostra os lotes/validade registrados (se houver), sem exigir a
-  // validade — quando ela não foi preenchida, aparece só o lote.
+  // Mostra os lotes/validade/quantidade registrados no resumo final.
   function _lotesResumoHTML(lotes){
     if(!lotes || !lotes.length) return '';
-    const linhas = lotes.map(l => 'Lote '+h_(l.lote)+(l.validade ? ' · Val '+h_(l.validade) : '')).join('<br>');
+    const linhas = lotes.map(l => 'Lote '+h_(l.lote)+' · Val '+h_(l.validade)+' · '+(Number(l.quantidade)||0)+' pç').join('<br>');
     return `<div style="font-size:.56rem;color:var(--cy);margin-top:3px">🏷 ${linhas}</div>`;
   }
 
@@ -4206,7 +4264,7 @@
       <div class="ic st-${kind}" style="margin-top:4px;flex-wrap:wrap;gap:4px">
         <div style="flex:1;min-width:0">
           <div class="iref">${h_(r.ref)}</div>
-          <div class="imeta">${h_(r.desc||'(fora da planilha)')}</div>
+          ${r.desc ? `<div class="imeta">${h_(r.desc)}</div>` : ''}
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div class="iqty" style="color:${colorMap[kind]};font-size:.85rem">${labelMap[kind]}</div>
@@ -5127,6 +5185,20 @@
       ab.classList.add('on');
     }else{ar.style.display='none';ab.classList.remove('on');}
 
+    // Lote/Validade — só em contagem às cegas com essa exigência ativa.
+    // Pré-preenche com o último lote/validade já usado nessa referência
+    // (comum estar escaneando várias caixas seguidas do mesmo lote) —
+    // o usuário só precisa trocar quando o lote realmente mudar.
+    const lvBox = document.getElementById('lv-box');
+    const precisaLote = !!(item.blind && session && session.rastrearLoteValidade);
+    if(lvBox) lvBox.style.display = precisaLote ? 'block' : 'none';
+    if(precisaLote){
+      const lotesExistentes = (ex && ex.lotes) || [];
+      const ultimo = lotesExistentes.length ? lotesExistentes[lotesExistentes.length-1] : null;
+      document.getElementById('r-lote').value     = ultimo ? ultimo.lote     : '';
+      document.getElementById('r-validade').value = ultimo ? ultimo.validade : '';
+    }
+
     document.getElementById('qr-box').classList.add('on');
     setSt(item.blind ? 'Confirme a quantidade' : 'QR lido — ajuste volumes e confirme', 'ok');
     doFlash();
@@ -5180,7 +5252,26 @@
     const vols = Math.max(1, parseInt(document.getElementById('r-vols').value)||1);
     const totalQty = pending.qty * vols;
     const wasBlind = !!pending.blind;
+
+    // Lote/Validade aqui são OPCIONAIS — nunca bloqueiam a confirmação.
+    // Se o lote for preenchido, a quantidade confirmada é registrada
+    // nele (consolidando com um lote de mesmo número, se já existir).
+    // Se ficar em branco, a quantidade é só somada ao total normalmente,
+    // sem nenhum lote associado — pode ser adicionado depois, a
+    // qualquer momento, pelo painel da referência.
+    const precisaLoteUI = wasBlind && session && session.rastrearLoteValidade;
+    let lote = '', validade = '';
+    if(precisaLoteUI){
+      const loteInp = document.getElementById('r-lote');
+      const valInp  = document.getElementById('r-validade');
+      lote     = loteInp ? loteInp.value.trim() : '';
+      validade = valInp  ? valInp.value.trim()  : '';
+    }
+
+    const ref = pending.ref;
     addItem({...pending, qty: totalQty, vols, qtyPerVol: pending.qty});
+    if(precisaLoteUI && lote) _loteConsolidar(ref, lote, validade, totalQty);
+
     pending=null;
     document.getElementById('qr-box').classList.remove('on');
     lastQR=0;
@@ -5195,6 +5286,31 @@
     } else {
       setSt('Aponte para o próximo QR Code','ok');
     }
+  }
+
+  // Registra a quantidade confirmada no lote informado. Se a referência
+  // já tem um lote com o MESMO NÚMERO (não diferencia maiúsc./minúsc.
+  // nem espaços nas pontas) — mesmo que a validade digitada agora seja
+  // diferente da que já estava — a quantidade é apenas SOMADA nesse
+  // lote existente, em vez de criar uma linha duplicada. Isso é o que
+  // mantém a soma dos lotes sempre igual ao total contado, sem esforço
+  // manual do usuário.
+  function _loteConsolidar(ref, lote, validade, quantidade){
+    if(!grouped[ref]){
+      const exp = session && session.expected ? session.expected[ref] : null;
+      grouped[ref] = { ref, desc:(exp&&exp.desc)||'', qty:0, vols:0, scans:0, forn:session.forn, obs:'', lastTs:Date.now() };
+    }
+    if(!grouped[ref].lotes) grouped[ref].lotes = [];
+
+    const loteNorm = lote.trim().toLowerCase();
+    const existente = grouped[ref].lotes.find(l => (l.lote||'').trim().toLowerCase() === loteNorm);
+    if(existente){
+      existente.quantidade = (Number(existente.quantidade)||0) + quantidade;
+      if(!existente.validade && validade) existente.validade = validade;
+    } else {
+      grouped[ref].lotes.push({ lote, validade, quantidade });
+    }
+    sessStateSave();
   }
 
   function itemCancel(){
