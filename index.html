@@ -1473,23 +1473,31 @@
     <div class="card" id="card-sess">
       <div class="ctit">Nova Sessão</div>
 
-      <!-- Escolha inicial: nuvem ou QR Code -->
+      <!-- Escolha inicial: nuvem, QR Code ou Foto com IA -->
       <div id="sess-entry-choice" style="display:flex;gap:10px;flex-wrap:wrap">
         <button type="button" onclick="sessChooseCloud()"
-                style="flex:1;min-width:130px;padding:22px 12px;border-radius:12px;
+                style="flex:1;min-width:100px;padding:22px 10px;border-radius:12px;
           border:1px solid rgba(0,216,255,.3);background:rgba(0,216,255,.06);
           color:var(--cy);cursor:pointer;display:flex;flex-direction:column;
           align-items:center;gap:8px">
           <span style="font-size:1.8rem;line-height:1">☁</span>
-          <span style="font-family:var(--R);font-weight:700;font-size:.7rem;letter-spacing:.4px">EM NUVEM</span>
+          <span style="font-family:var(--R);font-weight:700;font-size:.66rem;letter-spacing:.3px">EM NUVEM</span>
         </button>
         <button type="button" onclick="sessChooseQR()"
-                style="flex:1;min-width:130px;padding:22px 12px;border-radius:12px;
+                style="flex:1;min-width:100px;padding:22px 10px;border-radius:12px;
           border:1px solid rgba(167,139,250,.35);background:rgba(167,139,250,.08);
           color:#a78bfa;cursor:pointer;display:flex;flex-direction:column;
           align-items:center;gap:8px">
           <span style="font-size:1.8rem;line-height:1">📷</span>
-          <span style="font-family:var(--R);font-weight:700;font-size:.7rem;letter-spacing:.4px">QR CODE</span>
+          <span style="font-family:var(--R);font-weight:700;font-size:.66rem;letter-spacing:.3px">QR CODE</span>
+        </button>
+        <button type="button" onclick="sessChooseFotoIA()"
+                style="flex:1;min-width:100px;padding:22px 10px;border-radius:12px;
+          border:1px solid rgba(16,185,129,.35);background:rgba(16,185,129,.08);
+          color:var(--gr);cursor:pointer;display:flex;flex-direction:column;
+          align-items:center;gap:8px">
+          <span style="font-size:1.8rem;line-height:1">📸</span>
+          <span style="font-family:var(--R);font-weight:700;font-size:.6rem;letter-spacing:.2px;line-height:1.3">FOTOGRAFAR<br>NF</span>
         </button>
       </div>
       <button class="btn btn-x" style="margin-top:10px" onclick="navBack()">Cancelar</button>
@@ -1540,6 +1548,113 @@
 
         <button class="btn btn-cy" id="btn-sess-start" style="margin-top:6px" onclick="sessStart()">Iniciar Sessão</button>
         <button class="btn btn-x"  onclick="navBack()">Cancelar</button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════
+           FOTOGRAFAR NF COM IA
+      ═══════════════════════════════════════════════ -->
+      <div id="sess-foto-ia" style="display:none">
+        <button type="button" onclick="sessBackToChoice()"
+                style="background:none;border:none;color:var(--mu2);font-size:.62rem;
+          cursor:pointer;padding:0 0 10px;font-family:var(--R);font-weight:600">← Voltar</button>
+
+        <!-- Passo 1: captura de páginas -->
+        <div id="fia-step-capture">
+          <div class="ibox" style="margin-bottom:10px;line-height:1.6">
+            <b>Para melhor leitura:</b><br>
+            • deixe a NF inteira visível, em superfície plana<br>
+            • evite reflexos e sombras fortes<br>
+            • boa iluminação, câmera paralela à folha<br>
+            • aproxime-se para os códigos ficarem legíveis
+          </div>
+
+          <div id="fia-pages-list" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>
+
+          <input type="file" id="fia-input-cam" accept="image/*" capture="environment" style="display:none" onchange="fiaFileSelected(event)">
+          <input type="file" id="fia-input-gal" accept="image/*" style="display:none" onchange="fiaFileSelected(event)">
+
+          <div class="row" style="margin-bottom:8px">
+            <button class="btn btn-gr" style="margin-bottom:0" onclick="document.getElementById('fia-input-cam').click()">📸 Tirar Foto</button>
+            <button class="btn btn-x"  style="margin-bottom:0" onclick="document.getElementById('fia-input-gal').click()">🖼 Galeria</button>
+          </div>
+
+          <button class="btn btn-cy" id="fia-btn-processar" style="margin-top:4px" onclick="fiaProcessar()" disabled>
+            Processar Nota
+          </button>
+        </div>
+
+        <!-- Passo 2: indicador de processamento -->
+        <div id="fia-step-processing" style="display:none">
+          <div class="card" style="margin-bottom:0">
+            <div class="ctit">Analisando a Nota Fiscal</div>
+            <div id="fia-progress-steps" style="font-size:.68rem;line-height:2.1;color:var(--mu2);font-family:monospace"></div>
+          </div>
+        </div>
+
+        <!-- Passo 3: erro -->
+        <div id="fia-step-error" style="display:none">
+          <div class="ibox" style="border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.06);margin-bottom:10px">
+            <span id="fia-error-msg" style="color:var(--re)">Não foi possível processar a nota.</span>
+          </div>
+          <button class="btn btn-cy" style="margin-bottom:8px" onclick="fiaRetry()">🔄 Tentar Novamente</button>
+          <div class="row" style="margin-bottom:8px">
+            <button class="btn btn-x" style="margin-bottom:0" onclick="document.getElementById('fia-input-cam').click()">📸 Nova Foto</button>
+            <button class="btn btn-x" style="margin-bottom:0" onclick="document.getElementById('fia-input-gal').click()">🖼 Outra Imagem</button>
+          </div>
+          <button class="btn btn-gr" onclick="fiaGoManual()">✏ Inserir Manualmente</button>
+        </div>
+
+        <!-- Passo 4: revisão dos produtos extraídos -->
+        <div id="fia-step-review" style="display:none">
+          <div class="ibox" id="fia-review-banner" style="margin-bottom:10px">
+            Revise os dados antes de iniciar a conferência.
+          </div>
+
+          <label>Fornecedor *</label>
+          <input id="fia-forn" type="text" placeholder="Nome do fornecedor" autocomplete="off">
+          <div class="g2">
+            <div><label>NF / Pedido (opcional)</label>
+              <input id="fia-nf" type="text" placeholder="Ex: 318213"></div>
+            <div><label>CNPJ (opcional)</label>
+              <input id="fia-cnpj" type="text" placeholder="00.000.000/0000-00"></div>
+          </div>
+
+          <div class="sep" style="margin:10px 0"></div>
+          <div class="ctit" style="margin-bottom:6px">
+            Produtos <span id="fia-review-count" style="color:var(--mu2);font-weight:400"></span>
+          </div>
+
+          <div id="fia-products-header" style="display:grid;grid-template-columns:1.2fr 1.4fr .8fr .5fr 24px;
+            gap:6px;font-size:.55rem;font-weight:700;color:var(--mu2);text-transform:uppercase;
+            letter-spacing:.02em;padding:0 2px 6px">
+            <span>Referência</span><span>Descrição</span><span>Qtd</span><span>Un</span><span></span>
+          </div>
+          <div id="fia-products-list"></div>
+
+          <button class="btn btn-x" style="margin-top:4px;margin-bottom:12px" onclick="fiaAddProdutoRow()">＋ Adicionar produto</button>
+
+          <button class="btn btn-gr" onclick="fiaConfirmarRevisao()">Iniciar Contagem</button>
+          <button class="btn btn-x"  onclick="sessBackToChoice()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Crop / ajuste de perspectiva da foto (modal) -->
+    <div class="mbg" id="mdl-fia-crop">
+      <div class="md" style="max-width:520px">
+        <h3>Ajustar Recorte</h3>
+        <p style="font-size:.62rem;color:var(--mu2);margin-bottom:8px">
+          Arraste os 4 cantos para contornar exatamente a Nota Fiscal.
+        </p>
+        <div id="fia-crop-wrap" style="position:relative;width:100%;touch-action:none;
+          background:#000;border-radius:8px;overflow:hidden;margin-bottom:12px">
+          <canvas id="fia-crop-canvas" style="display:block;width:100%;height:auto"></canvas>
+          <svg id="fia-crop-svg" style="position:absolute;inset:0;width:100%;height:100%"></svg>
+        </div>
+        <div class="mrow">
+          <button class="btn btn-x" onclick="fiaCropCancel()">Cancelar</button>
+          <button class="btn btn-gr" id="fia-crop-confirm-btn" onclick="fiaCropConfirm()">Confirmar Recorte</button>
+        </div>
       </div>
     </div>
 
@@ -3181,18 +3296,588 @@
     document.getElementById('sess-entry-choice').style.display = 'none';
     document.getElementById('sess-form').style.display = 'block';
   }
+  function sessChooseFotoIA(){
+    document.getElementById('sess-entry-choice').style.display = 'none';
+    document.getElementById('sess-foto-ia').style.display = 'block';
+    _fiaResetFlow();
+  }
   function sessBackToChoice(){
     document.getElementById('sess-form').style.display = 'none';
+    document.getElementById('sess-foto-ia').style.display = 'none';
     document.getElementById('sess-entry-choice').style.display = 'flex';
   }
   /* Garante que, ao reabrir a tela de Nova Sessão, ela sempre comece na
-     escolha inicial (nuvem/QR Code), nunca no formulário deixado aberto
-     de uma visita anterior. */
+     escolha inicial (nuvem/QR Code/Foto), nunca numa etapa deixada
+     aberta de uma visita anterior. */
   function sessResetEntry(){
     const choice = document.getElementById('sess-entry-choice');
     const form   = document.getElementById('sess-form');
+    const foto   = document.getElementById('sess-foto-ia');
     if(choice) choice.style.display = 'flex';
     if(form)   form.style.display   = 'none';
+    if(foto)   foto.style.display   = 'none';
+  }
+
+  /* ═══════════════════════════════════════════════════════════════
+     FOTOGRAFAR NF COM IA (OpenAI Vision, via Cloudflare Worker)
+     ═══════════════════════════════════════════════════════════════
+     Fluxo: captura/galeria → recorte manual (4 cantos) → múltiplas
+     páginas → envia para um Cloudflare Worker (que valida o login do
+     Firebase e chama a OpenAI com a chave protegida no backend) →
+     tela de revisão editável → consolida e entra no MESMO fluxo de
+     contagem às cegas já usado por "Em Nuvem" (importPending →
+     sessStart()).
+
+     IMPORTANTE: a chamada só funciona depois de implantar o Worker
+     (pasta separada "cloudflare-worker/", com instruções em
+     DEPLOY.md) e colar a URL dele aqui embaixo, em FIA_WORKER_URL.
+     Até lá, esta tela funciona normalmente para capturar/recortar
+     fotos — só "Processar Nota" mostra um erro claro em vez de travar.
+  ═══════════════════════════════════════════════════════════════ */
+  // Cole aqui a URL do seu Worker depois de implantar (ver DEPLOY.md).
+  // Exemplo: 'https://recebemais-nf-ia.seu-subdominio.workers.dev'
+  const FIA_WORKER_URL = 'https://recebemais-nf-ia.murilo-recebemais.workers.dev';
+  const FIA_MAX_TENTATIVAS = 4;
+  const FIA_MAX_LADO_PX = 1600; // teto de resolução da imagem recortada
+
+  let _fiaPages       = [];   // { dataUrl } — cada página já recortada
+  let _fiaCropImg     = null; // Image() crua aguardando recorte
+  let _fiaCropPts     = [];   // 4 pontos {x,y} em pixels da imagem original
+  let _fiaCropDragIdx = -1;
+  let _fiaProdutos    = [];   // produtos em edição na tela de revisão
+  let _fiaAttempts    = 0;
+
+  function _fiaStepShow(step){
+    ['capture','processing','error','review'].forEach(s=>{
+      const el = document.getElementById('fia-step-'+s);
+      if(el) el.style.display = (s===step) ? 'block' : 'none';
+    });
+  }
+
+  function _fiaResetFlow(){
+    _fiaPages = [];
+    _fiaProdutos = [];
+    _fiaAttempts = 0;
+    fiaRenderPages();
+    _fiaStepShow('capture');
+  }
+
+  /* ── Captura (câmera/galeria) ── */
+  function fiaFileSelected(event){
+    const file = event.target.files && event.target.files[0];
+    event.target.value = ''; // permite escolher o mesmo arquivo de novo
+    if(!file) return;
+    if(!file.type || !file.type.startsWith('image/')){
+      toast('Selecione um arquivo de imagem (JPG, PNG ou WEBP)', true);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => fiaOpenCrop(img);
+      img.onerror = () => toast('Não foi possível abrir essa imagem', true);
+      img.src = e.target.result;
+    };
+    reader.onerror = () => toast('Falha ao ler o arquivo', true);
+    reader.readAsDataURL(file);
+  }
+
+  /* ── Recorte manual (4 cantos) ── */
+  function fiaOpenCrop(img){
+    _fiaCropImg = img;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    const m = 0.06; // margem inicial das alças, só um ponto de partida
+    _fiaCropPts = [
+      {x: iw*m,     y: ih*m},
+      {x: iw*(1-m), y: ih*m},
+      {x: iw*(1-m), y: ih*(1-m)},
+      {x: iw*m,     y: ih*(1-m)},
+    ];
+    const canvas = document.getElementById('fia-crop-canvas');
+    canvas.width = iw; canvas.height = ih;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+    document.getElementById('mdl-fia-crop').classList.add('on');
+    // espera o modal aplicar o layout (width:100%) antes de posicionar
+    // as alças, para pegar o tamanho final exibido em tela
+    requestAnimationFrame(()=> requestAnimationFrame(fiaRenderCropHandles));
+  }
+
+  function fiaRenderCropHandles(){
+    const canvas = document.getElementById('fia-crop-canvas');
+    const svg    = document.getElementById('fia-crop-svg');
+    if(!canvas || !svg) return;
+    const rect = canvas.getBoundingClientRect();
+    svg.setAttribute('viewBox', `0 0 ${rect.width} ${rect.height}`);
+    svg.innerHTML = '';
+
+    const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    poly.id = 'fia-crop-poly';
+    svg.appendChild(poly);
+
+    _fiaCropPts.forEach((p, idx)=>{
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('r', 15);
+      c.setAttribute('fill', '#0f1620');
+      c.setAttribute('stroke', 'var(--gr)');
+      c.setAttribute('stroke-width', '3');
+      c.dataset.idx = idx;
+      c.style.cursor = 'grab';
+      c.addEventListener('pointerdown', fiaCropPointerDown);
+      svg.appendChild(c);
+    });
+    fiaUpdateCropHandlesPos();
+  }
+
+  function fiaUpdateCropHandlesPos(){
+    const canvas = document.getElementById('fia-crop-canvas');
+    const svg    = document.getElementById('fia-crop-svg');
+    if(!canvas || !svg) return;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = rect.width  / canvas.width  || 1;
+    const scaleY = rect.height / canvas.height || 1;
+
+    const poly = document.getElementById('fia-crop-poly');
+    if(poly){
+      poly.setAttribute('points', _fiaCropPts.map(p=>`${p.x*scaleX},${p.y*scaleY}`).join(' '));
+      poly.setAttribute('fill','rgba(16,185,129,.18)');
+      poly.setAttribute('stroke','var(--gr)');
+      poly.setAttribute('stroke-width','2');
+    }
+    svg.querySelectorAll('circle').forEach((c)=>{
+      const idx = Number(c.dataset.idx);
+      c.setAttribute('cx', _fiaCropPts[idx].x*scaleX);
+      c.setAttribute('cy', _fiaCropPts[idx].y*scaleY);
+    });
+  }
+
+  function fiaCropPointerDown(e){
+    e.preventDefault();
+    _fiaCropDragIdx = Number(e.currentTarget.dataset.idx);
+    document.addEventListener('pointermove', fiaCropPointerMove);
+    document.addEventListener('pointerup',   fiaCropPointerUp);
+  }
+  function fiaCropPointerMove(e){
+    if(_fiaCropDragIdx < 0) return;
+    const canvas = document.getElementById('fia-crop-canvas');
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = rect.width  / canvas.width  || 1;
+    const scaleY = rect.height / canvas.height || 1;
+    let nx = (e.clientX - rect.left) / scaleX;
+    let ny = (e.clientY - rect.top)  / scaleY;
+    nx = Math.max(0, Math.min(canvas.width,  nx));
+    ny = Math.max(0, Math.min(canvas.height, ny));
+    _fiaCropPts[_fiaCropDragIdx] = {x:nx, y:ny};
+    fiaUpdateCropHandlesPos();
+  }
+  function fiaCropPointerUp(){
+    _fiaCropDragIdx = -1;
+    document.removeEventListener('pointermove', fiaCropPointerMove);
+    document.removeEventListener('pointerup',   fiaCropPointerUp);
+  }
+
+  function fiaCropCancel(){
+    document.getElementById('mdl-fia-crop').classList.remove('on');
+    _fiaCropImg = null;
+  }
+
+  async function fiaCropConfirm(){
+    const btn = document.getElementById('fia-crop-confirm-btn');
+    if(btn){ btn.disabled = true; btn.textContent = 'Processando…'; }
+    await new Promise(r=>setTimeout(r, 30)); // deixa o botão desabilitado pintar antes do trabalho pesado
+
+    try{
+      const wTop  = _fiaDist(_fiaCropPts[0], _fiaCropPts[1]);
+      const wBot  = _fiaDist(_fiaCropPts[3], _fiaCropPts[2]);
+      const hLeft = _fiaDist(_fiaCropPts[0], _fiaCropPts[3]);
+      const hRight= _fiaDist(_fiaCropPts[1], _fiaCropPts[2]);
+      let outW = Math.round(Math.max(wTop, wBot));
+      let outH = Math.round(Math.max(hLeft, hRight));
+      const scale = Math.min(1, FIA_MAX_LADO_PX / Math.max(outW, outH));
+      outW = Math.max(200, Math.round(outW*scale));
+      outH = Math.max(200, Math.round(outH*scale));
+
+      const outCanvas = _fiaWarpPerspective(_fiaCropImg, _fiaCropPts, outW, outH);
+      const dataUrl = outCanvas.toDataURL('image/jpeg', 0.85);
+      _fiaPages.push({ dataUrl });
+      fiaRenderPages();
+      document.getElementById('mdl-fia-crop').classList.remove('on');
+      _fiaCropImg = null;
+    }catch(err){
+      console.error('Falha ao recortar imagem:', err);
+      toast('Não foi possível processar essa imagem — tente novamente', true);
+    }finally{
+      if(btn){ btn.disabled = false; btn.textContent = 'Confirmar Recorte'; }
+    }
+  }
+
+  function _fiaDist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+
+  // Corrige a perspectiva: recebe a imagem crua + os 4 cantos escolhidos
+  // pelo usuário e devolve um canvas retangular "endireitado", do
+  // mesmo jeito que um scanner faria. Implementado com homografia
+  // (mapeamento projetivo) calculada na mão, sem dependências externas.
+  function _fiaWarpPerspective(img, srcPts, outW, outH){
+    const srcCanvas = document.createElement('canvas');
+    srcCanvas.width  = img.naturalWidth;
+    srcCanvas.height = img.naturalHeight;
+    const sctx = srcCanvas.getContext('2d');
+    sctx.drawImage(img, 0, 0);
+    const sw = srcCanvas.width, sh = srcCanvas.height;
+    const srcData = sctx.getImageData(0, 0, sw, sh).data;
+
+    const dstRect = [{x:0,y:0},{x:outW,y:0},{x:outW,y:outH},{x:0,y:outH}];
+    const H = _fiaComputeHomography(dstRect, srcPts); // mapeia destino → origem
+
+    const outCanvas = document.createElement('canvas');
+    outCanvas.width = outW; outCanvas.height = outH;
+    const octx = outCanvas.getContext('2d');
+    const outImgData = octx.createImageData(outW, outH);
+    const outData = outImgData.data;
+
+    for(let y=0; y<outH; y++){
+      for(let x=0; x<outW; x++){
+        const w  = H[6]*x + H[7]*y + 1;
+        const sx = (H[0]*x + H[1]*y + H[2]) / w;
+        const sy = (H[3]*x + H[4]*y + H[5]) / w;
+        const di = (y*outW + x) * 4;
+        if(sx>=0 && sx<sw-1 && sy>=0 && sy<sh-1){
+          const x0=Math.floor(sx), y0=Math.floor(sy);
+          const fx=sx-x0, fy=sy-y0;
+          for(let c=0;c<4;c++){
+            const p00=srcData[(y0*sw+x0)*4+c];
+            const p10=srcData[(y0*sw+x0+1)*4+c];
+            const p01=srcData[((y0+1)*sw+x0)*4+c];
+            const p11=srcData[((y0+1)*sw+x0+1)*4+c];
+            const top=p00*(1-fx)+p10*fx;
+            const bot=p01*(1-fx)+p11*fx;
+            outData[di+c] = top*(1-fy)+bot*fy;
+          }
+        } else {
+          outData[di]=255; outData[di+1]=255; outData[di+2]=255; outData[di+3]=255;
+        }
+      }
+    }
+    octx.putImageData(outImgData, 0, 0);
+    return outCanvas;
+  }
+
+  // Resolve a homografia (matriz de projeção 3x3, com h[8]=1 fixo) que
+  // mapeia os 4 pontos "from" para os 4 pontos "to" — método padrão via
+  // sistema linear 8x8 (eliminação de Gauss).
+  function _fiaComputeHomography(from, to){
+    const A=[], B=[];
+    for(let i=0;i<4;i++){
+      const {x:sx,y:sy}=from[i], {x:dx,y:dy}=to[i];
+      A.push([sx,sy,1,0,0,0,-sx*dx,-sy*dx]); B.push(dx);
+      A.push([0,0,0,sx,sy,1,-sx*dy,-sy*dy]); B.push(dy);
+    }
+    const h = _fiaSolveLinear(A,B);
+    return [h[0],h[1],h[2],h[3],h[4],h[5],h[6],h[7]];
+  }
+  function _fiaSolveLinear(A,B){
+    const n=B.length;
+    const M=A.map((row,i)=>[...row,B[i]]);
+    for(let col=0;col<n;col++){
+      let piv=col;
+      for(let r=col+1;r<n;r++) if(Math.abs(M[r][col])>Math.abs(M[piv][col])) piv=r;
+      [M[col],M[piv]]=[M[piv],M[col]];
+      const pv = M[col][col] || 1e-12;
+      for(let c=col;c<=n;c++) M[col][c]/=pv;
+      for(let r=0;r<n;r++){
+        if(r===col) continue;
+        const f=M[r][col];
+        for(let c=col;c<=n;c++) M[r][c]-=f*M[col][c];
+      }
+    }
+    return M.map(row=>row[n]);
+  }
+
+  /* ── Lista de páginas capturadas ── */
+  function fiaRenderPages(){
+    const wrap = document.getElementById('fia-pages-list');
+    if(!wrap) return;
+    wrap.innerHTML = _fiaPages.map((p, idx) => `
+      <div style="position:relative;width:72px;height:96px;border-radius:8px;overflow:hidden;
+        border:1px solid var(--bd);flex-shrink:0">
+        <img src="${p.dataUrl}" style="width:100%;height:100%;object-fit:cover;display:block">
+        <span style="position:absolute;bottom:2px;left:2px;background:rgba(0,0,0,.65);color:#fff;
+          font-size:.5rem;padding:1px 4px;border-radius:4px">Pág ${idx+1}</span>
+        <span onclick="fiaRemovePage(${idx})" style="position:absolute;top:2px;right:2px;
+          background:rgba(239,68,68,.85);color:#fff;width:18px;height:18px;border-radius:50%;
+          display:flex;align-items:center;justify-content:center;font-size:.6rem;cursor:pointer">✕</span>
+      </div>
+    `).join('');
+    const btn = document.getElementById('fia-btn-processar');
+    if(btn) btn.disabled = _fiaPages.length===0;
+  }
+  function fiaRemovePage(idx){
+    _fiaPages.splice(idx,1);
+    fiaRenderPages();
+  }
+
+  /* ── Envio para a IA + indicador de progresso ── */
+  async function fiaProcessar(){
+    if(!_fiaPages.length){ toast('Tire ao menos uma foto da NF', true); return; }
+    if(!navigator.onLine){
+      toast('Sem conexão com a internet — necessária para analisar a foto', true);
+      return;
+    }
+    _fiaAttempts++;
+    _fiaStepShow('processing');
+    fiaSetProgress([['✓','Foto recebida'],['●','Enviando para a IA'],['○','Identificando produtos'],['○','Validando resultado']]);
+
+    try{
+      const result = await fiaCallCloudFunction(_fiaPages.map(p=>p.dataUrl));
+      fiaSetProgress([['✓','Foto recebida'],['✓','Enviado para a IA'],['✓','Produtos identificados'],['✓','Resultado validado']]);
+      fiaLogUsage({ sucesso:true, numImagens:_fiaPages.length, numProdutos:(result.produtos||[]).length });
+      setTimeout(()=> fiaShowReview(result), 250);
+    }catch(err){
+      console.error('Falha ao processar NF com IA:', err);
+      fiaLogUsage({ sucesso:false, numImagens:_fiaPages.length, erro:String((err&&err.message)||err) });
+      fiaShowError(_fiaErrorMessage(err));
+    }
+  }
+
+  function fiaSetProgress(steps){
+    const el = document.getElementById('fia-progress-steps');
+    if(el) el.innerHTML = steps.map(([icon,label])=>`${icon} ${label}`).join('<br>');
+  }
+
+  function _fiaErrorMessage(err){
+    const code = String((err && err.code) || '').toLowerCase();
+    const msg  = (err && err.message) ? err.message : String(err||'');
+    if(code === 'not-configured')                          return 'O processamento por IA ainda não está configurado no servidor.';
+    if(code === 'network')                                 return 'Falha de conexão ao enviar a foto. Verifique a internet e tente novamente.';
+    if(code.includes('unauthenticated'))                  return 'Sessão expirada — saia e faça login novamente.';
+    if(code.includes('resource-exhausted'))                return 'Limite da API atingido no momento. Tente novamente em instantes.';
+    if(code.includes('deadline-exceeded'))                 return 'A análise demorou demais. Tente novamente (ou uma foto mais leve).';
+    if(code.includes('not-found'))                         return 'O processamento por IA ainda não está configurado no servidor.';
+    if(code.includes('invalid-argument'))                  return msg || 'A foto enviada não pôde ser processada.';
+    if(code.includes('internal')) {
+      if(/json|inválid/i.test(msg)) return 'A IA não retornou um resultado válido. Tente novamente ou ajuste o recorte da foto.';
+      return msg || 'Falha interna ao processar a nota. Tente novamente.';
+    }
+    if(/network|fetch|offline/i.test(msg))                 return 'Falha de conexão ao enviar a foto. Verifique a internet e tente novamente.';
+    return msg || 'Não foi possível processar a nota. Tente novamente.';
+  }
+
+  function fiaShowError(msg){
+    const el = document.getElementById('fia-error-msg');
+    if(el) el.textContent = msg;
+    _fiaStepShow('error');
+  }
+
+  function fiaRetry(){
+    if(_fiaAttempts >= FIA_MAX_TENTATIVAS){
+      toast('Muitas tentativas — tire uma foto nova ou preencha manualmente', true);
+      return;
+    }
+    fiaProcessar();
+  }
+
+  function fiaGoManual(){
+    fiaShowReview({ nota:{}, produtos:[] });
+  }
+
+  // Chama o Cloudflare Worker (protege a chave da OpenAI, que nunca
+  // fica no frontend). Manda o token de login do Firebase Auth no
+  // cabeçalho — o Worker confere se é um usuário válido antes de
+  // gastar créditos da OpenAI. Ver pasta cloudflare-worker/ com o
+  // código e as instruções de implantação.
+  async function fiaCallCloudFunction(images){
+    if(!FIA_WORKER_URL){
+      const e = new Error('O processamento por IA ainda não está configurado neste app (defina FIA_WORKER_URL).');
+      e.code = 'not-configured';
+      throw e;
+    }
+    if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length || !firebase.auth().currentUser){
+      const e = new Error('É necessário estar logado.');
+      e.code = 'unauthenticated';
+      throw e;
+    }
+
+    let idToken;
+    try{
+      idToken = await firebase.auth().currentUser.getIdToken();
+    }catch(tokenErr){
+      const e = new Error('Falha ao validar o login — tente sair e entrar novamente.');
+      e.code = 'unauthenticated';
+      throw e;
+    }
+
+    let resp;
+    try{
+      resp = await fetch(FIA_WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+idToken },
+        body: JSON.stringify({ images }),
+      });
+    }catch(networkErr){
+      const e = new Error('Falha de conexão com o servidor.');
+      e.code = 'network';
+      throw e;
+    }
+
+    let data = null;
+    try{ data = await resp.json(); }catch(parseErr){ /* segue com data=null */ }
+
+    if(!resp.ok || !data || data.sucesso !== true || !Array.isArray(data.produtos)){
+      const e = new Error((data && data.erro) ? data.erro : `Erro HTTP ${resp.status}`);
+      e.code = (data && data.code) ||
+        (resp.status===401 ? 'unauthenticated' :
+         resp.status===429 ? 'resource-exhausted' :
+         resp.status===408 ? 'deadline-exceeded' : 'internal');
+      throw e;
+    }
+    return data;
+  }
+
+  // Registro de uso (best-effort, nunca deve travar o fluxo principal)
+  // — permite futuramente visualizar consumo/custo da API.
+  function fiaLogUsage(info){
+    try{
+      if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+      const user = firebase.auth().currentUser;
+      firebase.firestore().collection('foto_ia_logs').add({
+        uid: user ? user.uid : null,
+        ts: Date.now(),
+        criadoEm: new Date().toISOString(),
+        modelo: 'configurado-no-backend',
+        ...info,
+      }).catch(()=>{});
+    }catch(e){ /* log é best-effort */ }
+  }
+
+  /* ── Tela de revisão ── */
+  function fiaShowReview(result){
+    const nota = result.nota || {};
+    document.getElementById('fia-forn').value = nota.fornecedor || '';
+    document.getElementById('fia-nf').value   = nota.numero || '';
+    document.getElementById('fia-cnpj').value = nota.cnpj || '';
+
+    _fiaProdutos = (result.produtos||[]).map(p => ({
+      referencia: p.referencia || '',
+      descricao : p.descricao  || '',
+      quantidade: (p.quantidade!=null && p.quantidade!=='') ? Number(p.quantidade) : '',
+      unidade   : p.unidade    || '',
+      confianca : (p.confianca!=null) ? Number(p.confianca) : null,
+    }));
+
+    const banner = document.getElementById('fia-review-banner');
+    if(banner){
+      banner.textContent = _fiaProdutos.length
+        ? 'Revise os dados antes de iniciar a conferência.'
+        : 'Nenhum produto identificado automaticamente — adicione manualmente abaixo.';
+    }
+
+    fiaRenderProdutos();
+    _fiaStepShow('review');
+  }
+
+  function fiaRenderProdutos(){
+    const list  = document.getElementById('fia-products-list');
+    const count = document.getElementById('fia-review-count');
+    if(count) count.textContent = _fiaProdutos.length ? `(${_fiaProdutos.length})` : '';
+    if(!list) return;
+
+    if(!_fiaProdutos.length){
+      list.innerHTML = '<div style="font-size:.62rem;color:var(--mu2);padding:8px 0">Nenhum produto ainda — use "Adicionar produto".</div>';
+      return;
+    }
+
+    list.innerHTML = _fiaProdutos.map((p, idx) => {
+      const conf = p.confianca;
+      let confBadge = '';
+      if(conf!=null && conf<95){
+        const cor = conf>=80 ? 'var(--wa)' : 'var(--re)';
+        confBadge = `<div style="font-size:.5rem;color:${cor};margin-top:2px;font-weight:700">⚠ Revisar</div>`;
+      }
+      return `
+        <div style="display:grid;grid-template-columns:1.2fr 1.4fr .8fr .5fr 24px;gap:6px;
+          align-items:start;margin-bottom:6px">
+          <div>
+            <input type="text" value="${_fiaEscAttr(p.referencia)}" placeholder="Referência"
+                   oninput="fiaEditProduto(${idx},'referencia',this.value)"
+                   style="font-size:.72rem;padding:6px 7px;margin-bottom:0">
+            ${confBadge}
+          </div>
+          <input type="text" value="${_fiaEscAttr(p.descricao)}" placeholder="Descrição"
+                 oninput="fiaEditProduto(${idx},'descricao',this.value)"
+                 style="font-size:.72rem;padding:6px 7px;margin-bottom:0">
+          <input type="text" value="${p.quantidade===''?'':p.quantidade}" placeholder="Qtd" inputmode="decimal"
+                 oninput="fiaEditProduto(${idx},'quantidade',this.value)"
+                 style="font-size:.72rem;padding:6px 7px;margin-bottom:0">
+          <input type="text" value="${_fiaEscAttr(p.unidade)}" placeholder="Un"
+                 oninput="fiaEditProduto(${idx},'unidade',this.value)"
+                 style="font-size:.72rem;padding:6px 7px;margin-bottom:0">
+          <button onclick="fiaRemoveProduto(${idx})" title="Remover"
+                  style="background:transparent;border:1px solid var(--bd);color:var(--re);
+            border-radius:6px;width:24px;height:30px;cursor:pointer">✕</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function _fiaEscAttr(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+  function fiaEditProduto(idx, field, value){
+    if(!_fiaProdutos[idx]) return;
+    _fiaProdutos[idx][field] = value;
+  }
+  function fiaRemoveProduto(idx){
+    _fiaProdutos.splice(idx,1);
+    fiaRenderProdutos();
+  }
+  function fiaAddProdutoRow(){
+    _fiaProdutos.push({ referencia:'', descricao:'', quantidade:'', unidade:'', confianca:null });
+    fiaRenderProdutos();
+  }
+
+  // Consolida (mesma lógica usada no resto do app: soma quantidades de
+  // referências repetidas) e entra no fluxo padrão de contagem às cegas
+  // — igual ao que acontece hoje ao escolher uma NF em "☁ Em Nuvem".
+  function fiaConfirmarRevisao(){
+    const forn = document.getElementById('fia-forn').value.trim();
+    const nf   = document.getElementById('fia-nf').value.trim();
+    const cnpj = document.getElementById('fia-cnpj').value.trim();
+
+    if(!forn){ toast('Informe o fornecedor', true); document.getElementById('fia-forn').focus(); return; }
+
+    const expected = {}; const order = [];
+    let duplicadas = 0;
+
+    for(const p of _fiaProdutos){
+      const ref = String(p.referencia||'').trim();
+      if(!ref) continue; // linha vazia, ignora silenciosamente
+      const qty = Number(p.quantidade);
+      if(!qty || qty<=0 || isNaN(qty)){
+        toast(`Quantidade inválida para "${ref}"`, true);
+        return;
+      }
+      if(expected[ref]){ expected[ref].qty += qty; duplicadas++; }
+      else { expected[ref] = { desc:String(p.descricao||'').trim(), qty, unidade:p.unidade||'' }; order.push(ref); }
+    }
+
+    if(!order.length){
+      toast('Adicione pelo menos um produto com referência e quantidade válidas', true);
+      return;
+    }
+
+    importPending = {
+      expected, order,
+      meta: { nf, forn, cnpj, raw: [] },
+      fileName: 'foto_ia',
+      rastrearLoteValidade: rastrearLoteValidade,
+      origem: 'foto_ia',
+    };
+
+    document.getElementById('inp-forn').value = forn;
+    document.getElementById('inp-nf').value   = nf;
+    _applyImportPendingUI('📸 <b style="color:var(--tx)">Extraído por foto (IA)</b>');
+    sessStart();
+
+    if(duplicadas>0) toast(`${duplicadas} referência(s) repetida(s) foram somadas`);
+    _fiaPages = []; _fiaProdutos = [];
   }
 
   /* Popula chips extras com fornecedores cadastrados (não-reservados) */
@@ -4129,6 +4814,9 @@
       session.expectedOrder = importPending.order;
       session.importMeta    = importPending.meta || {};
       session.rastrearLoteValidade = !!importPending.rastrearLoteValidade;
+      session.origem        = importPending.origem || 'nuvem';
+    } else {
+      session.origem = 'qr';
     }
     _applyFornBadges(forn);
     _populateOcrFornSelect(forn);
@@ -4304,6 +4992,7 @@
       grouped : {...grouped},
       items   : [...items],
       tipo         : session.tipo || 'padrao',
+      origem       : session.origem || null,
       expected     : session.expected || null,
       expectedOrder: session.expectedOrder || null,
       importMeta   : session.importMeta || null
@@ -4346,7 +5035,7 @@
 
     let rows;
     if(isImport){
-      rows=[['Referencia','Descricao','Contado','Esperado','Status','Fornecedor','NF','Inicio','Observacao','Lotes']];
+      rows=[['Referencia','Descricao','Contado','Esperado','Status','Fornecedor','NF','Inicio','Observacao','Lotes','Multiplos']];
       const order  = session.expectedOrder || Object.keys(session.expected||{});
       const extras = Object.keys(grouped).filter(r=>!session.expected[r]);
       [...order,...extras].forEach(ref=>{
@@ -4354,12 +5043,12 @@
         const exp = session.expected[ref];
         const st  = computeStatus(session.expected, grouped, ref);
         const stLbl = {pend:'Pendente',conv:'Convergente',div:'Divergente',extra:'Fora da lista'}[st]||'';
-        rows.push([ref, g.desc||(exp&&exp.desc)||'', g.qty||0, exp?exp.qty:'', stLbl, session.forn, session.nf||'', session.start, g.obs||'', _lotesParaTexto(g.lotes)]);
+        rows.push([ref, g.desc||(exp&&exp.desc)||'', g.qty||0, exp?exp.qty:'', stLbl, session.forn, session.nf||'', session.start, g.obs||'', _lotesParaTexto(g.lotes), _multiplosParaTexto(g.multiplos)]);
       });
     } else {
-      rows=[['Referencia','Descricao','Leituras','Pecas','Fornecedor','NF','Inicio','Observacao','Lotes']];
+      rows=[['Referencia','Descricao','Leituras','Pecas','Fornecedor','NF','Inicio','Observacao','Lotes','Multiplos']];
       Object.values(grouped).forEach(r=>{
-        rows.push([r.ref,r.desc||'',r.scans,r.qty,r.forn,session.nf||'',session.start,r.obs||'',_lotesParaTexto(r.lotes)]);
+        rows.push([r.ref,r.desc||'',r.scans,r.qty,r.forn,session.nf||'',session.start,r.obs||'',_lotesParaTexto(r.lotes),_multiplosParaTexto(r.multiplos)]);
       });
     }
     const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -5300,6 +5989,25 @@
     grouped[item.ref].vols +=(item.vols||1);
     grouped[item.ref].scans+=1;
     grouped[item.ref].lastTs=Date.now();
+
+    // Registra o múltiplo (peças/volume) usado nesta confirmação — assim
+    // a contagem finalizada guarda exatamente quantos volumes e peças
+    // vieram de cada múltiplo (ex.: 25 pç/vol × 40 vol = 1000 pç), em vez
+    // de só o total de volumes/peças somado. Se a mesma referência usar
+    // múltiplos diferentes em confirmações separadas, cada um fica
+    // registrado à parte.
+    if(item.qtyPerVol){
+      if(!grouped[item.ref].multiplos) grouped[item.ref].multiplos=[];
+      const mArr = grouped[item.ref].multiplos;
+      const existente = mArr.find(m=>m.qtyPerVol===item.qtyPerVol);
+      if(existente){
+        existente.vols += (item.vols||1);
+        existente.qty  += item.qty;
+      } else {
+        mArr.push({ qtyPerVol:item.qtyPerVol, vols:(item.vols||1), qty:item.qty });
+      }
+    }
+
     sessStateSave();
 
     const g=grouped[item.ref];
@@ -5752,7 +6460,7 @@
     document.getElementById('hdet-title').textContent=hs.forn;
     document.getElementById('hdet-info').innerHTML=
       `Fornecedor: <b style="color:var(--cy)">${h_(hs.forn)}</b>${hs.nf?` · NF: ${h_(hs.nf)}`:''}`+
-      `${hs.tipo==='importado'?' · <span style="color:#a78bfa">📥 Importada</span>':''}<br>`+
+      `${hs.origem==='foto_ia'?' · <span style="color:var(--gr)">📸 Foto + IA</span>':(hs.tipo==='importado'?' · <span style="color:#a78bfa">📥 Importada</span>':'')}<br>`+
       `Início: ${hs.start}  ·  Fim: ${hs.end||'—'}`;
 
     document.getElementById('btn-hdet-edit').style.display='block';
@@ -5873,6 +6581,16 @@
           `Lote ${h_(l.lote)}${l.validade?' · Val '+h_(l.validade):''} · ${Number(l.quantidade)||0} pç`
         ).join('<br>');
         info.append(lotesEl);
+      }
+
+      // Múltiplo(s) (peças/volume) usados nesta referência
+      if(r.multiplos && r.multiplos.length){
+        const multEl=document.createElement('div');
+        multEl.style.cssText='font-size:.55rem;color:var(--mu2);margin-top:2px;line-height:1.6';
+        multEl.innerHTML = '📦 ' + r.multiplos.map(m =>
+          `${m.qtyPerVol} pç/vol × ${m.vols} vol = ${m.qty} pç`
+        ).join('<br>');
+        info.append(multEl);
       }
 
       // Qtd + volumes
@@ -6015,6 +6733,13 @@
     return lotes.map(l => `Lote ${l.lote}${l.validade?' (Val '+l.validade+')':''}: ${Number(l.quantidade)||0}pc`).join(' | ');
   }
 
+  // Formata os múltiplos (peças/volume) usados numa referência como
+  // texto legível, para uso nas exportações (texto e CSV).
+  function _multiplosParaTexto(multiplos){
+    if(!multiplos || !multiplos.length) return '';
+    return multiplos.map(m => `${m.qtyPerVol}pc/vol x ${m.vols}vol = ${m.qty}pc`).join(' | ');
+  }
+
   function buildHistExport(hs,rows,tot){
     const isImport = hs.tipo==='importado';
     let t='RECEBIMENTO DE MERCADORIAS\n';
@@ -6041,6 +6766,9 @@
         if(r.lotes && r.lotes.length) r.lotes.forEach(l=>{
           t+=`   Lote ${l.lote}${l.validade?' (Val '+l.validade+')':''}: ${Number(l.quantidade)||0} pc\n`;
         });
+        if(r.multiplos && r.multiplos.length) r.multiplos.forEach(m=>{
+          t+=`   Multiplo: ${m.qtyPerVol} pc/vol x ${m.vols} vol = ${m.qty} pc\n`;
+        });
       });
       t+=`${'-'.repeat(54)}\n${'TOTAL'.padEnd(16)}${String(tot).padStart(9)}\n`;
     } else {
@@ -6053,6 +6781,9 @@
         if(r.lotes && r.lotes.length) r.lotes.forEach(l=>{
           t+=`   Lote ${l.lote}${l.validade?' (Val '+l.validade+')':''}: ${Number(l.quantidade)||0} pc\n`;
         });
+        if(r.multiplos && r.multiplos.length) r.multiplos.forEach(m=>{
+          t+=`   Multiplo: ${m.qtyPerVol} pc/vol x ${m.vols} vol = ${m.qty} pc\n`;
+        });
       });
       t+=`${'-'.repeat(44)}\n${'TOTAL'.padEnd(16)}${String(hs.scans||0).padStart(6)}${String(tot).padStart(8)}\n`;
     }
@@ -6064,7 +6795,7 @@
     const isImport = viewHist.tipo==='importado';
     let rows;
     if(isImport){
-      rows=[['Referencia','Descricao','Contado','Esperado','Status','Fornecedor','NF','Inicio','Fim','Observacao','Lotes']];
+      rows=[['Referencia','Descricao','Contado','Esperado','Status','Fornecedor','NF','Inicio','Fim','Observacao','Lotes','Multiplos']];
       const order  = viewHist.expectedOrder || Object.keys(viewHist.expected||{});
       const extras = Object.keys(viewHist.grouped||{}).filter(r=>!(viewHist.expected||{})[r]);
       const stLbl  = {pend:'Pendente',conv:'Convergente',div:'Divergente',extra:'Fora da lista'};
@@ -6072,12 +6803,12 @@
         const g   = (viewHist.grouped||{})[ref]||{};
         const exp = (viewHist.expected||{})[ref];
         const st  = stLbl[computeStatus(viewHist.expected, viewHist.grouped, ref)||'pend']||'';
-        rows.push([ref, g.desc||(exp&&exp.desc)||'', g.qty||0, exp?exp.qty:'', st, viewHist.forn, viewHist.nf||'', viewHist.start, viewHist.end||'', g.obs||'', _lotesParaTexto(g.lotes)]);
+        rows.push([ref, g.desc||(exp&&exp.desc)||'', g.qty||0, exp?exp.qty:'', st, viewHist.forn, viewHist.nf||'', viewHist.start, viewHist.end||'', g.obs||'', _lotesParaTexto(g.lotes), _multiplosParaTexto(g.multiplos)]);
       });
     } else {
-      rows=[['Referencia','Descricao','Leituras','Pecas','Fornecedor','NF','Inicio','Fim','Observacao','Lotes']];
+      rows=[['Referencia','Descricao','Leituras','Pecas','Fornecedor','NF','Inicio','Fim','Observacao','Lotes','Multiplos']];
       Object.values(viewHist.grouped||{}).forEach(r=>{
-        rows.push([r.ref,r.desc||'',r.scans,r.qty,r.forn,viewHist.nf||'',viewHist.start,viewHist.end||'',r.obs||'',_lotesParaTexto(r.lotes)]);
+        rows.push([r.ref,r.desc||'',r.scans,r.qty,r.forn,viewHist.nf||'',viewHist.start,viewHist.end||'',r.obs||'',_lotesParaTexto(r.lotes),_multiplosParaTexto(r.multiplos)]);
       });
     }
     const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
