@@ -1496,8 +1496,8 @@
           border:1px solid rgba(16,185,129,.35);background:rgba(16,185,129,.08);
           color:var(--gr);cursor:pointer;display:flex;flex-direction:column;
           align-items:center;gap:8px">
-          <span style="font-size:1.8rem;line-height:1">📸</span>
-          <span style="font-family:var(--R);font-weight:700;font-size:.6rem;letter-spacing:.2px;line-height:1.3">FOTOGRAFAR<br>NF</span>
+          <span style="font-size:1.8rem;line-height:1">🧾</span>
+          <span style="font-family:var(--R);font-weight:700;font-size:.6rem;letter-spacing:.2px;line-height:1.3">EXTRATOR<br>FOTO NF</span>
         </button>
       </div>
       <button class="btn btn-x" style="margin-top:10px" onclick="navBack()">Cancelar</button>
@@ -1562,21 +1562,17 @@
         <div id="fia-step-capture">
           <div class="ibox" style="margin-bottom:10px;line-height:1.6">
             <b>Para melhor leitura:</b><br>
-            • deixe a NF inteira visível, em superfície plana<br>
+            • escolha uma foto com a NF inteira visível, em superfície plana<br>
             • evite reflexos e sombras fortes<br>
-            • boa iluminação, câmera paralela à folha<br>
-            • aproxime-se para os códigos ficarem legíveis
+            • boa iluminação, foto tirada de frente (sem inclinar)<br>
+            • quanto mais próxima e nítida, mais fácil ler os códigos
           </div>
 
           <div id="fia-pages-list" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"></div>
 
-          <input type="file" id="fia-input-cam" accept="image/*" capture="environment" style="display:none" onchange="fiaFileSelected(event)">
           <input type="file" id="fia-input-gal" accept="image/*" style="display:none" onchange="fiaFileSelected(event)">
 
-          <div class="row" style="margin-bottom:8px">
-            <button class="btn btn-gr" style="margin-bottom:0" onclick="document.getElementById('fia-input-cam').click()">📸 Tirar Foto</button>
-            <button class="btn btn-x"  style="margin-bottom:0" onclick="document.getElementById('fia-input-gal').click()">🖼 Galeria</button>
-          </div>
+          <button class="btn btn-gr" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()">🖼 Galeria</button>
 
           <button class="btn btn-cy" id="fia-btn-processar" style="margin-top:4px" onclick="fiaProcessar()" disabled>
             Processar Nota
@@ -1597,10 +1593,7 @@
             <span id="fia-error-msg" style="color:var(--re)">Não foi possível processar a nota.</span>
           </div>
           <button class="btn btn-cy" style="margin-bottom:8px" onclick="fiaRetry()">🔄 Tentar Novamente</button>
-          <div class="row" style="margin-bottom:8px">
-            <button class="btn btn-x" style="margin-bottom:0" onclick="document.getElementById('fia-input-cam').click()">📸 Nova Foto</button>
-            <button class="btn btn-x" style="margin-bottom:0" onclick="document.getElementById('fia-input-gal').click()">🖼 Outra Imagem</button>
-          </div>
+          <button class="btn btn-x" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()">🖼 Outra Imagem</button>
           <button class="btn btn-gr" onclick="fiaGoManual()">✏ Inserir Manualmente</button>
         </div>
 
@@ -1788,6 +1781,11 @@
             <div><label style="margin-bottom:3px;font-size:.54rem">Validade</label>
               <input id="r-validade" type="text" placeholder="Ex: 01/01/2027" autocomplete="off" style="margin-bottom:0"></div>
           </div>
+          <!-- Chips com os lotes já registrados (com saldo) desta
+               referência — tocar num deles preenche lote/validade acima,
+               em vez de digitar de novo. Só aparece quando já existe
+               pelo menos um lote contado. -->
+          <div id="r-lote-existing" style="display:none"></div>
         </div>
 
         <!-- Acumulado e fornecedor -->
@@ -4420,6 +4418,21 @@
     renderBlindStatus();
   }
 
+  // Com o múltiplo já fixado, o campo continua editável — não precisa
+  // desfixar pra corrigir o valor. Enquanto estiver fixado, cada
+  // alteração digitada no campo já atualiza o valor fixado direto (sem
+  // precisar reabrir o toggle depois). Não re-renderiza a linha inteira
+  // aqui de propósito, pra não perder o foco/cursor do campo a cada
+  // tecla digitada — só persiste o valor.
+  function blindMultInputChanged(ref){
+    if(!session || !_isMultPinned(ref)) return;
+    const multEl = document.getElementById('blind-panel-mult');
+    const val = multEl ? parseInt(multEl.value) : NaN;
+    if(!val || val<1) return; // campo vazio/inválido enquanto o usuário ainda está digitando — não sobrescreve o valor fixado com lixo
+    session.pinnedMult[ref] = val;
+    sessStateSave();
+  }
+
   function _blindPanelHTML(ref){
     const pinned = session.pinnedMult && session.pinnedMult[ref];
     return `
@@ -4433,6 +4446,7 @@
           </span>
         </label>
         <input id="blind-panel-mult" type="number" min="1" placeholder="Ex: 12" value="${pinned||''}"
+               oninput="blindMultInputChanged('${ea(ref)}')"
                style="margin-bottom:10px">
 
         <button class="btn btn-gr" style="margin-bottom:0" onclick="blindStartCount('${ea(ref)}')">▶ Contar</button>
@@ -4534,7 +4548,10 @@
 
   // Salva a edição de um lote já registrado (lote, validade e/ou
   // quantidade). Lote continua sendo o único campo realmente exigido
-  // aqui — validade pode ficar em branco.
+  // aqui — validade pode ficar em branco. Se a quantidade for alterada,
+  // a diferença (pra mais ou pra menos) é aplicada também ao TOTAL
+  // contado da referência, pra não ficar destoando do que está
+  // registrado nos lotes.
   function blindLoteEditSave(ref, idx){
     const loteInp = document.getElementById('blind-lote-edit-lote');
     const valInp  = document.getElementById('blind-lote-edit-val');
@@ -4548,29 +4565,47 @@
 
     const lotes = grouped[ref] && grouped[ref].lotes;
     if(!lotes || !lotes[idx]) return;
+    const antiga = Number(lotes[idx].quantidade)||0;
     lotes[idx] = { lote, validade, quantidade };
+
+    const delta = quantidade - antiga;
+    if(delta !== 0){
+      grouped[ref].qty = Math.max(0, (Number(grouped[ref].qty)||0) + delta);
+    }
+
     sessStateSave();
     _blindLoteEditing = null;
-    toast('Lote atualizado — '+ref);
+    if(delta < 0) toast(`Lote atualizado — ${Math.abs(delta)} pç subtraída do total`);
+    else if(delta > 0) toast(`Lote atualizado — ${delta} pç somada ao total`);
+    else toast('Lote atualizado — '+ref);
+    try{ updateDash(); }catch(e){ console.error('updateDash falhou:', e); }
     try{ renderBlindStatus(); }catch(e){ console.error('renderBlindStatus falhou:', e); }
   }
 
-  // Remove o lote — só tira a "etiqueta" (lote/validade/quantidade
-  // daquela parte); a quantidade TOTAL contada da referência nunca é
-  // alterada por isso, e não fica nenhuma pendência: a parte que ficar
-  // sem lote associado simplesmente continua contada normalmente, sem
-  // exigir nada.
+  // Remove o lote (tira a "etiqueta" de lote/validade/quantidade) e
+  // TAMBÉM subtrai essa quantidade do total contado da referência — as
+  // peças daquele lote deixam de estar contadas, então não faz sentido
+  // continuarem valendo no total.
   function blindLoteRemove(ref, idx){
     if(!grouped[ref] || !grouped[ref].lotes) return;
-    grouped[ref].lotes.splice(idx, 1);
+    const lotes = grouped[ref].lotes;
+    if(!lotes[idx]) return;
+    const removida = Number(lotes[idx].quantidade)||0;
+    lotes.splice(idx, 1);
+    if(removida){
+      grouped[ref].qty = Math.max(0, (Number(grouped[ref].qty)||0) - removida);
+    }
     if(_blindLoteEditing && _blindLoteEditing.ref===ref) _blindLoteEditing = null;
     sessStateSave();
+    toast(removida ? `Lote removido — ${removida} pç subtraída do total` : 'Lote removido');
+    try{ updateDash(); }catch(e){ console.error('updateDash falhou:', e); }
     try{ renderBlindStatus(); }catch(e){ console.error('renderBlindStatus falhou:', e); }
   }
 
-  // Abre a MESMA tela de confirmação usada na leitura de QR Code (com
-  // vibração e bip) — só que aqui a "peças/volume" vem do múltiplo
-  // digitado manualmente, já que não há etiqueta para escanear.
+  // Abre a MESMA tela de confirmação usada na leitura de QR Code — só
+  // que aqui a "peças/volume" vem do múltiplo digitado manualmente, já
+  // que não há etiqueta para escanear. O bip só toca ao confirmar a
+  // quantidade de verdade (ver itemConfirm), não aqui.
   function blindStartCount(ref){
     const multEl = document.getElementById('blind-panel-mult');
     const mult = multEl ? (parseInt(multEl.value)||0) : 0;
@@ -4582,7 +4617,6 @@
       time: new Date().toLocaleTimeString('pt-BR'),
       blind: true,
     };
-    doBip();
     showResult(pending);
   }
 
@@ -5543,7 +5577,6 @@
         _ocrCountdownStop();
         setSt('Etiqueta lida — confirme ou cancele','ok');
         if(!silent) toast(`${ocrParsed.forn}: ${ocrParsed.ref} · ${ocrParsed.qty} pç`);
-        doBip();
         doFlash();
       } else {
         const hasText = fullText.trim().length > 5;
@@ -5804,7 +5837,6 @@
       }
     }
     pending={...parsed,raw,time:new Date().toLocaleTimeString('pt-BR')};
-    doBip();
     showResult(pending);
   }
 
@@ -5841,9 +5873,39 @@
     if(lvBox) lvBox.style.display = precisaLote ? 'block' : 'none';
     if(precisaLote){
       const lotesExistentes = (ex && ex.lotes) || [];
-      const ultimo = lotesExistentes.length ? lotesExistentes[lotesExistentes.length-1] : null;
+      // Usa o registro explícito do último lote/validade usado (ver
+      // _loteConsolidar); se a sessão ainda não tiver esse campo (ex.:
+      // sessão iniciada numa versão anterior), cai de volta pro último
+      // item da lista, que era o comportamento anterior.
+      const ultimo = (ex && ex.lastLote)
+        ? { lote: ex.lastLote, validade: ex.lastValidade || '' }
+        : (lotesExistentes.length ? lotesExistentes[lotesExistentes.length-1] : null);
       document.getElementById('r-lote').value     = ultimo ? ultimo.lote     : '';
       document.getElementById('r-validade').value = ultimo ? ultimo.validade : '';
+
+      // Chips com os lotes já registrados (com saldo) pra essa
+      // referência — permite selecionar um lote já existente em vez de
+      // digitar de novo (útil quando o volume novo pertence a um lote
+      // já contado antes).
+      const loteBox = document.getElementById('r-lote-existing');
+      if(loteBox){
+        if(lotesExistentes.length){
+          loteBox.style.display = 'block';
+          loteBox.innerHTML =
+            '<div style="font-size:.5rem;color:var(--mu2);letter-spacing:.5px;margin:9px 0 5px">'+
+            'OU SELECIONE UM LOTE JÁ CONTADO:</div>'+
+            '<div style="display:flex;flex-wrap:wrap;gap:6px">'+
+            lotesExistentes.map((l,idx)=>
+              `<span onclick="selecionarLoteExistente(${idx})" style="cursor:pointer;background:var(--s3);
+                border:1px solid var(--bd);border-radius:20px;padding:5px 10px;font-size:.6rem;color:var(--tx)">
+                🏷 ${h_(l.lote)} · ${Number(l.quantidade)||0} pç</span>`
+            ).join('')+
+            '</div>';
+        } else {
+          loteBox.style.display = 'none';
+          loteBox.innerHTML = '';
+        }
+      }
     }
 
     document.getElementById('qr-box').classList.add('on');
@@ -5851,6 +5913,19 @@
     doFlash();
     const b=document.getElementById('scan-body');
     setTimeout(()=>b.scrollTo({top:b.scrollHeight,behavior:'smooth'}),80);
+  }
+
+  // Preenche lote/validade na tela de confirmação a partir de um lote já
+  // existente (chip clicável) — ver _loteConsolidar / showResult.
+  function selecionarLoteExistente(idx){
+    if(!pending) return;
+    const ex = grouped[pending.ref];
+    const lotes = (ex && ex.lotes) || [];
+    const l = lotes[idx];
+    if(!l) return;
+    document.getElementById('r-lote').value = l.lote;
+    document.getElementById('r-validade').value = l.validade || '';
+    toast('Lote selecionado: '+l.lote);
   }
 
   function recalcTotal(){
@@ -5918,6 +5993,7 @@
     const ref = pending.ref;
     addItem({...pending, qty: totalQty, vols, qtyPerVol: pending.qty});
     if(precisaLoteUI && lote) _loteConsolidar(ref, lote, validade, totalQty);
+    doBip();
 
     pending=null;
     document.getElementById('qr-box').classList.remove('on');
@@ -5957,6 +6033,13 @@
     } else {
       grouped[ref].lotes.push({ lote, validade, quantidade });
     }
+    // Guarda separadamente qual foi o ÚLTIMO lote/validade usado nesta
+    // referência (por ordem de uso, não de posição no array — um lote
+    // repetido não muda de posição na lista, já que só soma na entrada
+    // existente). É esse registro que showResult() usa pra pré-preencher
+    // a próxima contagem da mesma referência.
+    grouped[ref].lastLote = lote;
+    grouped[ref].lastValidade = validade;
     sessStateSave();
   }
 
