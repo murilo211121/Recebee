@@ -1112,7 +1112,9 @@
     <h3>☁ Contagens da Nuvem</h3>
     <div style="font-size:.58rem;color:var(--mu2);margin-bottom:10px;line-height:1.5">
       NFs enviadas pelo extrator de nota fiscal, prontas para conferência às cegas.
-      Escolha uma para revisar e iniciar a contagem.
+      Escolha uma para revisar e iniciar a contagem. Iniciar não remove o item daqui —
+      dá pra pausar e voltar quando quiser, mesmo no meio da contagem. O item só sai
+      da nuvem quando a contagem é finalizada ou descartada.
     </div>
     <div id="cloud-list"></div>
     <div class="mrow">
@@ -1129,7 +1131,9 @@
       margin-bottom:12px;line-height:1.6">✔ Tudo convergente — pronto para salvar.</div>
     <div id="resumo-warn" style="display:none;font-size:.6rem;color:var(--re);line-height:1.7;margin-bottom:12px">
       ⚠ Há referências divergentes ou pendentes. Revise abaixo — você pode retomar a contagem
-      para corrigir, ou finalizar assim mesmo.
+      para corrigir, ou finalizar assim mesmo. Ao retomar, os itens convergentes ficam ocultos
+      (dá pra reexibi-los) e a contagem dos divergentes zera para a recontagem, mantendo o
+      histórico das tentativas anteriores.
     </div>
     <div id="resumo-body"></div>
     <div class="mrow">
@@ -1218,6 +1222,20 @@
             Escanear etiquetas</div>
         </div>
         <div style="font-size:1.1rem;color:rgba(255,255,255,.55)">›</div>
+      </div>
+
+      <!-- Iniciar outra contagem em paralelo, sem mexer na que já está em andamento -->
+      <div id="dbtn-newsess" onclick="sessStartNew()" style="display:none;text-align:center;padding:2px 0 12px;cursor:pointer">
+        <span style="font-size:.62rem;color:var(--cy);font-family:var(--R);font-weight:700;letter-spacing:.2px">
+          + Iniciar outra contagem em paralelo
+        </span>
+      </div>
+
+      <!-- Outras contagens em andamento (pausadas) — várias podem existir ao mesmo tempo -->
+      <div id="card-multi-sess" style="display:none;margin-bottom:10px">
+        <div style="font-family:var(--R);font-weight:700;font-size:.6rem;letter-spacing:1px;
+          text-transform:uppercase;color:var(--mu2);margin-bottom:6px">⏸ Outras Contagens Pausadas</div>
+        <div id="multi-sess-list"></div>
       </div>
 
       <!-- Grade 2×2 de ações secundárias -->
@@ -1869,8 +1887,11 @@
     <div id="card-acoes" style="display:none">
       <div class="sep"></div>
       <button class="btn btn-gr" onclick="sessFinalizeClick()">Finalizar e Salvar Contagem</button>
+      <button class="btn btn-cy" style="font-size:.7rem;padding:9px;margin-top:6px" onclick="sessStartNew()">
+        ⏸ Pausar e Iniciar Outra Contagem
+      </button>
       <button class="btn btn-re" style="font-size:.75rem;padding:9px"
-              onclick="mc('Encerrar Sessão','A sessão será encerrada sem salvar. Os dados atuais serão perdidos.',sessCancel)">
+              onclick="mc('Encerrar Sessão','A sessão será encerrada sem salvar. Os dados atuais serão perdidos e, se a NF veio da nuvem, ela também sairá de lá.',sessCancel)">
         Descartar Sessão
       </button>
     </div>
@@ -2527,21 +2548,182 @@
     if(idx>=0){ arr[idx]=updatedEntry; histSave(arr); }
   }
 
-  /* ── Session persistence ── */
-  function sessStateLoad(){
+  /* ── Session persistence ──────────────────────────────────────────
+     Suporte a MÚLTIPLAS contagens em andamento ao mesmo tempo: cada
+     sessão tem um id próprio e é salva como um registro independente
+     dentro de "rcb_sessions". "rcb_active_id" guarda qual delas está
+     aberta na tela agora (as variáveis session/items/grouped/pending
+     continuam sendo o "rascunho de trabalho" da sessão aberta — o
+     resto do código nem precisa saber que existem várias). Isso já
+     deixa o formato pronto pra um cenário futuro de múltiplos usuários
+     no mesmo acesso, cada um com suas próprias contagens em paralelo. */
+  function _uid(){ return 'S'+Date.now()+Math.random().toString(36).slice(2,7); }
+
+  function sessionsLoadAll(){
+    try{ return JSON.parse(localStorage.getItem('rcb_sessions')||'[]'); }catch(e){ return []; }
+  }
+  function sessionsSaveAll(arr){
+    try{ localStorage.setItem('rcb_sessions', JSON.stringify(arr)); return true; }
+    catch(e){ toast('⚠ Erro ao salvar sessão — armazenamento cheio!', true); return false; }
+  }
+  function sessionsRemove(id){
+    if(!id) return;
+    sessionsSaveAll(sessionsLoadAll().filter(r=>r.id!==id));
+  }
+
+  // Migra uma única vez o formato antigo (uma sessão só, chave "rcb_sess")
+  // pro novo array multi-sessão, se ainda houver dado nesse formato.
+  function _migrateLegacySession(){
     try{
-      const s=JSON.parse(localStorage.getItem('rcb_sess')||'null');
-      if(!s||!s.session)return;
-      session=s.session; items=s.items||[]; grouped=s.grouped||{};
+      const legacy = localStorage.getItem('rcb_sess');
+      if(!legacy) return;
+      const s = JSON.parse(legacy);
+      if(s && s.session){
+        if(!s.session.id) s.session.id = _uid();
+        const arr = sessionsLoadAll();
+        if(!arr.find(r=>r.id===s.session.id)){
+          arr.push({ id:s.session.id, session:s.session, items:s.items||[], grouped:s.grouped||{}, pending:null });
+          sessionsSaveAll(arr);
+        }
+        localStorage.setItem('rcb_active_id', s.session.id);
+      }
+      localStorage.removeItem('rcb_sess');
+    }catch(e){}
+  }
+
+  function sessStateLoad(){
+    _migrateLegacySession();
+    try{
+      const activeId = localStorage.getItem('rcb_active_id');
+      if(!activeId) return;
+      const rec = sessionsLoadAll().find(r=>r.id===activeId);
+      if(!rec) return;
+      session=rec.session; items=rec.items||[]; grouped=rec.grouped||{}; pending=rec.pending||null;
+      _blindRestoreFromSession();
     }catch(e){}
   }
   function sessStateSave(){
     try{
-      if(session) localStorage.setItem('rcb_sess',JSON.stringify({session,items,grouped}));
-      else localStorage.removeItem('rcb_sess');
+      if(!session){ localStorage.removeItem('rcb_active_id'); return; }
+      if(!session.id) session.id = _uid();
+      const arr = sessionsLoadAll();
+      const idx = arr.findIndex(r=>r.id===session.id);
+      const rec = { id:session.id, session, items, grouped, pending };
+      if(idx>=0) arr[idx]=rec; else arr.push(rec);
+      sessionsSaveAll(arr);
+      localStorage.setItem('rcb_active_id', session.id);
     }catch(e){
       toast('⚠ Erro ao salvar sessão — armazenamento cheio!', true);
     }
+  }
+
+  // Estaciona a sessão atualmente aberta (se houver): salva o estado
+  // dela (fica disponível na lista de "Outras Contagens Pausadas") e
+  // limpa a área de trabalho, sem apagar nada — permite iniciar/abrir
+  // outra contagem em paralelo.
+  function _parkCurrentSession(){
+    if(!session) return;
+    sessStateSave();
+    camStop();
+    session = null; items = []; grouped = {}; pending = null;
+    _blindDivergentRefs = new Set();
+    _blindHiddenRefs = new Set();
+    _blindShowHidden = false;
+    try{ localStorage.removeItem('rcb_active_id'); }catch(e){}
+  }
+
+  // Abre a tela de "Nova Sessão" pra iniciar outra contagem, mesmo com
+  // uma já em andamento — a atual só é estacionada, não é descartada.
+  function sessStartNew(){
+    _parkCurrentSession();
+    resetScanUI();
+    updateDash();
+    navTo('pg-scan');
+  }
+
+  // Troca para outra contagem salva (aberta ou apenas pausada). Se a
+  // sessão pedida já for a que está na tela, só navega até ela.
+  function sessSwitchTo(id){
+    if(session && session.id===id){ navTo('pg-scan'); return; }
+    if(session) sessStateSave(); // guarda a atual antes de trocar, nada se perde
+    const rec = sessionsLoadAll().find(r=>r.id===id);
+    if(!rec){ toast('Contagem não encontrada — pode ter sido removida', true); return; }
+    camStop();
+    session = rec.session; items = rec.items||[]; grouped = rec.grouped||{}; pending = rec.pending||null;
+    _blindRestoreFromSession();
+    try{ localStorage.setItem('rcb_active_id', id); }catch(e){}
+    updateDash();
+    navTo('pg-scan');
+  }
+
+  // Descarta uma contagem pausada direto da lista, sem precisar abri-la.
+  function sessionsDiscardPrompt(id){
+    // Busca o cloudDocId ANTES de remover — se essa contagem tiver vindo
+    // da nuvem, descartar também libera/consome o item lá (igual à
+    // finalização; só pausar preserva o item na nuvem).
+    const rec = sessionsLoadAll().find(r=>r.id===id);
+    const cloudDocId = (rec && rec.session && rec.session.cloudDocId) ||
+                        (session && session.id===id ? session.cloudDocId : null);
+    const msg = cloudDocId
+      ? 'Esta contagem em andamento será removida permanentemente e o item também sairá da nuvem.'
+      : 'Esta contagem em andamento será removida permanentemente.';
+    mc('Descartar Contagem', msg, ()=>{
+      sessionsRemove(id);
+      if(cloudDocId) _cloudConsume(cloudDocId);
+      if(session && session.id===id){
+        camStop();
+        session = null; items = []; grouped = {}; pending = null;
+        _blindDivergentRefs = new Set();
+        _blindHiddenRefs = new Set();
+        _blindShowHidden = false;
+        try{ localStorage.removeItem('rcb_active_id'); }catch(e){}
+        resetScanUI();
+      }
+      updateDash();
+      toast('Contagem descartada');
+    });
+  }
+
+  // Card "Outras Contagens Pausadas" no dashboard — lista todas as
+  // sessões salvas, exceto a que já está aberta na tela.
+  function renderSessionsList(){
+    const card   = document.getElementById('card-multi-sess');
+    const el     = document.getElementById('multi-sess-list');
+    const newBtn = document.getElementById('dbtn-newsess');
+    if(newBtn) newBtn.style.display = session ? 'block' : 'none';
+    if(!card || !el) return;
+    const others = sessionsLoadAll().filter(r => !session || r.id !== session.id);
+    if(!others.length){ card.style.display='none'; el.innerHTML=''; return; }
+    card.style.display='block';
+    others.sort((a,b)=>(b.session&&b.session.id||'').localeCompare(a.session&&a.session.id||''));
+    el.innerHTML='';
+    others.forEach(r=>{
+      const s = r.session||{};
+      const qtdRefs = Object.keys(r.grouped||{}).length;
+      const qtdPc   = Object.values(r.grouped||{}).reduce((sum,g)=>sum+(g.qty||0),0);
+
+      const row=document.createElement('div');
+      row.style.cssText='background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:11px 12px;'+
+        'margin-bottom:7px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px';
+      row.innerHTML=`
+        <div style="min-width:0">
+          <div style="font-family:var(--R);font-weight:700;font-size:.72rem;color:var(--tx);
+            white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+            ${h(s.forn||'—')}${s.nf?' · NF '+h(s.nf):''}${s.tipo==='importado'?' · 📥':''}
+          </div>
+          <div style="font-size:.58rem;color:var(--mu2);margin-top:2px">
+            ${qtdRefs} referência${qtdRefs!==1?'s':''} · ${qtdPc} pç · desde ${h(s.start||'')}
+          </div>
+        </div>
+        <button class="msdel" aria-label="Descartar esta contagem" title="Descartar esta contagem"
+                style="flex-shrink:0;background:none;border:none;color:var(--re);font-size:.85rem;cursor:pointer;padding:4px 6px">✕</button>`;
+      row.onclick=()=>sessSwitchTo(s.id);
+      const delBtn = row.querySelector('.msdel');
+      if(delBtn){
+        delBtn.onclick=(e)=>{ e.stopPropagation(); sessionsDiscardPrompt(s.id); };
+      }
+      el.appendChild(row);
+    });
   }
 
   /* ═══════════════════════════════════════════════
@@ -2629,6 +2811,9 @@
 
     // Analytics do histórico completo (isolado: falha aqui não deve travar o resto)
     try{ _updateDashAnalytics(); }catch(e){ console.error('_updateDashAnalytics falhou:', e); }
+
+    // Outras contagens em andamento (múltiplas sessões em paralelo)
+    try{ renderSessionsList(); }catch(e){ console.error('renderSessionsList falhou:', e); }
 
     const dot  = document.getElementById('sdot');
     const name = document.getElementById('sname');
@@ -4286,6 +4471,10 @@
       el.innerHTML = '<div style="text-align:center;color:var(--mu2);font-size:.7rem;padding:20px 0">Nenhuma contagem pendente na nuvem.</div>';
       return;
     }
+    // Sessões (abertas na tela agora ou apenas pausadas) que já
+    // referenciam algum desses docs da nuvem — pra sinalizar e evitar
+    // iniciar a mesma NF duas vezes.
+    const allSessRecords = sessionsLoadAll();
     el.innerHTML = cloudPendentes.map((d) => {
       // usa a mesma regra de validade de referência aplicada ao importar
       // (cloudPickItem), para o resumo aqui já bater com o que de fato
@@ -4298,11 +4487,21 @@
       const qtdTotal = validos.reduce((s,p)=>s+(Number(p.quantidade)||0),0);
       let quando = '';
       try{ if(d.criadoEm && d.criadoEm.toDate) quando = d.criadoEm.toDate().toLocaleString('pt-BR'); }catch(e){}
+      // Contagem já iniciada localmente — sinaliza sem excluir da nuvem,
+      // disponível pra retomar. Distingue a que está aberta na tela
+      // agora da que só ficou pausada (estacionada) em paralelo.
+      const isOpenNow = !!(session && session.cloudDocId === d.id);
+      const isParked  = !isOpenNow && allSessRecords.some(r => r.session && r.session.cloudDocId === d.id);
+      const badge = isOpenNow ? '▶ Em andamento' : (isParked ? '⏸ Pausada' : '');
+      const borderColor = (isOpenNow||isParked) ? 'var(--cy)' : 'var(--bd)';
       return `
-        <div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer"
+        <div style="background:var(--s2);border:1px solid ${borderColor};border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer"
              onclick="cloudPickItem('${d.id}')">
-          <div style="font-family:var(--R);font-weight:700;font-size:.78rem;color:var(--tx)">
-            ${h(d.forn || 'Fornecedor não identificado')}
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+            <div style="font-family:var(--R);font-weight:700;font-size:.78rem;color:var(--tx)">
+              ${h(d.forn || 'Fornecedor não identificado')}
+            </div>
+            ${badge ? `<span class="status-badge status-conv" style="flex-shrink:0">${badge}</span>` : ''}
           </div>
           <div style="font-size:.62rem;color:var(--mu2);margin-top:3px">
             ${d.nf ? 'NF '+h(d.nf)+' · ' : ''}${qtdRefs} referência${qtdRefs!==1?'s':''} · ${qtdTotal} pç
@@ -4316,6 +4515,15 @@
     const doc = cloudPendentes.find((d) => d.id===id);
     if(!doc){ toast('Item não encontrado — pode ter sido removido', true); return; }
 
+    // Essa NF já tem uma contagem em andamento — aberta na tela agora
+    // ou só pausada. Não cria outra do zero: apenas abre/retoma essa.
+    const existing = sessionsLoadAll().find(r => r.session && r.session.cloudDocId === id);
+    if(existing){
+      cloudModalClose();
+      sessSwitchTo(existing.id);
+      return;
+    }
+
     const expected = {}; const order = [];
     (doc.produtos||[]).forEach((p) => {
       const ref = String(p.referencia||'').trim();
@@ -4328,6 +4536,11 @@
       else { expected[ref] = { desc: p.descricao||'', qty, unidade: p.unidade||'' }; order.push(ref); }
     });
     if(!order.length){ toast('Essa NF da nuvem não tem referências válidas', true); return; }
+
+    // Já existe outra contagem aberta na tela — estaciona ela (fica
+    // salva, disponível pra retomar depois) e inicia essa nova em
+    // paralelo. Várias contagens podem ficar em andamento ao mesmo tempo.
+    if(session) _parkCurrentSession();
 
     importPending = {
       expected, order,
@@ -4345,9 +4558,11 @@
     sessStart();
   }
 
-  // Remove o item da coleção "pendentes" quando a sessão é efetivamente
-  // iniciada (consumido) — ele deixa de aparecer no ícone de nuvem e,
-  // ao final da contagem, passa a existir apenas no Histórico local.
+  // O item só é removido da coleção "pendentes" quando a contagem é
+  // FINALIZADA E SALVA (sessSave) ou DESCARTADA/EXCLUÍDA (sessCancel,
+  // sessionsDiscardPrompt) — iniciar, voltar ou pausar a contagem NÃO
+  // tira o item da nuvem; ele continua disponível pra retomar depois,
+  // inclusive no meio da contagem e após fechar o app.
   function _cloudConsume(docId){
     if(!docId || typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
     firebase.firestore().collection('pendentes').doc(docId).delete()
@@ -4390,6 +4605,17 @@
   let _blindOpenRef = null;   // ref cujo painel de contagem está expandido ('__extra__' = referência fora da lista)
   let _blindEditRef = null;   // ref cujo painel de edição (quantidade/observação) está expandido
   let _blindDivergentRefs = new Set(); // refs marcadas como divergentes no resumo — só essas mostram a comparação em vermelho ao retomar
+  let _blindHiddenRefs   = new Set(); // refs convergentes ocultadas ao retomar a contagem (evita recontar o que já bateu)
+  let _blindShowHidden   = false;     // se true, exibe temporariamente as refs ocultas (toggle "Exibir")
+
+  // Restaura os Sets de refs divergentes/ocultas a partir do que foi persistido
+  // na sessão (necessário porque são variáveis de módulo e não sobrevivem
+  // sozinhas a um reload da página / retomada do app em segundo plano).
+  function _blindRestoreFromSession(){
+    _blindDivergentRefs = new Set((session && session.blindDivergentRefs) || []);
+    _blindHiddenRefs    = new Set((session && session.blindHiddenRefs)    || []);
+    _blindShowHidden    = false;
+  }
 
   function blindToggleRow(ref){
     _blindOpenRef = (_blindOpenRef===ref) ? null : ref;
@@ -4722,9 +4948,31 @@
     let countedN=0;
     allRefs.forEach(ref=>{ if(grouped[ref] && grouped[ref].qty>0) countedN++; });
 
-    const visibleRefs = searchTerm ? allRefs.filter(r=>r.toUpperCase().includes(searchTerm)) : allRefs;
+    let visibleRefs = searchTerm ? allRefs.filter(r=>r.toUpperCase().includes(searchTerm)) : allRefs;
+
+    // Itens convergentes ocultados ao retomar a contagem (ver resumoRetomar).
+    // Uma busca ativa ignora a ocultação, pra sempre achar o que se procura.
+    const hiddenInList = visibleRefs.filter(r=>_blindHiddenRefs.has(r));
+    if(!searchTerm && !_blindShowHidden && hiddenInList.length){
+      visibleRefs = visibleRefs.filter(r=>!_blindHiddenRefs.has(r));
+    }
 
     el.innerHTML='';
+
+    if(!searchTerm && hiddenInList.length){
+      const toggleBar=document.createElement('div');
+      toggleBar.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:8px;'+
+        'padding:8px 10px;margin-bottom:8px;border:1px solid var(--bd);border-radius:8px;'+
+        'background:var(--s3);cursor:pointer';
+      toggleBar.onclick=blindToggleHidden;
+      toggleBar.innerHTML = `
+        <span style="font-size:.62rem;color:var(--mu2)">
+          ✔ ${hiddenInList.length} convergente${hiddenInList.length>1?'s':''} oculto${hiddenInList.length>1?'s':''}
+        </span>
+        <span style="font-size:.6rem;font-weight:700;color:var(--cy)">${_blindShowHidden?'Ocultar':'Exibir'}</span>`;
+      el.appendChild(toggleBar);
+    }
+
     visibleRefs.forEach(ref=>{
       const exp = session.expected[ref];
       const g   = grouped[ref];
@@ -4756,6 +5004,13 @@
         obsEl.style.cssText='font-size:.55rem;color:var(--wa);margin-top:2px;font-style:italic';
         obsEl.textContent='📝 '+g.obs;
         info.appendChild(obsEl);
+      }
+      const hist = session.blindHistory && session.blindHistory[ref];
+      if(isFlagged && hist && hist.length){
+        const histEl=document.createElement('div');
+        histEl.style.cssText='font-size:.55rem;color:var(--re);margin-top:2px;font-weight:600';
+        histEl.textContent='↺ Recontagem · anterior'+(hist.length>1?'es':'')+': '+hist.map(h=>h.qty+' pç').join(', ');
+        info.appendChild(histEl);
       }
       if(session.rastrearLoteValidade && isCounted && g.lotes && g.lotes.length){
         const alocado = _loteAlocado(ref);
@@ -4841,7 +5096,12 @@
     const forn = document.getElementById('inp-forn').value.trim();
     if(!forn){ toast('Informe o fornecedor',true); return; }
     const nf = document.getElementById('inp-nf').value.trim();
-    session = { forn, nf, start: new Date().toLocaleString('pt-BR') };
+    // Segurança: se por algum caminho sessStart() for chamado com uma
+    // sessão ainda aberta, estaciona ela antes (nunca sobrescreve uma
+    // contagem em andamento sem salvar) — permite múltiplas contagens
+    // simultâneas em vez de perder a anterior.
+    if(session) _parkCurrentSession();
+    session = { forn, nf, start: new Date().toLocaleString('pt-BR'), id: _uid() };
     if(importPending){
       session.tipo          = 'importado';
       session.expected      = importPending.expected;
@@ -4849,6 +5109,11 @@
       session.importMeta    = importPending.meta || {};
       session.rastrearLoteValidade = !!importPending.rastrearLoteValidade;
       session.origem        = importPending.origem || 'nuvem';
+      // Guardado na própria sessão (não só no importPending, que é
+      // descartado logo abaixo) pra saber, mesmo depois de pausar/voltar
+      // ou recarregar a página, qual doc da nuvem consumir quando a
+      // contagem for finalizada (ver sessSave / _cloudConsume).
+      session.cloudDocId    = importPending.cloudDocId || null;
     } else {
       session.origem = 'qr';
     }
@@ -4862,8 +5127,10 @@
       (session.tipo==='importado' && session.importMeta && session.importMeta.raw && session.importMeta.raw.length) ? 'block' : 'none';
     document.getElementById('card-acoes').style.display  = 'block';
     document.getElementById('m-forn').value = forn;
-    if(session.tipo==='importado'){ _blindOpenRef = null; _blindDivergentRefs = new Set(); renderImportInfo(); }
-    if(importPending && importPending.cloudDocId) _cloudConsume(importPending.cloudDocId);
+    if(session.tipo==='importado'){ _blindOpenRef = null; _blindDivergentRefs = new Set(); _blindHiddenRefs = new Set(); _blindShowHidden = false; renderImportInfo(); }
+    // Não consome/exclui o item da nuvem aqui — só ao finalizar e salvar
+    // (sessSave). Assim, iniciar e depois voltar/pausar não faz o item
+    // sumir da nuvem; ele continua disponível pra retomar depois.
     importPending = null;
     clearImportPending();
     sessStateSave();
@@ -4874,8 +5141,17 @@
 
   function sessCancel(){
     camStop();
+    const discardId     = session && session.id;
+    const discardCloudId = session && session.cloudDocId;
     session = null; items = []; grouped = {}; pending = null;
     _blindDivergentRefs = new Set();
+    _blindHiddenRefs = new Set();
+    _blindShowHidden = false;
+    if(discardId) sessionsRemove(discardId);
+    // Descartar é definitivo — assim como finalizar, libera/consome o
+    // item na nuvem (diferente de pausar/voltar, que preserva o item lá
+    // pra retomar depois).
+    if(discardCloudId) _cloudConsume(discardCloudId);
     sessStateSave();
     resetScanUI();
     updateDash();
@@ -5001,10 +5277,50 @@
     // partir de agora elas ficam marcadas em vermelho no checklist até
     // serem corrigidas, pra facilitar encontrá-las. As demais continuam
     // às cegas normalmente.
-    if(_lastResumoData){
+    if(_lastResumoData && session){
       _blindDivergentRefs = new Set(_lastResumoData.div.map(r=>r.ref));
+
+      // Para cada referência divergente: guarda a contagem atual no
+      // histórico da própria sessão (mantém o total de tentativas
+      // anteriores daquele item) e zera a contagem para a recontagem.
+      if(!session.blindHistory) session.blindHistory = {};
+      _blindDivergentRefs.forEach(ref=>{
+        const g = grouped[ref];
+        if(!g) return;
+        if(!session.blindHistory[ref]) session.blindHistory[ref] = [];
+        session.blindHistory[ref].push({
+          qty  : g.qty || 0,
+          scans: g.scans || 0,
+          obs  : g.obs || '',
+          ts   : Date.now()
+        });
+        g.qty   = 0;
+        g.scans = 0;
+        g.obs   = '';
+        g.vols  = 0;
+        if(g.lotes) g.lotes = [];
+        if(g.multiplos) g.multiplos = [];
+        g.lastTs = Date.now();
+      });
+
+      // Itens convergentes ficam ocultos por padrão ao retomar — evita
+      // recontar o que já bateu. O usuário pode reexibi-los a qualquer
+      // momento com o botão "Exibir".
+      _blindHiddenRefs = new Set(_lastResumoData.conv.map(r=>r.ref));
+      _blindShowHidden = false;
+    }
+    if(session){
+      session.blindDivergentRefs = [..._blindDivergentRefs];
+      session.blindHiddenRefs    = [..._blindHiddenRefs];
+      sessStateSave();
     }
     try{ renderBlindStatus(); }catch(e){ console.error('renderBlindStatus falhou:', e); }
+  }
+
+  // Alterna a exibição temporária das referências convergentes ocultadas.
+  function blindToggleHidden(){
+    _blindShowHidden = !_blindShowHidden;
+    renderBlindStatus();
   }
 
   function resumoConfirmar(){
@@ -5029,14 +5345,25 @@
       origem       : session.origem || null,
       expected     : session.expected || null,
       expectedOrder: session.expectedOrder || null,
-      importMeta   : session.importMeta || null
+      importMeta   : session.importMeta || null,
+      blindHistory : session.blindHistory || null
     };
     const ok = histAdd(entry);
     if(!ok){ toast('Falha ao salvar — armazenamento cheio!', true); return; }
 
+    // Só agora, com a contagem efetivamente finalizada e salva no
+    // Histórico, o item é removido da coleção "pendentes" da nuvem —
+    // enquanto isso, pausar/voltar/recarregar mantinha o item lá,
+    // disponível pra retomar.
+    if(session.cloudDocId) _cloudConsume(session.cloudDocId);
+
     camStop();
+    const finishedId = session.id;
     session = null; items = []; grouped = {}; pending = null;
     _blindDivergentRefs = new Set();
+    _blindHiddenRefs = new Set();
+    _blindShowHidden = false;
+    if(finishedId) sessionsRemove(finishedId);
     sessStateSave();
     resetScanUI();
     updateDash();
