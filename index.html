@@ -1109,7 +1109,7 @@
 <!-- MODAL NUVEM — contagens às cegas recebidas do extrator de NF-e -->
 <div class="mbg" id="mdl-cloud">
   <div class="md">
-    <h3>☁ Contagens da Nuvem</h3>
+    <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg> Contagens da Nuvem</h3>
     <div style="font-size:.58rem;color:var(--mu2);margin-bottom:10px;line-height:1.5">
       NFs enviadas pelo extrator de nota fiscal, prontas para conferência às cegas.
       Escolha uma para revisar e iniciar a contagem. Iniciar não remove o item daqui —
@@ -1161,14 +1161,16 @@
         <button onclick="openCloudModal()" id="btn-cloud"
                 style="position:relative;background:var(--s2);border:1px solid var(--bd);color:var(--mu2);font-size:.95rem;
           cursor:pointer;padding:6px 9px;line-height:1;border-radius:var(--radius-sm)" title="Contagens recebidas da nuvem">
-          ☁
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg>
           <span id="cloud-badge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:15px;
             height:15px;padding:0 3px;border-radius:8px;background:var(--re);color:#fff;
             font-family:var(--R);font-weight:700;font-size:.48rem;line-height:15px;text-align:center">0</span>
         </button>
         <button onclick="navTo('pg-config')"
                 style="background:var(--s2);border:1px solid var(--bd);color:var(--mu2);font-size:.95rem;cursor:pointer;
-          padding:6px 9px;line-height:1;border-radius:var(--radius-sm)" title="Configurações">⚙</button>
+          padding:6px 9px;line-height:1;border-radius:var(--radius-sm)" title="Configurações">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.1 5.9l-1.7 1.7M7.6 16.4l-1.7 1.7M18.1 18.1l-1.7-1.7M7.6 7.6 5.9 5.9"/></svg>
+        </button>
       </div>
 
       <div class="dash-logo">Recebe<span>+</span></div>
@@ -1179,7 +1181,7 @@
     <!-- Aviso storage -->
     <div id="storage-warn">⚠ Armazenamento local quase cheio. Exporte e exclua contagens antigas para continuar salvando.</div>
     <!-- Aviso sem conexão -->
-    <div id="offline-warn">☁ Sem conexão — a contagem local continua funcionando normalmente. A nuvem (envio/recebimento) volta assim que a internet reconectar.</div>
+    <div id="offline-warn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg> Sem conexão — a contagem local continua funcionando normalmente. A nuvem (envio/recebimento) volta assim que a internet reconectar.</div>
 
     <!-- IDs ocultos para compatibilidade -->
     <span id="d-refs" style="display:none">0</span>
@@ -1348,15 +1350,15 @@
           <button onclick="dashTurno('manha')" id="tbtn-manha"
                   style="padding:6px 4px;border-radius:7px;border:1px solid var(--bd);
             background:transparent;color:var(--mu2);font-family:var(--R);font-weight:700;
-            font-size:.58rem;cursor:pointer;line-height:1.4">☀️ MANHÃ<br><span style="font-size:.44rem;font-weight:400;opacity:.7">06h–14h</span></button>
+            font-size:.58rem;cursor:pointer;line-height:1.4"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg> MANHÃ<br><span style="font-size:.44rem;font-weight:400;opacity:.7">06h–14h</span></button>
           <button onclick="dashTurno('tarde')" id="tbtn-tarde"
                   style="padding:6px 4px;border-radius:7px;border:1px solid var(--bd);
             background:transparent;color:var(--mu2);font-family:var(--R);font-weight:700;
-            font-size:.58rem;cursor:pointer;line-height:1.4">🌤 TARDE<br><span style="font-size:.44rem;font-weight:400;opacity:.7">14h–22h</span></button>
+            font-size:.58rem;cursor:pointer;line-height:1.4"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><circle cx="7.5" cy="7" r="2.4"/><path d="M7.5 2.6V4M7.5 10v1.4M3.1 7H4.5M10.5 7h1.4M4.6 3.9l1 1M10.4 3.9l-1 1"/><path d="M11 20a3.5 3.5 0 1 0 .5-6.97A4.5 4.5 0 0 0 3.4 15a3 3 0 0 0 .1 5h7.5z"/></svg> TARDE<br><span style="font-size:.44rem;font-weight:400;opacity:.7">14h–22h</span></button>
           <button onclick="dashTurno('noite')" id="tbtn-noite"
                   style="padding:6px 4px;border-radius:7px;border:1px solid var(--bd);
             background:transparent;color:var(--mu2);font-family:var(--R);font-weight:700;
-            font-size:.58rem;cursor:pointer;line-height:1.4">🌙 NOITE<br><span style="font-size:.44rem;font-weight:400;opacity:.7">22h–06h</span></button>
+            font-size:.58rem;cursor:pointer;line-height:1.4"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg> NOITE<br><span style="font-size:.44rem;font-weight:400;opacity:.7">22h–06h</span></button>
         </div>
       </div>
 
@@ -1389,13 +1391,13 @@
         <div style="font-size:.46rem;color:var(--mu2);letter-spacing:1.2px;margin-bottom:6px">VOLUMES RECEBIDOS</div>
         <div style="font-size:2rem;font-family:var(--R);font-weight:800;color:var(--cy);line-height:1" id="da-total-vols">0</div>
         <div style="font-size:.52rem;color:var(--mu2);margin-top:4px" id="da-vols-sub">em 0 contagens</div>
-        <div style="position:absolute;right:10px;top:10px;font-size:1.4rem;opacity:.1">📦</div>
+        <div style="position:absolute;right:10px;top:10px;opacity:.15;color:var(--cy)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-4.5L21 8l-9 4.5L3 8z"/><path d="M3 8v9l9 4.5V12.5M21 8v9l-9 4.5"/></svg></div>
       </div>
       <div class="card" style="padding:14px;border-color:rgba(16,185,129,.25);position:relative;overflow:hidden;margin-bottom:0">
         <div style="font-size:.46rem;color:var(--mu2);letter-spacing:1.2px;margin-bottom:6px">PEÇAS CONFERIDAS</div>
         <div style="font-size:2rem;font-family:var(--R);font-weight:800;color:var(--gr);line-height:1" id="da-total-pecas">0</div>
         <div style="font-size:.52rem;color:var(--mu2);margin-top:4px" id="da-pecas-sub">total acumulado</div>
-        <div style="position:absolute;right:10px;top:10px;font-size:1.4rem;opacity:.1">🔢</div>
+        <div style="position:absolute;right:10px;top:10px;opacity:.15;color:var(--gr)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 6 21M18 3l-2 18M3 9h18M2 15h18"/></svg></div>
       </div>
     </div>
 
@@ -1420,7 +1422,7 @@
 
     <!-- Última contagem -->
     <div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 14px">
-      <div style="font-size:1.2rem;opacity:.35">🕐</div>
+      <div style="opacity:.4;color:var(--tx)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
       <div style="flex:1;min-width:0">
         <div style="font-size:.44rem;color:var(--mu2);letter-spacing:1px;margin-bottom:3px">ÚLTIMA CONTAGEM DO PERÍODO</div>
         <div style="font-size:.75rem;font-family:var(--R);font-weight:700;color:var(--tx);
@@ -1498,7 +1500,7 @@
           border:1px solid rgba(0,216,255,.3);background:rgba(0,216,255,.06);
           color:var(--cy);cursor:pointer;display:flex;flex-direction:column;
           align-items:center;gap:8px">
-          <span style="font-size:1.8rem;line-height:1">☁</span>
+          <span style="line-height:1"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg></span>
           <span style="font-family:var(--R);font-weight:700;font-size:.66rem;letter-spacing:.3px">EM NUVEM</span>
         </button>
         <button type="button" onclick="sessChooseQR()"
@@ -1506,7 +1508,7 @@
           border:1px solid rgba(167,139,250,.35);background:rgba(167,139,250,.08);
           color:#a78bfa;cursor:pointer;display:flex;flex-direction:column;
           align-items:center;gap:8px">
-          <span style="font-size:1.8rem;line-height:1">📷</span>
+          <span style="line-height:1"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.4A2 2 0 0 1 10.3 4.6h3.4a2 2 0 0 1 1.7 1L17 8h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="3.4"/></svg></span>
           <span style="font-family:var(--R);font-weight:700;font-size:.66rem;letter-spacing:.3px">QR CODE</span>
         </button>
         <button type="button" onclick="sessChooseFotoIA()"
@@ -1514,7 +1516,7 @@
           border:1px solid rgba(16,185,129,.35);background:rgba(16,185,129,.08);
           color:var(--gr);cursor:pointer;display:flex;flex-direction:column;
           align-items:center;gap:8px">
-          <span style="font-size:1.8rem;line-height:1">🧾</span>
+          <span style="line-height:1"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3V5a3 3 0 0 1 3-3z"/><path d="M8 8h6M8 12h6M8 16h4"/></svg></span>
           <span style="font-family:var(--R);font-weight:700;font-size:.6rem;letter-spacing:.2px;line-height:1.3">EXTRATOR<br>FOTO NF</span>
         </button>
       </div>
@@ -1551,7 +1553,7 @@
         <input id="inp-nf" type="text" placeholder="Ex: NF-001234">
 
         <div class="sep" style="margin:10px 0"></div>
-        <div class="ctit" style="margin-bottom:6px">📥 Ou importe a lista da NF (Excel)</div>
+        <div class="ctit" style="margin-bottom:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg> Ou importe a lista da NF (Excel)</div>
         <div style="font-size:.54rem;color:var(--mu2);margin-bottom:8px;line-height:1.5">
           Para fornecedores sem etiqueta com QR Code. Importe a planilha (.xlsx) com as
           referências e quantidades da nota — a contagem será feita às cegas, comparando o
@@ -1560,7 +1562,7 @@
         <input type="file" id="import-file-input" accept=".xlsx" style="display:none" onchange="handleImportFile(event)">
         <button class="btn" style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.35);color:#a78bfa"
                 onclick="document.getElementById('import-file-input').click()">
-          📥 Importar Planilha (.xlsx)
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg> Importar Planilha (.xlsx)
         </button>
         <div id="import-summary" style="display:none"></div>
 
@@ -1590,7 +1592,7 @@
 
           <input type="file" id="fia-input-gal" accept="image/*" style="display:none" onchange="fiaFileSelected(event)">
 
-          <button class="btn btn-gr" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()">🖼 Galeria</button>
+          <button class="btn btn-gr" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><rect x="3" y="4" width="18" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15l-5.5-5.5L9 16"/></svg> Galeria</button>
 
           <button class="btn btn-cy" id="fia-btn-processar" style="margin-top:4px" onclick="fiaProcessar()" disabled>
             Processar Nota
@@ -1610,9 +1612,9 @@
           <div class="ibox" style="border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.06);margin-bottom:10px">
             <span id="fia-error-msg" style="color:var(--re)">Não foi possível processar a nota.</span>
           </div>
-          <button class="btn btn-cy" style="margin-bottom:8px" onclick="fiaRetry()">🔄 Tentar Novamente</button>
-          <button class="btn btn-x" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()">🖼 Outra Imagem</button>
-          <button class="btn btn-gr" onclick="fiaGoManual()">✏ Inserir Manualmente</button>
+          <button class="btn btn-cy" style="margin-bottom:8px" onclick="fiaRetry()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M20 11A8 8 0 0 0 6.3 6.3M4 4v5h5"/><path d="M4 13a8 8 0 0 0 13.7 4.7M20 20v-5h-5"/></svg> Tentar Novamente</button>
+          <button class="btn btn-x" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><rect x="3" y="4" width="18" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15l-5.5-5.5L9 16"/></svg> Outra Imagem</button>
+          <button class="btn btn-gr" onclick="fiaGoManual()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/></svg> Inserir Manualmente</button>
         </div>
 
         <!-- Passo 4: revisão dos produtos extraídos -->
@@ -1725,7 +1727,7 @@
       <!-- Botão captura OCR (força leitura manual, modo OCR) -->
       <div id="ocr-capture-row" style="display:none;margin-bottom:8px">
         <button class="btn btn-wa" onclick="ocrCapture(false)" style="letter-spacing:1.5px">
-          📷 Forçar Leitura Agora
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M4 8h3l1.6-2.4A2 2 0 0 1 10.3 4.6h3.4a2 2 0 0 1 1.7 1L17 8h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="3.4"/></svg> Forçar Leitura Agora
         </button>
         <div id="ocr-raw-box"></div>
       </div>
@@ -2010,6 +2012,9 @@
                 onclick="toggleHistEdit()">Concluir Edição</button>
       </div>
     </div>
+    <input id="hdet-search" type="text" placeholder="Pesquisar referência ou descrição..." autocomplete="off"
+           autocorrect="off" autocapitalize="characters" oninput="renderHistDet()"
+           style="margin-bottom:8px">
     <div class="ilist" id="hdet-list"></div>
     <div style="margin-top:10px">
       <div class="card" id="hdet-exp" style="display:none">
@@ -2419,7 +2424,7 @@
         background:rgba(0,216,255,.05);border:1px solid rgba(0,216,255,.15);
         border-radius:7px;margin-bottom:10px">
         &#9670; <b style="color:var(--cy)">OCR Vision</b> — A câmera vai identificar a referência no texto da etiqueta.
-        Requer <b>Google Cloud Vision API</b> em Configurações ⚙.
+        Requer <b>Google Cloud Vision API</b> em Configurações <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.1 5.9l-1.7 1.7M7.6 16.4l-1.7 1.7M18.1 18.1l-1.7-1.7M7.6 7.6 5.9 5.9"/></svg>.
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <div style="font-size:.68rem;font-family:var(--R);font-weight:700;color:var(--tx)">Referências Cadastradas</div>
@@ -2453,7 +2458,7 @@
 
     <div class="row" style="margin-bottom:8px">
       <button class="btn btn-x"  onclick="fornEditClose()">Cancelar</button>
-      <button class="btn btn-gr" onclick="fornEditSave()">💾 Salvar Alterações</button>
+      <button class="btn btn-gr" onclick="fornEditSave()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M8 3v6h8V3M7 21v-7h10v7"/></svg> Salvar Alterações</button>
     </div>
     <button class="btn btn-re" style="font-size:.72rem;padding:9px" onclick="fornEditDelete()">Excluir Fornecedor</button>
   </div>
@@ -2462,6 +2467,59 @@
 <canvas id="cv" style="display:none"></canvas>
 
 <script>
+  /* ═══════════════════════════════════════════════
+     ÍCONES SVG (substituem emojis por ícones vetoriais
+     consistentes — herdam a cor do texto via currentColor,
+     então se adaptam automaticamente ao tema claro/escuro
+     e à cor de cada contexto).
+  ═══════════════════════════════════════════════ */
+  const ICO_PATHS = {
+    cloud:   '<path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/>',
+    gear:    '<circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.1 5.9l-1.7 1.7M7.6 16.4l-1.7 1.7M18.1 18.1l-1.7-1.7M7.6 7.6 5.9 5.9"/>',
+    pencil:  '<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/>',
+    tag:     '<path d="M12.6 2.7 21 11.1a2 2 0 0 1 0 2.8l-6.1 6.1a2 2 0 0 1-2.8 0L3.7 11.6a2 2 0 0 1-.6-1.4V4.7a2 2 0 0 1 2-2h5.5a2 2 0 0 1 1.4.6z"/><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"/>',
+    sun:     '<circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/>',
+    cloudSun:'<circle cx="7.5" cy="7" r="2.4"/><path d="M7.5 2.6V4M7.5 10v1.4M3.1 7H4.5M10.5 7h1.4M4.6 3.9l1 1M10.4 3.9l-1 1"/><path d="M11 20a3.5 3.5 0 1 0 .5-6.97A4.5 4.5 0 0 0 3.4 15a3 3 0 0 0 .1 5h7.5z"/>',
+    moon:    '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
+    box:     '<path d="M3 8l9-4.5L21 8l-9 4.5L3 8z"/><path d="M3 8v9l9 4.5V12.5M21 8v9l-9 4.5"/>',
+    hash:    '<path d="M8 3 6 21M18 3l-2 18M3 9h18M2 15h18"/>',
+    clock:   '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+    camera:  '<path d="M4 8h3l1.6-2.4A2 2 0 0 1 10.3 4.6h3.4a2 2 0 0 1 1.7 1L17 8h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="3.4"/>',
+    receipt: '<path d="M6 2h9l3 3v17l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3V5a3 3 0 0 1 3-3z"/><path d="M8 8h6M8 12h6M8 16h4"/>',
+    gallery: '<rect x="3" y="4" width="18" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15l-5.5-5.5L9 16"/>',
+    refresh: '<path d="M20 11A8 8 0 0 0 6.3 6.3M4 4v5h5"/><path d="M4 13a8 8 0 0 0 13.7 4.7M20 20v-5h-5"/>',
+    undo:    '<path d="M8 6 4 10l4 4"/><path d="M4 10h9a6 6 0 1 1 0 12H8"/>',
+    save:    '<path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M8 3v6h8V3M7 21v-7h10v7"/>',
+    download:'<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/>',
+    pin:     '<path d="M12 2a5 5 0 0 0-5 5c0 3.5 5 11 5 11s5-7.5 5-11a5 5 0 0 0-5-5z"/><circle cx="12" cy="7" r="2"/>',
+    robot:   '<rect x="4" y="8" width="16" height="11" rx="2"/><circle cx="9" cy="13.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r="1.3" fill="currentColor" stroke="none"/><path d="M12 8V4M9 4h6"/><path d="M2 12h2M20 12h2"/>',
+    check:   '<path d="M4 12.5 9.5 18 20 6"/>',
+    x:       '<path d="M5 5l14 14M19 5 5 19"/>',
+    warning: '<path d="M12 3 22 20H2z"/><path d="M12 9.5v5M12 17.5v.1"/>',
+    pause:   '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
+    play:    '<path d="M6 4l14 8-14 8z"/>'
+  };
+  function ico(name, opts){
+    opts = opts || {};
+    const size  = opts.size || 14;
+    const extra = opts.style ? (';'+opts.style) : '';
+    const path  = ICO_PATHS[name];
+    if(!path) return '';
+    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
+      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '+
+      'style="display:inline-block;vertical-align:-2px;flex-shrink:0'+extra+'">'+path+'</svg>';
+  }
+  // Badge numerado (1º/2º/3º) usado em rankings, substitui as medalhas
+  // emoji 🥇🥈🥉 por um círculo colorido consistente com o resto da UI.
+  function _rankBadge(i){
+    const colors = ['#d4af37','#a8a8a8','#b08d57'];
+    if(i>2) return '';
+    return '<svg width="15" height="15" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-3px;flex-shrink:0">'+
+      '<circle cx="12" cy="12" r="10" fill="'+colors[i]+'"/>'+
+      '<text x="12" y="16.5" font-size="12" font-family="Arial,sans-serif" font-weight="700" fill="#1a1a1a" text-anchor="middle">'+(i+1)+'</text>'+
+      '</svg>';
+  }
+
   /* ═══════════════════════════════════════════════
      AVISO AO FECHAR COM SESSÃO ATIVA
   ═══════════════════════════════════════════════ */
@@ -2654,6 +2712,11 @@
     try{ localStorage.setItem('rcb_active_id', id); }catch(e){}
     updateDash();
     navTo('pg-scan');
+    // navTo() só atualiza a tela quando a PÁGINA muda — mas se já
+    // estávamos em pg-scan (olhando outra contagem), ele não faz nada.
+    // Chama direto pra garantir que a troca sempre reflita na tela,
+    // independente de já estarmos nessa página ou não.
+    _refreshScanScreen();
   }
 
   // Descarta uma contagem pausada direto da lista, sem precisar abri-la.
@@ -2709,7 +2772,7 @@
         <div style="min-width:0">
           <div style="font-family:var(--R);font-weight:700;font-size:.72rem;color:var(--tx);
             white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-            ${h(s.forn||'—')}${s.nf?' · NF '+h(s.nf):''}${s.tipo==='importado'?' · 📥':''}
+            ${h(s.forn||'—')}${s.nf?' · NF '+h(s.nf):''}${s.tipo==='importado'?' · '+ico('download'):''}
           </div>
           <div style="font-size:.58rem;color:var(--mu2);margin-top:2px">
             ${qtdRefs} referência${qtdRefs!==1?'s':''} · ${qtdPc} pç · desde ${h(s.start||'')}
@@ -2735,6 +2798,33 @@
   /* ═══════════════════════════════════════════════
      NAVEGAÇÃO
   ═══════════════════════════════════════════════ */
+  // Atualiza a tela de Contagem (pg-scan) pra refletir a sessão de
+  // trabalho atual (session/items/grouped). Extraído do navTo() porque
+  // ele só reage quando a PÁGINA muda — mas trocar entre duas contagens
+  // já abertas (sessSwitchTo) continua na mesma página "pg-scan", só
+  // troca os dados por baixo, então precisa ser chamado explicitamente
+  // nesse caso pra tela não "travar" mostrando o estado antigo.
+  function _refreshScanScreen(){
+    if(session){
+      document.getElementById('card-sess').style.display   = 'none';
+      document.getElementById('card-cam').style.display    = session.tipo==='importado' ? 'none' : 'block';
+      document.getElementById('card-manual').style.display = session.tipo==='importado' ? 'none' : 'block';
+      document.getElementById('card-import-info').style.display = (session.tipo==='importado' && session.importMeta && session.importMeta.raw && session.importMeta.raw.length) ? 'block' : 'none';
+      document.getElementById('card-acoes').style.display  = 'block';
+      _applyFornBadges(session.forn);
+      document.getElementById('sess-tag').textContent      = session.forn.toUpperCase();
+      document.getElementById('m-forn').value              = session.forn;
+      if(session.tipo==='importado'){ renderImportInfo(); }
+      renderScanList();
+    } else {
+      _renderSessFornChips();
+      // Garante que a tela de Nova Sessão sempre volte a mostrar as duas
+      // opções (Em Nuvem / QR Code), mesmo que a visita anterior tenha
+      // ficado parada no formulário do QR Code.
+      sessResetEntry();
+    }
+  }
+
   function navTo(id){
     const cur = pageStack[pageStack.length-1];
     if(cur===id) return;
@@ -2749,25 +2839,7 @@
     if(id==='pg-forn')     { fornTabShow('cadastrados'); _updateVisionStatus(); }
     if(id==='pg-config')   { cfgPageOpen(); }
     if(id==='pg-stats')    { _updateDashAnalytics(); }
-    if(id==='pg-scan' && session){
-      document.getElementById('card-sess').style.display   = 'none';
-      document.getElementById('card-cam').style.display    = session.tipo==='importado' ? 'none' : 'block';
-      document.getElementById('card-manual').style.display = session.tipo==='importado' ? 'none' : 'block';
-      document.getElementById('card-import-info').style.display = (session.tipo==='importado' && session.importMeta && session.importMeta.raw && session.importMeta.raw.length) ? 'block' : 'none';
-      document.getElementById('card-acoes').style.display  = 'block';
-      _applyFornBadges(session.forn);
-      document.getElementById('sess-tag').textContent      = session.forn.toUpperCase();
-      document.getElementById('m-forn').value              = session.forn;
-      if(session.tipo==='importado'){ renderImportInfo(); }
-      renderScanList();
-    }
-    if(id==='pg-scan' && !session){
-      _renderSessFornChips();
-      // Garante que a tela de Nova Sessão sempre volte a mostrar as duas
-      // opções (Em Nuvem / QR Code), mesmo que a visita anterior tenha
-      // ficado parada no formulário do QR Code.
-      sessResetEntry();
-    }
+    if(id==='pg-scan')     { _refreshScanScreen(); }
   }
 
   function navBack(){
@@ -2825,7 +2897,7 @@
     const scanIco = document.getElementById('dbtn-scan-ico');
     if(session){
       dot.classList.add('live');
-      name.textContent = session.forn + (session.nf?' · '+session.nf:'') + (session.tipo==='importado'?' · 📥 Importada':'');
+      name.innerHTML = h(session.forn) + (session.nf?' · '+h(session.nf):'') + (session.tipo==='importado'?' · '+ico('download')+' Importada':'');
       det.textContent  = 'Iniciada '+session.start+' · '+items.length+' scan'+(items.length!==1?'s':'')+'  →  Ver lista';
       if(arrow){ arrow.style.color='var(--gr)'; arrow.textContent='›'; }
       if(scanLbl) scanLbl.textContent = 'Continuar';
@@ -4056,7 +4128,7 @@
 
     document.getElementById('inp-forn').value = forn;
     document.getElementById('inp-nf').value   = nf;
-    _applyImportPendingUI('📸 <b style="color:var(--tx)">Extraído por foto (IA)</b>');
+    _applyImportPendingUI(ico('camera')+' <b style="color:var(--tx)">Extraído por foto (IA)</b>');
     sessStart();
 
     if(duplicadas>0) toast(`${duplicadas} referência(s) repetida(s) foram somadas`);
@@ -4352,7 +4424,7 @@
         throw new Error('Não encontrei colunas de Referência/Quantidade na planilha. Verifique os cabeçalhos (ex: "Referência", "Quantidade").');
       }
       importPending = { expected: product.expected, order: product.order, meta: notaMeta, fileName: file.name };
-      _applyImportPendingUI(`📥 <b style="color:var(--tx)">${h_(file.name)}</b>`);
+      _applyImportPendingUI(ico('download')+` <b style="color:var(--tx)">${h_(file.name)}</b>`);
       toast('Planilha importada: '+product.order.length+' referências');
     }catch(err){
       console.error('Import XLSX:', err);
@@ -4551,7 +4623,7 @@
     };
     cloudModalClose();
     navTo('pg-scan');
-    _applyImportPendingUI('☁ <b style="color:var(--tx)">Recebido da nuvem</b>');
+    _applyImportPendingUI(ico('cloud')+' <b style="color:var(--tx)">Recebido da nuvem</b>');
     // Fluxo "Em Nuvem": fornecedor e NF já vêm preenchidos pelo item da
     // nuvem, então a sessão inicia direto, sem passar pelo formulário
     // manual (que só é usado no fluxo "QR Code").
@@ -4577,6 +4649,23 @@
     if(!exp) return counted>0 ? 'extra' : null;
     if(!g || counted===0) return 'pend';
     return counted===exp.qty ? 'conv' : 'div';
+  }
+
+  /* Unidade de medida de uma referência, quando a contagem veio de uma
+     planilha importada (nuvem/Excel) que já trouxe essa informação
+     (ex.: "MH", "CX", "UN"). Fora desse caso, ou se a planilha não
+     informou, cai de volta para "pç" (peças), como sempre foi. */
+  function _unidLabel(ref){
+    try{
+      if(session && session.tipo==='importado' && session.expected){
+        const exp = session.expected[ref];
+        if(exp && exp.unidade){
+          const u = String(exp.unidade).trim();
+          if(u) return u;
+        }
+      }
+    }catch(e){}
+    return 'pç';
   }
   function statusBadgeHTML(st){
     const map = {pend:'Pendente', conv:'Convergente', div:'Divergente', extra:'Fora da lista'};
@@ -4665,7 +4754,7 @@
       <div class="obs-panel" style="padding:10px;background:var(--bg);border:1px solid var(--cy);
         border-top:none;border-radius:0 0 8px 8px">
         <label style="margin-bottom:3px;display:flex;align-items:center;justify-content:space-between">
-          <span>Múltiplo (peças por volume)</span>
+          <span>Múltiplo (${h_(_unidLabel(ref))} por volume)</span>
           <span class="tgl-wrap" onclick="blindPinToggle('${ea(ref)}')" title="Fixar múltiplo para esta referência">
             <span class="tgl-lbl">Fixar</span>
             <span class="tgl ${pinned?'on':''}"></span>
@@ -4697,7 +4786,7 @@
     if(contado <= 0){
       statusHTML = `<div style="font-size:.58rem;color:var(--mu2);margin-bottom:8px">Conte a quantidade primeiro — o lote é informado na hora de confirmar.</div>`;
     } else if(alocado > 0){
-      statusHTML = `<div style="font-size:.6rem;color:var(--cy);font-weight:600;margin-bottom:8px">🏷 ${alocado} de ${contado} pç com lote registrado</div>`;
+      statusHTML = `<div style="font-size:.6rem;color:var(--cy);font-weight:600;margin-bottom:8px">${ico('tag')} ${alocado} de ${contado} pç com lote registrado</div>`;
     } else {
       statusHTML = `<div style="font-size:.58rem;color:var(--mu2);margin-bottom:8px">Nenhum lote registrado ainda (opcional).</div>`;
     }
@@ -4835,11 +4924,11 @@
   function blindStartCount(ref){
     const multEl = document.getElementById('blind-panel-mult');
     const mult = multEl ? (parseInt(multEl.value)||0) : 0;
-    if(!mult || mult<1){ toast('Informe o múltiplo (peças por volume)',true); return; }
+    if(!mult || mult<1){ toast('Informe o múltiplo ('+_unidLabel(ref)+' por volume)',true); return; }
     const exp = session.expected[ref];
     pending = {
       ref, qty: mult, desc: (exp&&exp.desc)||'', forn: session.forn,
-      raw: 'Contagem às cegas · múltiplo '+mult+' pç/vol',
+      raw: 'Contagem às cegas · múltiplo '+mult+' '+_unidLabel(ref)+'/vol',
       time: new Date().toLocaleTimeString('pt-BR'),
       blind: true,
     };
@@ -4859,7 +4948,7 @@
     return `
       <div class="obs-panel" style="padding:10px;background:var(--bg);border:1px solid var(--wa);
         border-top:none;border-radius:0 0 8px 8px">
-        <label style="margin-bottom:3px">Quantidade contada</label>
+        <label style="margin-bottom:3px">Quantidade contada (${h_(_unidLabel(ref))})</label>
         <input id="blind-edit-qty" type="number" min="0" value="${qty}" style="margin-bottom:10px">
         <label style="margin-bottom:3px">Observação</label>
         <input id="blind-edit-obs" type="text" placeholder="Ex: caixa amassada, verificar NF" value="${h_(obs)}"
@@ -4890,7 +4979,7 @@
     grouped[ref].lastTs = Date.now();
     sessStateSave();
     _blindEditRef = null;
-    toast(old===newQty ? 'Observação salva' : `${ref} ajustado: ${old} → ${newQty} pç`);
+    toast(old===newQty ? 'Observação salva' : `${ref} ajustado: ${old} → ${newQty} ${_unidLabel(ref)}`);
     try{ updateDash(); }catch(e){ console.error('updateDash falhou:', e); }
     try{ renderBlindStatus(); }catch(e){ console.error('renderBlindStatus falhou:', e); }
   }
@@ -4991,32 +5080,37 @@
 
       const info=document.createElement('div'); info.style.cssText='flex:1;min-width:0';
       const refEl=document.createElement('div'); refEl.className='iref'; refEl.textContent=ref;
-      let metaText = exp && exp.desc ? exp.desc : '';
-      if(pinnedMult) metaText += ' · 📌 '+pinnedMult+'/vol';
+      const metaText = exp && exp.desc ? exp.desc : '';
       info.append(refEl);
       if(metaText){
         const meta=document.createElement('div'); meta.className='imeta';
         meta.textContent = metaText;
         info.append(meta);
       }
+      if(pinnedMult){
+        const pinEl=document.createElement('div');
+        pinEl.className='imeta';
+        pinEl.innerHTML = ico('pin')+' '+pinnedMult+'/vol';
+        info.append(pinEl);
+      }
       if(g && g.obs){
         const obsEl=document.createElement('div');
         obsEl.style.cssText='font-size:.55rem;color:var(--wa);margin-top:2px;font-style:italic';
-        obsEl.textContent='📝 '+g.obs;
+        obsEl.innerHTML=ico('pencil')+' '+h_(g.obs);
         info.appendChild(obsEl);
       }
       const hist = session.blindHistory && session.blindHistory[ref];
       if(isFlagged && hist && hist.length){
         const histEl=document.createElement('div');
         histEl.style.cssText='font-size:.55rem;color:var(--re);margin-top:2px;font-weight:600';
-        histEl.textContent='↺ Recontagem · anterior'+(hist.length>1?'es':'')+': '+hist.map(h=>h.qty+' pç').join(', ');
+        histEl.innerHTML=ico('undo')+' Recontagem · anterior'+(hist.length>1?'es':'')+': '+hist.map(h=>h.qty+' '+_unidLabel(ref)).join(', ');
         info.appendChild(histEl);
       }
       if(session.rastrearLoteValidade && isCounted && g.lotes && g.lotes.length){
         const alocado = _loteAlocado(ref);
         const loteEl=document.createElement('div');
         loteEl.style.cssText='font-size:.55rem;color:var(--cy);margin-top:2px;font-weight:600';
-        loteEl.textContent='🏷 '+g.lotes.length+' lote'+(g.lotes.length>1?'s':'')+' · '+alocado+' pç registrada'+(alocado!==1?'s':'');
+        loteEl.innerHTML=ico('tag')+' '+g.lotes.length+' lote'+(g.lotes.length>1?'s':'')+' · '+alocado+' '+_unidLabel(ref)+' registrada'+(alocado!==1?'s':'');
         info.appendChild(loteEl);
       }
 
@@ -5024,10 +5118,10 @@
       const qtyRow=document.createElement('div'); qtyRow.style.cssText='display:flex;align-items:center;gap:2px;justify-content:flex-end';
       const qtyEl=document.createElement('div'); qtyEl.className='iqty';
       qtyEl.style.color = isExtra ? 'var(--cy)' : (stillDiv ? 'var(--re)' : (isCounted ? 'var(--gr)' : 'var(--mu2)'));
-      qtyEl.textContent = (g?g.qty:0)+' pç';
+      qtyEl.textContent = (g?g.qty:0)+' '+_unidLabel(ref);
       const editBtn=document.createElement('button');
       editBtn.className='idel';
-      editBtn.textContent='✎';
+      editBtn.innerHTML=ico('pencil');
       editBtn.style.cssText='color:var(--wa);font-size:.85rem';
       editBtn.title='Editar contagem / observação';
       editBtn.onclick=(ev)=>{ ev.stopPropagation(); blindEditToggle(ref); };
@@ -5205,7 +5299,7 @@
   function _lotesResumoHTML(lotes){
     if(!lotes || !lotes.length) return '';
     const linhas = lotes.map(l => 'Lote '+h_(l.lote)+' · Val '+h_(l.validade)+' · '+(Number(l.quantidade)||0)+' pç').join('<br>');
-    return `<div style="font-size:.56rem;color:var(--cy);margin-top:3px">🏷 ${linhas}</div>`;
+    return `<div style="font-size:.56rem;color:var(--cy);margin-top:3px">${ico('tag')} ${linhas}</div>`;
   }
 
   function _resumoRowHTML(r, kind){
@@ -5253,7 +5347,7 @@
 
     if(data.lotesAll && data.lotesAll.length){
       html += `<div style="margin-top:12px;font-family:var(--R);font-weight:700;font-size:.6rem;
-        letter-spacing:1px;color:var(--cy);text-transform:uppercase">🏷 Lotes Registrados (${data.lotesAll.length})</div>`;
+        letter-spacing:1px;color:var(--cy);text-transform:uppercase">${ico('tag')} Lotes Registrados (${data.lotesAll.length})</div>`;
       html += data.lotesAll.map(item => `
         <div class="ic" style="margin-top:4px;flex-wrap:wrap;gap:4px">
           <div style="flex:1;min-width:0">
@@ -6168,15 +6262,16 @@
   }
 
   function showResult(item){
+    const un = _unidLabel(item.ref);
     document.getElementById('r-ref').textContent  = item.ref;
-    document.getElementById('r-qty').textContent  = item.qty + ' pç/vol';
+    document.getElementById('r-qty').textContent  = item.qty + ' '+un+'/vol';
     document.getElementById('r-forn').textContent = item.forn;
     document.getElementById('r-raw').textContent  = item.raw.length>55?item.raw.slice(0,55)+'…':item.raw;
     document.getElementById('r-vols').value = 1;
     // Inicializar fórmula visual com valores do item atual
     const fPqv = document.getElementById('r-formula-pqv');
     const fVols = document.getElementById('r-formula-vols');
-    if(fPqv)  fPqv.textContent  = item.qty + ' pç/vol';
+    if(fPqv)  fPqv.textContent  = item.qty + ' '+un+'/vol';
     if(fVols) fVols.textContent = '1 vol';
 
     recalcTotal();
@@ -6187,7 +6282,7 @@
     if(ex){
       document.getElementById('r-acc').textContent=ex.qty;
       ar.style.display='flex';
-      ab.textContent=`Ref já possui ${ex.scans} leitura${ex.scans>1?'s':''} · ${ex.qty} pç acumuladas. Será somado.`;
+      ab.textContent=`Ref já possui ${ex.scans} leitura${ex.scans>1?'s':''} · ${ex.qty} ${un} acumuladas. Será somado.`;
       ab.classList.add('on');
     }else{ar.style.display='none';ab.classList.remove('on');}
 
@@ -6225,7 +6320,7 @@
             lotesExistentes.map((l,idx)=>
               `<span onclick="selecionarLoteExistente(${idx})" style="cursor:pointer;background:var(--s3);
                 border:1px solid var(--bd);border-radius:20px;padding:5px 10px;font-size:.6rem;color:var(--tx)">
-                🏷 ${h_(l.lote)} · ${Number(l.quantidade)||0} pç</span>`
+                ${ico('tag')} ${h_(l.lote)} · ${Number(l.quantidade)||0} pç</span>`
             ).join('')+
             '</div>';
         } else {
@@ -6258,16 +6353,17 @@
   function recalcTotal(){
     if(!pending) return;
     try{
+      const un    = _unidLabel(pending.ref);
       const vols  = Math.max(1, parseInt(document.getElementById('r-vols').value)||1);
       const total = pending.qty * vols;
 
-      // Fórmula visual pç/vol × vols = total
+      // Fórmula visual un/vol × vols = total
       const fPqv  = document.getElementById('r-formula-pqv');
       const fVols = document.getElementById('r-formula-vols');
       const rt    = document.getElementById('r-total');
-      if(fPqv)  fPqv.textContent  = pending.qty + ' pç/vol';
+      if(fPqv)  fPqv.textContent  = pending.qty + ' '+un+'/vol';
       if(fVols) fVols.textContent = vols + (vols===1 ? ' vol' : ' vol');
-      if(rt)    rt.textContent    = total + ' pç';
+      if(rt)    rt.textContent    = total + ' '+un;
 
       // Acumulado
       const ex = grouped[pending.ref];
@@ -6276,10 +6372,10 @@
       const ar = document.getElementById('r-acc-row');
       if(ex){
         const novoTotal = ex.qty + total;
-        if(ra) ra.textContent = ex.qty + ' pç';
+        if(ra) ra.textContent = ex.qty + ' '+un;
         if(ar) ar.style.display = 'flex';
         if(ab){
-          ab.textContent = `Ref já possui ${ex.scans} leitura${ex.scans>1?'s':''} · ${ex.qty} pç → novo total: ${novoTotal} pç`;
+          ab.textContent = `Ref já possui ${ex.scans} leitura${ex.scans>1?'s':''} · ${ex.qty} ${un} → novo total: ${novoTotal} ${un}`;
           ab.classList.add('on');
         }
       } else {
@@ -6532,7 +6628,7 @@
       if(r.obs){
         const obsEl=document.createElement('div');
         obsEl.style.cssText='font-size:.55rem;color:var(--wa);margin-top:2px;font-style:italic';
-        obsEl.textContent='📝 '+r.obs;
+        obsEl.innerHTML=ico('pencil')+' '+h_(r.obs);
         info.append(ref, meta, obsEl);
       } else {
         info.append(ref, meta);
@@ -6553,7 +6649,7 @@
       // Botão observação
       const obsBtn=document.createElement('button');
       obsBtn.className='idel';
-      obsBtn.textContent='📝';
+      obsBtn.innerHTML=ico('pencil');
       obsBtn.style.cssText='font-size:.85rem;opacity:'+(r.obs?'1':'.45');
       obsBtn.title='Adicionar observação';
       obsBtn.onclick=()=>openObsInline(r.ref, wrap);
@@ -6561,7 +6657,7 @@
       // Botão editar quantidade
       const editBtn=document.createElement('button');
       editBtn.className='idel';
-      editBtn.textContent='✎';
+      editBtn.innerHTML=ico('pencil');
       editBtn.style.cssText='color:var(--cy);font-size:.9rem';
       editBtn.onclick=()=>openEdit(r.ref);
 
@@ -6870,12 +6966,14 @@
     document.getElementById('hdet-title').textContent=hs.forn;
     document.getElementById('hdet-info').innerHTML=
       `Fornecedor: <b style="color:var(--cy)">${h_(hs.forn)}</b>${hs.nf?` · NF: ${h_(hs.nf)}`:''}`+
-      `${hs.origem==='foto_ia'?' · <span style="color:var(--gr)">📸 Foto + IA</span>':(hs.tipo==='importado'?' · <span style="color:#a78bfa">📥 Importada</span>':'')}<br>`+
+      `${hs.origem==='foto_ia'?' · <span style="color:var(--gr)">'+ico('camera')+' Foto + IA</span>':(hs.tipo==='importado'?' · <span style="color:#a78bfa">'+ico('download')+' Importada</span>':'')}<br>`+
       `Início: ${hs.start}  ·  Fim: ${hs.end||'—'}`;
 
     document.getElementById('btn-hdet-edit').style.display='block';
     document.getElementById('btn-hdet-edit').textContent='Editar';
     document.getElementById('hdet-edit-bar').style.display='none';
+    const searchEl = document.getElementById('hdet-search');
+    if(searchEl) searchEl.value='';
 
     renderHistDet();
     navTo('pg-hist-det');
@@ -6906,6 +7004,14 @@
 
     const listEl=document.getElementById('hdet-list');
     listEl.innerHTML='';
+
+    // Filtro de pesquisa (referência ou descrição) — só afeta a lista
+    // exibida; totais/estatísticas do topo continuam sobre tudo.
+    const searchEl = document.getElementById('hdet-search');
+    const searchTerm = searchEl ? searchEl.value.trim().toUpperCase() : '';
+    const visibleRows = searchTerm
+      ? rows.filter(r => (r.ref||'').toUpperCase().includes(searchTerm) || (r.desc||'').toUpperCase().includes(searchTerm))
+      : rows;
 
     // Totais de volumes da contagem
     const totalVols = (viewHist.items||[]).reduce((s,it)=>s+(it.vols||1),0);
@@ -6946,7 +7052,14 @@
       }
     }
 
-    rows.forEach(r=>{
+    if(searchTerm && !visibleRows.length){
+      const empty=document.createElement('div');
+      empty.style.cssText='text-align:center;color:var(--mu2);font-size:.65rem;padding:14px 0';
+      empty.textContent='Nenhuma referência encontrada para "'+searchTerm+'"';
+      listEl.appendChild(empty);
+    }
+
+    visibleRows.forEach(r=>{
       const st = isImport ? (computeStatus(viewHist.expected, viewHist.grouped, r.ref)||'pend') : null;
       const wrap=document.createElement('div');
       wrap.style.cssText='margin-bottom:6px';
@@ -6977,7 +7090,7 @@
       if(r.obs){
         const obsEl=document.createElement('div');
         obsEl.style.cssText='font-size:.55rem;color:var(--wa);margin-top:2px;font-style:italic';
-        obsEl.textContent='📝 '+r.obs;
+        obsEl.innerHTML=ico('pencil')+' '+h_(r.obs);
         info.append(ref, meta, obsEl);
       } else {
         info.append(ref, meta);
@@ -6987,7 +7100,7 @@
       if(r.lotes && r.lotes.length){
         const lotesEl=document.createElement('div');
         lotesEl.style.cssText='font-size:.55rem;color:var(--cy);margin-top:2px;line-height:1.6';
-        lotesEl.innerHTML = '🏷 ' + r.lotes.map(l =>
+        lotesEl.innerHTML = ico('tag') + ' ' + r.lotes.map(l =>
           `Lote ${h_(l.lote)}${l.validade?' · Val '+h_(l.validade):''} · ${Number(l.quantidade)||0} pç`
         ).join('<br>');
         info.append(lotesEl);
@@ -6997,7 +7110,7 @@
       if(r.multiplos && r.multiplos.length){
         const multEl=document.createElement('div');
         multEl.style.cssText='font-size:.55rem;color:var(--mu2);margin-top:2px;line-height:1.6';
-        multEl.innerHTML = '📦 ' + r.multiplos.map(m =>
+        multEl.innerHTML = ico('box') + ' ' + r.multiplos.map(m =>
           `${m.qtyPerVol} pç/vol × ${m.vols} vol = ${m.qty} pç`
         ).join('<br>');
         info.append(multEl);
@@ -7402,7 +7515,7 @@
   /* ── Analisar etiqueta ── */
   async function aiAnalyze(){
     const key  = (typeof EMBEDDED_OPENAI_KEY==='string'&&EMBEDDED_OPENAI_KEY.trim().length>10?EMBEDDED_OPENAI_KEY.trim():(localStorage.getItem('rcb_openai_key')||''));
-    if(!key){ toast('Configure a chave OpenAI em Configurações ⚙',true); return; }
+    if(!key){ toast('Configure a chave OpenAI em Configurações',true); return; }
 
     const raw   = document.getElementById('ai-label-raw').value.trim();
     const forn  = document.getElementById('ai-forn-nome').value.trim();
@@ -7512,7 +7625,7 @@
       card.style.display = 'none';
     } finally {
       document.getElementById('ai-analyze-btn').disabled = false;
-      document.getElementById('ai-analyze-btn').textContent = '🤖 Analisar com IA';
+      document.getElementById('ai-analyze-btn').innerHTML = ico('robot') + ' Analisar com IA';
     }
   }
 
@@ -7845,7 +7958,7 @@
   async function aiChatSend(){
     if(_aiChatBusy) return;
     const key = (typeof EMBEDDED_OPENAI_KEY==='string'&&EMBEDDED_OPENAI_KEY.trim().length>10?EMBEDDED_OPENAI_KEY.trim():(localStorage.getItem('rcb_openai_key')||''));
-    if(!key){ toast('Configure a chave OpenAI em Configurações ⚙',true); return; }
+    if(!key){ toast('Configure a chave OpenAI em Configurações',true); return; }
 
     const inp = document.getElementById('ai-chat-input');
     const msg = inp.value.trim();
@@ -7958,7 +8071,7 @@
         const saveEl = document.createElement('div');
         saveEl.className = 'ai-msg sys';
         saveEl.style.cssText = 'align-self:stretch;text-align:center;cursor:pointer;background:rgba(0,245,160,.14);border-color:var(--gr);font-size:.64rem;padding:11px';
-        saveEl.innerHTML = '💾 Tudo certo! Toque aqui para <b style="color:var(--gr)">Salvar Fornecedor</b>';
+        saveEl.innerHTML = ico('save') + ' Tudo certo! Toque aqui para <b style="color:var(--gr)">Salvar Fornecedor</b>';
         saveEl.onclick = () => fornSave();
         box.appendChild(saveEl);
         setTimeout(()=>{ box.scrollTop = box.scrollHeight; }, 60);
@@ -8270,7 +8383,7 @@
     if(_dashFiltroAtivo === 'tudo')  return 'EXIBINDO TODOS OS REGISTROS';
     if(_dashFiltroAtivo === 'dia')   return `HOJE — ${now.toLocaleDateString('pt-BR')}`;
     if(_dashFiltroAtivo === 'turno'){
-      const nomes = {manha:'☀️ MANHÃ (06h–14h)', tarde:'🌤 TARDE (14h–22h)', noite:'🌙 NOITE (22h–06h)'};
+      const nomes = {manha:ico('sun')+' MANHÃ (06h–14h)', tarde:ico('cloudSun')+' TARDE (14h–22h)', noite:ico('moon')+' NOITE (22h–06h)'};
       return 'TURNO ' + (nomes[_dashTurnoAtivo] || '');
     }
     if(_dashFiltroAtivo === 'range' && _dashRangeDe && _dashRangeAte){
@@ -8285,7 +8398,7 @@
 
     // Label do filtro
     const labelEl = document.getElementById('dash-filtro-label');
-    if(labelEl) labelEl.textContent = _labelFiltro();
+    if(labelEl) labelEl.innerHTML = _labelFiltro();
 
     // ── Calcular totais ──────────────────────────────────────
     let totalVols = 0, totalPecas = 0;
@@ -8345,7 +8458,7 @@
         fl.innerHTML = sorted.map(([nome,d],i)=>{
           const pct = Math.round((d.vols/maxV)*100);
           const cor = CORES[i%CORES.length];
-          const medal = ['🥇','🥈','🥉','',''][i]||'';
+          const medal = _rankBadge(i);
           return `<div style="margin-bottom:${i<sorted.length-1?'9':'0'}px">
             <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
               <div style="font-size:.65rem;font-family:var(--R);font-weight:700;color:var(--tx)">${medal} ${nome}</div>
