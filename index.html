@@ -4655,14 +4655,17 @@
      planilha importada (nuvem/Excel) que já trouxe essa informação
      (ex.: "MH", "CX", "UN"). Fora desse caso, ou se a planilha não
      informou, cai de volta para "pç" (peças), como sempre foi. */
-  function _unidLabel(ref){
+  function _unidLabel(ref, expectedOverride){
     try{
-      if(session && session.tipo==='importado' && session.expected){
-        const exp = session.expected[ref];
-        if(exp && exp.unidade){
-          const u = String(exp.unidade).trim();
-          if(u) return u;
-        }
+      // Prioriza um mapa "expected" explícito (usado ao visualizar uma
+      // contagem finalizada no Histórico, onde não há — ou pode haver
+      // outra — sessão ativa) e cai para a sessão em andamento como
+      // antes, mantendo compatibilidade com todos os outros usos.
+      const exp = (expectedOverride && expectedOverride[ref]) ||
+        (session && session.tipo==='importado' && session.expected && session.expected[ref]);
+      if(exp && exp.unidade){
+        const u = String(exp.unidade).trim();
+        if(u) return u;
       }
     }catch(e){}
     return 'pç';
@@ -5100,7 +5103,7 @@
         info.appendChild(obsEl);
       }
       const hist = session.blindHistory && session.blindHistory[ref];
-      if(isFlagged && hist && hist.length){
+      if(hist && hist.length){
         const histEl=document.createElement('div');
         histEl.style.cssText='font-size:.55rem;color:var(--re);margin-top:2px;font-weight:600';
         histEl.innerHTML=ico('undo')+' Recontagem · anterior'+(hist.length>1?'es':'')+': '+hist.map(h=>h.qty+' '+_unidLabel(ref)).join(', ');
@@ -7094,6 +7097,17 @@
         info.append(ref, meta, obsEl);
       } else {
         info.append(ref, meta);
+      }
+
+      // Histórico de recontagem (refs que foram recontadas — ver
+      // resumoRetomar) — mantido e exibido mesmo após a contagem ser
+      // finalizada, pra nunca "sumir" da vista.
+      const rhist = viewHist.blindHistory && viewHist.blindHistory[r.ref];
+      if(rhist && rhist.length){
+        const histEl=document.createElement('div');
+        histEl.style.cssText='font-size:.55rem;color:var(--re);margin-top:2px;font-weight:600';
+        histEl.innerHTML=ico('undo')+' Recontagem · anterior'+(rhist.length>1?'es':'')+': '+rhist.map(h=>h.qty+' '+_unidLabel(r.ref, viewHist.expected)).join(', ');
+        info.appendChild(histEl);
       }
 
       // Lote(s)/Validade (se existir) — cada lote com sua quantidade
