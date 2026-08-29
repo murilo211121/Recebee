@@ -5452,6 +5452,120 @@
     sessSave();
   }
 
+  /* ═══════════════════════════════════════════════════════════════
+     NUVEM — avisa o site de Conferência de Nota Fiscal (tela Painel)
+     quando uma contagem vinda de lá é finalizada aqui. A ligação entre
+     os dois registros é feita pelo campo "pendenteDocId", gravado pelo
+     site de conferência dentro do próprio documento de
+     "historico_envios" no momento do envio (é o id do documento em
+     "pendentes" — o mesmo que chega aqui como session.cloudDocId).
+     Só existe o que notificar quando a contagem veio da nuvem
+     (session.cloudDocId preenchido); contagens via QR Code ou Excel não
+     têm nada a atualizar no Painel.
+  ════════════════════════════════════════════════════════════════ */
+  const HISTORICO_ENVIOS_COLLECTION = 'historico_envios';
+
+  // Monta, a partir da entrada já salva no Histórico local (mesmo
+  // formato de sessSave/histAdd), o mesmo conjunto de informações
+  // exibido na tela de Detalhe do Histórico (renderHistDet) — pra que o
+  // Painel do site de conferência possa mostrar exatamente o que se vê
+  // aqui quando se abre uma contagem finalizada.
+  function _buildResultadoParaPainel(entry){
+    const isImport = entry.tipo === 'importado';
+    const grouped  = entry.grouped  || {};
+    const expected = entry.expected || {};
+    const order    = entry.expectedOrder || Object.keys(expected);
+
+    let rows;
+    if(isImport){
+      const extras = Object.keys(grouped).filter(r => !expected[r]);
+      rows = [...order, ...extras].map(ref => {
+        const g   = grouped[ref];
+        const exp = expected[ref];
+        const base = g ? {...g} : {ref, desc:(exp&&exp.desc)||'', qty:0, vols:0, scans:0};
+        base.ref = ref;
+        base.status = computeStatus(expected, grouped, ref) || 'pend';
+        const rhist = entry.blindHistory && entry.blindHistory[ref];
+        base.recontagens = rhist ? rhist.map(h => ({ qty: h.qty||0 })) : [];
+        return base;
+      });
+    } else {
+      rows = Object.values(grouped).map(g => ({...g, status:null, recontagens:[]}));
+    }
+    rows.sort((a,b) => (b.qty||0) - (a.qty||0));
+
+    let conv=0, div=0, pend=0, extra=0;
+    if(isImport){
+      rows.forEach(r => {
+        if(r.status==='conv') conv++;
+        else if(r.status==='div') div++;
+        else if(r.status==='pend') pend++;
+        else if(r.status==='extra') extra++;
+      });
+    }
+
+    const totalVolumes = (entry.items||[]).reduce((s,it) => s+(it.vols||1), 0);
+
+    return {
+      scans: entry.scans || 0,
+      start: entry.start || '',
+      end:   entry.end   || '',
+      tipo:  entry.tipo  || 'padrao',
+      origem: entry.origem || null,
+      totalVolumes,
+      reconResumo: isImport ? {conv, div, pend, extra} : null,
+      rows: rows.map(r => ({
+        ref: r.ref,
+        desc: r.desc || '',
+        qty: r.qty || 0,
+        vols: r.vols || 0,
+        scans: r.scans || 0,
+        obs: r.obs || '',
+        lotes: r.lotes || [],
+        status: r.status || null,
+        recontagens: r.recontagens || [],
+      })),
+    };
+  }
+
+  // Best-effort: se essa contagem veio do site de conferência (tem
+  // cloudDocId), procura o registro correspondente em
+  // "historico_envios" e o marca como finalizado, gravando o resultado
+  // completo. Se falhar (sem internet, doc não encontrado etc.), não
+  // interrompe o fluxo local — a contagem já foi salva no Histórico
+  // deste aparelho, que é o que importa de verdade; o Painel só deixa
+  // de mostrar "Finalizada" até a próxima tentativa.
+  async function _notificarFinalizacaoNoPainel(cloudDocId, entry){
+    if(!cloudDocId) return;
+    if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+    const usuario = firebase.auth().currentUser;
+    if(!usuario) return; // sem login não há como passar nas regras de segurança (nem faz sentido tentar)
+    try{
+      const db = firebase.firestore();
+      // O filtro por "criadoPorUid" é obrigatório aqui — além de reforçar
+      // o isolamento entre contas, é o que permite essa consulta passar
+      // pelas regras de segurança do Firestore (que só liberam a leitura
+      // de "historico_envios" quando a própria query já vem restrita a
+      // documentos do dono logado). Mesmo padrão já usado na consulta de
+      // "pendentes" (ver cloudInit()).
+      const snap = await db.collection(HISTORICO_ENVIOS_COLLECTION)
+        .where('criadoPorUid', '==', usuario.uid)
+        .where('pendenteDocId', '==', cloudDocId)
+        .limit(1)
+        .get();
+      if(snap.empty) return;
+      await snap.docs[0].ref.update({
+        status: 'finalizada',
+        finalizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+        finalizadoPorUid: usuario.uid,
+        finalizadoPorEmail: usuario.email || null,
+        resultado: _buildResultadoParaPainel(entry),
+      });
+    }catch(err){
+      console.error('Falha ao notificar finalização da contagem no Painel:', err);
+    }
+  }
+
   function sessSave(){
     if(!session){ toast('Nenhuma sessão ativa',true); return; }
     if(!Object.keys(grouped).length){ toast('Nenhum item para salvar',true); return; }
@@ -5479,7 +5593,13 @@
     // Histórico, o item é removido da coleção "pendentes" da nuvem —
     // enquanto isso, pausar/voltar/recarregar mantinha o item lá,
     // disponível pra retomar.
-    if(session.cloudDocId) _cloudConsume(session.cloudDocId);
+    if(session.cloudDocId){
+      _cloudConsume(session.cloudDocId);
+      // Avisa o site de conferência (tela Painel) que essa contagem foi
+      // finalizada, com o resultado completo — não bloqueia o
+      // salvamento local, que já aconteceu logo acima.
+      _notificarFinalizacaoNoPainel(session.cloudDocId, entry);
+    }
 
     camStop();
     const finishedId = session.id;
