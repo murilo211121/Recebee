@@ -2287,6 +2287,20 @@
       <button class="btn btn-x" onclick="fazerLogout()">Sair</button>
     </div>
 
+    <!-- ══ PERFIL DESTE APARELHO ══ -->
+    <div class="card">
+      <div class="ctit">&#9670; Perfil deste aparelho</div>
+      <div class="ibox" style="margin-bottom:10px">
+        Identifica quem usa este aparelho especificamente (diferente da conta da empresa, que é a mesma em todos os
+        aparelhos). Esse nome vai junto sempre que uma contagem vinda da nuvem for <b>finalizada</b> ou
+        <b>descartada</b> por aqui, pra o administrativo saber qual conferente foi o responsável.
+      </div>
+      <label>Nome / apelido de quem usa este aparelho</label>
+      <input id="cfg-perfil-nome" type="text" placeholder="Ex: João - Conferente" autocomplete="off" maxlength="60">
+      <button class="btn btn-cy" style="margin-top:8px" onclick="perfilDispositivoSalvar()">Salvar</button>
+      <div id="cfg-perfil-status" style="font-size:.62rem;color:var(--mu2);margin-top:8px"></div>
+    </div>
+
     <!-- ══ SOBRE ══ -->
     <div class="card">
       <div class="ctit">Sobre</div>
@@ -2732,7 +2746,10 @@
       : 'Esta contagem em andamento será removida permanentemente.';
     mc('Descartar Contagem', msg, ()=>{
       sessionsRemove(id);
-      if(cloudDocId) _cloudConsume(cloudDocId);
+      if(cloudDocId){
+        _cloudConsume(cloudDocId);
+        _notificarDescarteNoPainel(cloudDocId);
+      }
       if(session && session.id===id){
         camStop();
         session = null; items = []; grouped = {}; pending = null;
@@ -5275,7 +5292,10 @@
     // Descartar é definitivo — assim como finalizar, libera/consome o
     // item na nuvem (diferente de pausar/voltar, que preserva o item lá
     // pra retomar depois).
-    if(discardCloudId) _cloudConsume(discardCloudId);
+    if(discardCloudId){
+      _cloudConsume(discardCloudId);
+      _notificarDescarteNoPainel(discardCloudId);
+    }
     sessStateSave();
     resetScanUI();
     updateDash();
@@ -5559,10 +5579,42 @@
         finalizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
         finalizadoPorUid: usuario.uid,
         finalizadoPorEmail: usuario.email || null,
+        finalizadoPorPerfil: perfilDispositivoLoad() || null,
         resultado: _buildResultadoParaPainel(entry),
       });
     }catch(err){
       console.error('Falha ao notificar finalização da contagem no Painel:', err);
+    }
+  }
+
+  // Mesma ideia de _notificarFinalizacaoNoPainel, mas para quando a
+  // contagem é DESCARTADA antes de finalizar (sessCancel /
+  // sessionsDiscardPrompt) — em vez de "finalizada" com o resultado
+  // completo, marca "descartada" pra o Painel exibir essa linha
+  // esmaecida em cinza, deixando claro que ela nunca chegou a ser
+  // concluída.
+  async function _notificarDescarteNoPainel(cloudDocId){
+    if(!cloudDocId) return;
+    if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+    const usuario = firebase.auth().currentUser;
+    if(!usuario) return;
+    try{
+      const db = firebase.firestore();
+      const snap = await db.collection(HISTORICO_ENVIOS_COLLECTION)
+        .where('criadoPorUid', '==', usuario.uid)
+        .where('pendenteDocId', '==', cloudDocId)
+        .limit(1)
+        .get();
+      if(snap.empty) return;
+      await snap.docs[0].ref.update({
+        status: 'descartada',
+        descartadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+        descartadoPorUid: usuario.uid,
+        descartadoPorEmail: usuario.email || null,
+        descartadoPorPerfil: perfilDispositivoLoad() || null,
+      });
+    }catch(err){
+      console.error('Falha ao notificar descarte da contagem no Painel:', err);
     }
   }
 
@@ -8283,7 +8335,45 @@
   /* ═══════════════════════════════════════════════
      CONFIGURAÇÕES — pg-config
   ═══════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════
+     PERFIL DESTE APARELHO — nome/apelido guardado só neste dispositivo
+     (localStorage), independente da conta da empresa usada no login.
+     Enviado junto quando esse aparelho finaliza ou descarta uma
+     contagem vinda da nuvem, pra o Painel do site de conferência
+     mostrar qual conferente foi o responsável por aquela ação — sem
+     precisar de um login individual por pessoa.
+  ═══════════════════════════════════════════════ */
+  const PERFIL_DISPOSITIVO_KEY = 'rcb_perfil_nome';
+
+  function perfilDispositivoLoad(){
+    try{ return localStorage.getItem(PERFIL_DISPOSITIVO_KEY) || ''; }catch(e){ return ''; }
+  }
+
+  function perfilDispositivoSalvar(){
+    const input = document.getElementById('cfg-perfil-nome');
+    const statusEl = document.getElementById('cfg-perfil-status');
+    const nome = input ? input.value.trim() : '';
+    try{
+      if(nome) localStorage.setItem(PERFIL_DISPOSITIVO_KEY, nome);
+      else localStorage.removeItem(PERFIL_DISPOSITIVO_KEY);
+      if(statusEl){
+        statusEl.textContent = nome
+          ? 'Salvo — esse nome vai junto nas próximas finalizações/descartes.'
+          : 'Nome removido — as próximas ações aparecerão sem responsável identificado.';
+      }
+      toast(nome ? 'Perfil do aparelho salvo' : 'Perfil do aparelho removido');
+    }catch(e){
+      console.error('Falha ao salvar perfil do aparelho:', e);
+      toast('Não foi possível salvar o perfil deste aparelho', true);
+    }
+  }
+
   function cfgPageOpen(){
+    const perfilInput = document.getElementById('cfg-perfil-nome');
+    if(perfilInput) perfilInput.value = perfilDispositivoLoad();
+    const perfilStatus = document.getElementById('cfg-perfil-status');
+    if(perfilStatus) perfilStatus.textContent = '';
+
     // Status Vision
     const embVision = typeof EMBEDDED_VISION_KEY==='string' && EMBEDDED_VISION_KEY.trim().length>10;
     const lsVision  = localStorage.getItem('rcb_vision_key') || '';
