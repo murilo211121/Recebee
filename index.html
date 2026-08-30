@@ -560,6 +560,25 @@
     .rk{font-size:.58rem;color:var(--mu2);letter-spacing:.4px;text-transform:uppercase;font-weight:600}
     .rv{font-weight:500;font-size:.78rem}
     .rv.ref{color:var(--tx);font-family:var(--R);font-weight:700;font-size:1rem}
+
+    /* ── Resumo da contagem: cabeçalho + cards de estatística ── */
+    .resumo-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px}
+    .resumo-head .ico{flex-shrink:0;width:30px;height:30px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:700}
+    .resumo-head .ico.ok{background:rgba(31,169,113,.14);color:var(--gr)}
+    .resumo-head .ico.warn{background:rgba(225,75,75,.14);color:var(--re)}
+    .resumo-head .txt .t1{font-family:var(--R);font-weight:700;font-size:.82rem;color:var(--tx)}
+    .resumo-head .txt .t2{font-size:.62rem;color:var(--mu2);margin-top:2px;line-height:1.4}
+    .resumo-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));
+      gap:8px;margin-bottom:16px}
+    .rstat{background:var(--s2);border:1px solid var(--bd);border-radius:var(--radius-sm);
+      padding:10px 6px;text-align:center}
+    .rstat .n{font-family:var(--R);font-weight:800;font-size:1.15rem;line-height:1.1}
+    .rstat .l{font-size:.52rem;color:var(--mu2);letter-spacing:.5px;text-transform:uppercase;
+      font-weight:600;margin-top:4px}
+    .resumo-clean{display:flex;align-items:center;gap:7px;background:rgba(31,169,113,.1);
+      border:1px solid rgba(31,169,113,.3);border-radius:var(--radius-sm);
+      padding:9px 11px;font-size:.62rem;color:var(--gr);font-weight:600;margin-bottom:4px}
     .rv.qty{color:var(--gr);font-family:var(--R);font-weight:700;font-size:1.2rem;font-variant-numeric:tabular-nums}
     .rv.tot{color:var(--wa);font-family:var(--R);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
     .acc-bar{display:none;background:rgba(224,160,32,.08);border:1px solid rgba(224,160,32,.3);
@@ -1109,7 +1128,7 @@
 <!-- MODAL NUVEM — contagens às cegas recebidas do extrator de NF-e -->
 <div class="mbg" id="mdl-cloud">
   <div class="md">
-    <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg> Contagens da Nuvem</h3>
+    <h3>☁ Contagens da Nuvem</h3>
     <div style="font-size:.58rem;color:var(--mu2);margin-bottom:10px;line-height:1.5">
       NFs enviadas pelo extrator de nota fiscal, prontas para conferência às cegas.
       Escolha uma para revisar e iniciar a contagem. Iniciar não remove o item daqui —
@@ -1127,8 +1146,9 @@
 <div class="mbg" id="mdl-resumo">
   <div class="md" style="max-width:420px;max-height:82vh;overflow-y:auto">
     <h3>Resumo da Contagem</h3>
-    <div id="resumo-ok" style="display:none;text-align:center;color:var(--gr);font-size:.68rem;
-      margin-bottom:12px;line-height:1.6">✔ Tudo convergente — pronto para salvar.</div>
+    <div id="resumo-head" class="resumo-head"></div>
+    <div id="resumo-stats" class="resumo-stats"></div>
+    <div id="resumo-ok" class="resumo-clean" style="display:none">✓ Nenhuma divergência encontrada</div>
     <div id="resumo-warn" style="display:none;font-size:.6rem;color:var(--re);line-height:1.7;margin-bottom:12px">
       ⚠ Há referências divergentes ou pendentes. Revise abaixo — você pode retomar a contagem
       para corrigir, ou finalizar assim mesmo. Ao retomar, os itens convergentes ficam ocultos
@@ -1138,7 +1158,7 @@
     <div id="resumo-body"></div>
     <div class="mrow">
       <button class="btn btn-x"  onclick="resumoRetomar()">Retomar Contagem</button>
-      <button class="btn btn-gr" onclick="resumoConfirmar()">Finalizar e Salvar</button>
+      <button class="btn btn-gr" onclick="resumoConfirmar()">✓ Finalizar e Salvar</button>
     </div>
   </div>
 </div>
@@ -1161,16 +1181,14 @@
         <button onclick="openCloudModal()" id="btn-cloud"
                 style="position:relative;background:var(--s2);border:1px solid var(--bd);color:var(--mu2);font-size:.95rem;
           cursor:pointer;padding:6px 9px;line-height:1;border-radius:var(--radius-sm)" title="Contagens recebidas da nuvem">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg>
+          ☁
           <span id="cloud-badge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:15px;
             height:15px;padding:0 3px;border-radius:8px;background:var(--re);color:#fff;
             font-family:var(--R);font-weight:700;font-size:.48rem;line-height:15px;text-align:center">0</span>
         </button>
         <button onclick="navTo('pg-config')"
                 style="background:var(--s2);border:1px solid var(--bd);color:var(--mu2);font-size:.95rem;cursor:pointer;
-          padding:6px 9px;line-height:1;border-radius:var(--radius-sm)" title="Configurações">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.1 5.9l-1.7 1.7M7.6 16.4l-1.7 1.7M18.1 18.1l-1.7-1.7M7.6 7.6 5.9 5.9"/></svg>
-        </button>
+          padding:6px 9px;line-height:1;border-radius:var(--radius-sm)" title="Configurações">⚙</button>
       </div>
 
       <div class="dash-logo">Recebe<span>+</span></div>
@@ -1181,7 +1199,7 @@
     <!-- Aviso storage -->
     <div id="storage-warn">⚠ Armazenamento local quase cheio. Exporte e exclua contagens antigas para continuar salvando.</div>
     <!-- Aviso sem conexão -->
-    <div id="offline-warn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg> Sem conexão — a contagem local continua funcionando normalmente. A nuvem (envio/recebimento) volta assim que a internet reconectar.</div>
+    <div id="offline-warn">☁ Sem conexão — a contagem local continua funcionando normalmente. A nuvem (envio/recebimento) volta assim que a internet reconectar.</div>
 
     <!-- IDs ocultos para compatibilidade -->
     <span id="d-refs" style="display:none">0</span>
@@ -1284,17 +1302,17 @@
           <div style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px">Padrões cadastrados</div>
         </div>
 
-        <!-- Última Contagem -->
-        <div id="db-ultima-card" onclick="_openUltimaContagem()"
+        <!-- Exportar -->
+        <div onclick="dashExportMenu()"
              style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
           padding:14px;cursor:pointer;transition:border-color .15s;
           -webkit-tap-highlight-color:transparent"
              onmousedown="this.style.background='var(--s2)'" onmouseup="this.style.background='var(--s1)'"
              ontouchstart="this.style.background='var(--s2)'" ontouchend="this.style.background='var(--s1)'">
-          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Recente</div>
-          <div id="db-ultima-forn" style="font-family:var(--R);font-weight:700;font-size:.86rem;
-            color:var(--tx);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Última Contagem</div>
-          <div id="db-ultima-sub" style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px">Nenhuma ainda</div>
+          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Dados</div>
+          <div style="font-family:var(--R);font-weight:700;font-size:.86rem;
+            color:var(--tx);margin-bottom:3px">Exportar</div>
+          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px">CSV da sessão atual</div>
         </div>
 
       </div>
@@ -1350,15 +1368,15 @@
           <button onclick="dashTurno('manha')" id="tbtn-manha"
                   style="padding:6px 4px;border-radius:7px;border:1px solid var(--bd);
             background:transparent;color:var(--mu2);font-family:var(--R);font-weight:700;
-            font-size:.58rem;cursor:pointer;line-height:1.4"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg> MANHÃ<br><span style="font-size:.44rem;font-weight:400;opacity:.7">06h–14h</span></button>
+            font-size:.58rem;cursor:pointer;line-height:1.4">☀️ MANHÃ<br><span style="font-size:.44rem;font-weight:400;opacity:.7">06h–14h</span></button>
           <button onclick="dashTurno('tarde')" id="tbtn-tarde"
                   style="padding:6px 4px;border-radius:7px;border:1px solid var(--bd);
             background:transparent;color:var(--mu2);font-family:var(--R);font-weight:700;
-            font-size:.58rem;cursor:pointer;line-height:1.4"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><circle cx="7.5" cy="7" r="2.4"/><path d="M7.5 2.6V4M7.5 10v1.4M3.1 7H4.5M10.5 7h1.4M4.6 3.9l1 1M10.4 3.9l-1 1"/><path d="M11 20a3.5 3.5 0 1 0 .5-6.97A4.5 4.5 0 0 0 3.4 15a3 3 0 0 0 .1 5h7.5z"/></svg> TARDE<br><span style="font-size:.44rem;font-weight:400;opacity:.7">14h–22h</span></button>
+            font-size:.58rem;cursor:pointer;line-height:1.4">🌤 TARDE<br><span style="font-size:.44rem;font-weight:400;opacity:.7">14h–22h</span></button>
           <button onclick="dashTurno('noite')" id="tbtn-noite"
                   style="padding:6px 4px;border-radius:7px;border:1px solid var(--bd);
             background:transparent;color:var(--mu2);font-family:var(--R);font-weight:700;
-            font-size:.58rem;cursor:pointer;line-height:1.4"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg> NOITE<br><span style="font-size:.44rem;font-weight:400;opacity:.7">22h–06h</span></button>
+            font-size:.58rem;cursor:pointer;line-height:1.4">🌙 NOITE<br><span style="font-size:.44rem;font-weight:400;opacity:.7">22h–06h</span></button>
         </div>
       </div>
 
@@ -1391,13 +1409,13 @@
         <div style="font-size:.46rem;color:var(--mu2);letter-spacing:1.2px;margin-bottom:6px">VOLUMES RECEBIDOS</div>
         <div style="font-size:2rem;font-family:var(--R);font-weight:800;color:var(--cy);line-height:1" id="da-total-vols">0</div>
         <div style="font-size:.52rem;color:var(--mu2);margin-top:4px" id="da-vols-sub">em 0 contagens</div>
-        <div style="position:absolute;right:10px;top:10px;opacity:.15;color:var(--cy)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-4.5L21 8l-9 4.5L3 8z"/><path d="M3 8v9l9 4.5V12.5M21 8v9l-9 4.5"/></svg></div>
+        <div style="position:absolute;right:10px;top:10px;font-size:1.4rem;opacity:.1">📦</div>
       </div>
       <div class="card" style="padding:14px;border-color:rgba(16,185,129,.25);position:relative;overflow:hidden;margin-bottom:0">
         <div style="font-size:.46rem;color:var(--mu2);letter-spacing:1.2px;margin-bottom:6px">PEÇAS CONFERIDAS</div>
         <div style="font-size:2rem;font-family:var(--R);font-weight:800;color:var(--gr);line-height:1" id="da-total-pecas">0</div>
         <div style="font-size:.52rem;color:var(--mu2);margin-top:4px" id="da-pecas-sub">total acumulado</div>
-        <div style="position:absolute;right:10px;top:10px;opacity:.15;color:var(--gr)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 6 21M18 3l-2 18M3 9h18M2 15h18"/></svg></div>
+        <div style="position:absolute;right:10px;top:10px;font-size:1.4rem;opacity:.1">🔢</div>
       </div>
     </div>
 
@@ -1422,7 +1440,7 @@
 
     <!-- Última contagem -->
     <div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 14px">
-      <div style="opacity:.4;color:var(--tx)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
+      <div style="font-size:1.2rem;opacity:.35">🕐</div>
       <div style="flex:1;min-width:0">
         <div style="font-size:.44rem;color:var(--mu2);letter-spacing:1px;margin-bottom:3px">ÚLTIMA CONTAGEM DO PERÍODO</div>
         <div style="font-size:.75rem;font-family:var(--R);font-weight:700;color:var(--tx);
@@ -1500,7 +1518,7 @@
           border:1px solid rgba(0,216,255,.3);background:rgba(0,216,255,.06);
           color:var(--cy);cursor:pointer;display:flex;flex-direction:column;
           align-items:center;gap:8px">
-          <span style="line-height:1"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg></span>
+          <span style="font-size:1.8rem;line-height:1">☁</span>
           <span style="font-family:var(--R);font-weight:700;font-size:.66rem;letter-spacing:.3px">EM NUVEM</span>
         </button>
         <button type="button" onclick="sessChooseQR()"
@@ -1508,7 +1526,7 @@
           border:1px solid rgba(167,139,250,.35);background:rgba(167,139,250,.08);
           color:#a78bfa;cursor:pointer;display:flex;flex-direction:column;
           align-items:center;gap:8px">
-          <span style="line-height:1"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2.4A2 2 0 0 1 10.3 4.6h3.4a2 2 0 0 1 1.7 1L17 8h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="3.4"/></svg></span>
+          <span style="font-size:1.8rem;line-height:1">📷</span>
           <span style="font-family:var(--R);font-weight:700;font-size:.66rem;letter-spacing:.3px">QR CODE</span>
         </button>
         <button type="button" onclick="sessChooseFotoIA()"
@@ -1516,7 +1534,7 @@
           border:1px solid rgba(16,185,129,.35);background:rgba(16,185,129,.08);
           color:var(--gr);cursor:pointer;display:flex;flex-direction:column;
           align-items:center;gap:8px">
-          <span style="line-height:1"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h9l3 3v17l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3V5a3 3 0 0 1 3-3z"/><path d="M8 8h6M8 12h6M8 16h4"/></svg></span>
+          <span style="font-size:1.8rem;line-height:1">🧾</span>
           <span style="font-family:var(--R);font-weight:700;font-size:.6rem;letter-spacing:.2px;line-height:1.3">EXTRATOR<br>FOTO NF</span>
         </button>
       </div>
@@ -1553,7 +1571,7 @@
         <input id="inp-nf" type="text" placeholder="Ex: NF-001234">
 
         <div class="sep" style="margin:10px 0"></div>
-        <div class="ctit" style="margin-bottom:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg> Ou importe a lista da NF (Excel)</div>
+        <div class="ctit" style="margin-bottom:6px">📥 Ou importe a lista da NF (Excel)</div>
         <div style="font-size:.54rem;color:var(--mu2);margin-bottom:8px;line-height:1.5">
           Para fornecedores sem etiqueta com QR Code. Importe a planilha (.xlsx) com as
           referências e quantidades da nota — a contagem será feita às cegas, comparando o
@@ -1562,7 +1580,7 @@
         <input type="file" id="import-file-input" accept=".xlsx" style="display:none" onchange="handleImportFile(event)">
         <button class="btn" style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.35);color:#a78bfa"
                 onclick="document.getElementById('import-file-input').click()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg> Importar Planilha (.xlsx)
+          📥 Importar Planilha (.xlsx)
         </button>
         <div id="import-summary" style="display:none"></div>
 
@@ -1592,7 +1610,7 @@
 
           <input type="file" id="fia-input-gal" accept="image/*" style="display:none" onchange="fiaFileSelected(event)">
 
-          <button class="btn btn-gr" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><rect x="3" y="4" width="18" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15l-5.5-5.5L9 16"/></svg> Galeria</button>
+          <button class="btn btn-gr" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()">🖼 Galeria</button>
 
           <button class="btn btn-cy" id="fia-btn-processar" style="margin-top:4px" onclick="fiaProcessar()" disabled>
             Processar Nota
@@ -1612,9 +1630,9 @@
           <div class="ibox" style="border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.06);margin-bottom:10px">
             <span id="fia-error-msg" style="color:var(--re)">Não foi possível processar a nota.</span>
           </div>
-          <button class="btn btn-cy" style="margin-bottom:8px" onclick="fiaRetry()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M20 11A8 8 0 0 0 6.3 6.3M4 4v5h5"/><path d="M4 13a8 8 0 0 0 13.7 4.7M20 20v-5h-5"/></svg> Tentar Novamente</button>
-          <button class="btn btn-x" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><rect x="3" y="4" width="18" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15l-5.5-5.5L9 16"/></svg> Outra Imagem</button>
-          <button class="btn btn-gr" onclick="fiaGoManual()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/></svg> Inserir Manualmente</button>
+          <button class="btn btn-cy" style="margin-bottom:8px" onclick="fiaRetry()">🔄 Tentar Novamente</button>
+          <button class="btn btn-x" style="margin-bottom:8px" onclick="document.getElementById('fia-input-gal').click()">🖼 Outra Imagem</button>
+          <button class="btn btn-gr" onclick="fiaGoManual()">✏ Inserir Manualmente</button>
         </div>
 
         <!-- Passo 4: revisão dos produtos extraídos -->
@@ -1727,7 +1745,7 @@
       <!-- Botão captura OCR (força leitura manual, modo OCR) -->
       <div id="ocr-capture-row" style="display:none;margin-bottom:8px">
         <button class="btn btn-wa" onclick="ocrCapture(false)" style="letter-spacing:1.5px">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M4 8h3l1.6-2.4A2 2 0 0 1 10.3 4.6h3.4a2 2 0 0 1 1.7 1L17 8h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="3.4"/></svg> Forçar Leitura Agora
+          📷 Forçar Leitura Agora
         </button>
         <div id="ocr-raw-box"></div>
       </div>
@@ -2012,9 +2030,6 @@
                 onclick="toggleHistEdit()">Concluir Edição</button>
       </div>
     </div>
-    <input id="hdet-search" type="text" placeholder="Pesquisar referência ou descrição..." autocomplete="off"
-           autocorrect="off" autocapitalize="characters" oninput="renderHistDet()"
-           style="margin-bottom:8px">
     <div class="ilist" id="hdet-list"></div>
     <div style="margin-top:10px">
       <div class="card" id="hdet-exp" style="display:none">
@@ -2287,20 +2302,6 @@
       <button class="btn btn-x" onclick="fazerLogout()">Sair</button>
     </div>
 
-    <!-- ══ PERFIL DESTE APARELHO ══ -->
-    <div class="card">
-      <div class="ctit">&#9670; Perfil deste aparelho</div>
-      <div class="ibox" style="margin-bottom:10px">
-        Identifica quem usa este aparelho especificamente (diferente da conta da empresa, que é a mesma em todos os
-        aparelhos). Esse nome vai junto sempre que uma contagem vinda da nuvem for <b>finalizada</b> ou
-        <b>descartada</b> por aqui, pra o administrativo saber qual conferente foi o responsável.
-      </div>
-      <label>Nome / apelido de quem usa este aparelho</label>
-      <input id="cfg-perfil-nome" type="text" placeholder="Ex: João - Conferente" autocomplete="off" maxlength="60">
-      <button class="btn btn-cy" style="margin-top:8px" onclick="perfilDispositivoSalvar()">Salvar</button>
-      <div id="cfg-perfil-status" style="font-size:.62rem;color:var(--mu2);margin-top:8px"></div>
-    </div>
-
     <!-- ══ SOBRE ══ -->
     <div class="card">
       <div class="ctit">Sobre</div>
@@ -2438,7 +2439,7 @@
         background:rgba(0,216,255,.05);border:1px solid rgba(0,216,255,.15);
         border-radius:7px;margin-bottom:10px">
         &#9670; <b style="color:var(--cy)">OCR Vision</b> — A câmera vai identificar a referência no texto da etiqueta.
-        Requer <b>Google Cloud Vision API</b> em Configurações <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.1 5.9l-1.7 1.7M7.6 16.4l-1.7 1.7M18.1 18.1l-1.7-1.7M7.6 7.6 5.9 5.9"/></svg>.
+        Requer <b>Google Cloud Vision API</b> em Configurações ⚙.
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <div style="font-size:.68rem;font-family:var(--R);font-weight:700;color:var(--tx)">Referências Cadastradas</div>
@@ -2472,7 +2473,7 @@
 
     <div class="row" style="margin-bottom:8px">
       <button class="btn btn-x"  onclick="fornEditClose()">Cancelar</button>
-      <button class="btn btn-gr" onclick="fornEditSave()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M8 3v6h8V3M7 21v-7h10v7"/></svg> Salvar Alterações</button>
+      <button class="btn btn-gr" onclick="fornEditSave()">💾 Salvar Alterações</button>
     </div>
     <button class="btn btn-re" style="font-size:.72rem;padding:9px" onclick="fornEditDelete()">Excluir Fornecedor</button>
   </div>
@@ -2481,59 +2482,6 @@
 <canvas id="cv" style="display:none"></canvas>
 
 <script>
-  /* ═══════════════════════════════════════════════
-     ÍCONES SVG (substituem emojis por ícones vetoriais
-     consistentes — herdam a cor do texto via currentColor,
-     então se adaptam automaticamente ao tema claro/escuro
-     e à cor de cada contexto).
-  ═══════════════════════════════════════════════ */
-  const ICO_PATHS = {
-    cloud:   '<path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/>',
-    gear:    '<circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.1 5.9l-1.7 1.7M7.6 16.4l-1.7 1.7M18.1 18.1l-1.7-1.7M7.6 7.6 5.9 5.9"/>',
-    pencil:  '<path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l3 3"/>',
-    tag:     '<path d="M12.6 2.7 21 11.1a2 2 0 0 1 0 2.8l-6.1 6.1a2 2 0 0 1-2.8 0L3.7 11.6a2 2 0 0 1-.6-1.4V4.7a2 2 0 0 1 2-2h5.5a2 2 0 0 1 1.4.6z"/><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none"/>',
-    sun:     '<circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/>',
-    cloudSun:'<circle cx="7.5" cy="7" r="2.4"/><path d="M7.5 2.6V4M7.5 10v1.4M3.1 7H4.5M10.5 7h1.4M4.6 3.9l1 1M10.4 3.9l-1 1"/><path d="M11 20a3.5 3.5 0 1 0 .5-6.97A4.5 4.5 0 0 0 3.4 15a3 3 0 0 0 .1 5h7.5z"/>',
-    moon:    '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
-    box:     '<path d="M3 8l9-4.5L21 8l-9 4.5L3 8z"/><path d="M3 8v9l9 4.5V12.5M21 8v9l-9 4.5"/>',
-    hash:    '<path d="M8 3 6 21M18 3l-2 18M3 9h18M2 15h18"/>',
-    clock:   '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
-    camera:  '<path d="M4 8h3l1.6-2.4A2 2 0 0 1 10.3 4.6h3.4a2 2 0 0 1 1.7 1L17 8h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"/><circle cx="12" cy="13" r="3.4"/>',
-    receipt: '<path d="M6 2h9l3 3v17l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3V5a3 3 0 0 1 3-3z"/><path d="M8 8h6M8 12h6M8 16h4"/>',
-    gallery: '<rect x="3" y="4" width="18" height="15" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 15l-5.5-5.5L9 16"/>',
-    refresh: '<path d="M20 11A8 8 0 0 0 6.3 6.3M4 4v5h5"/><path d="M4 13a8 8 0 0 0 13.7 4.7M20 20v-5h-5"/>',
-    undo:    '<path d="M8 6 4 10l4 4"/><path d="M4 10h9a6 6 0 1 1 0 12H8"/>',
-    save:    '<path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M8 3v6h8V3M7 21v-7h10v7"/>',
-    download:'<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/>',
-    pin:     '<path d="M12 2a5 5 0 0 0-5 5c0 3.5 5 11 5 11s5-7.5 5-11a5 5 0 0 0-5-5z"/><circle cx="12" cy="7" r="2"/>',
-    robot:   '<rect x="4" y="8" width="16" height="11" rx="2"/><circle cx="9" cy="13.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="13.5" r="1.3" fill="currentColor" stroke="none"/><path d="M12 8V4M9 4h6"/><path d="M2 12h2M20 12h2"/>',
-    check:   '<path d="M4 12.5 9.5 18 20 6"/>',
-    x:       '<path d="M5 5l14 14M19 5 5 19"/>',
-    warning: '<path d="M12 3 22 20H2z"/><path d="M12 9.5v5M12 17.5v.1"/>',
-    pause:   '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
-    play:    '<path d="M6 4l14 8-14 8z"/>'
-  };
-  function ico(name, opts){
-    opts = opts || {};
-    const size  = opts.size || 14;
-    const extra = opts.style ? (';'+opts.style) : '';
-    const path  = ICO_PATHS[name];
-    if(!path) return '';
-    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" '+
-      'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" '+
-      'style="display:inline-block;vertical-align:-2px;flex-shrink:0'+extra+'">'+path+'</svg>';
-  }
-  // Badge numerado (1º/2º/3º) usado em rankings, substitui as medalhas
-  // emoji 🥇🥈🥉 por um círculo colorido consistente com o resto da UI.
-  function _rankBadge(i){
-    const colors = ['#d4af37','#a8a8a8','#b08d57'];
-    if(i>2) return '';
-    return '<svg width="15" height="15" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-3px;flex-shrink:0">'+
-      '<circle cx="12" cy="12" r="10" fill="'+colors[i]+'"/>'+
-      '<text x="12" y="16.5" font-size="12" font-family="Arial,sans-serif" font-weight="700" fill="#1a1a1a" text-anchor="middle">'+(i+1)+'</text>'+
-      '</svg>';
-  }
-
   /* ═══════════════════════════════════════════════
      AVISO AO FECHAR COM SESSÃO ATIVA
   ═══════════════════════════════════════════════ */
@@ -2746,10 +2694,7 @@
       : 'Esta contagem em andamento será removida permanentemente.';
     mc('Descartar Contagem', msg, ()=>{
       sessionsRemove(id);
-      if(cloudDocId){
-        _cloudConsume(cloudDocId);
-        _notificarDescarteNoPainel(cloudDocId);
-      }
+      if(cloudDocId) _cloudConsume(cloudDocId);
       if(session && session.id===id){
         camStop();
         session = null; items = []; grouped = {}; pending = null;
@@ -2789,7 +2734,7 @@
         <div style="min-width:0">
           <div style="font-family:var(--R);font-weight:700;font-size:.72rem;color:var(--tx);
             white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-            ${h(s.forn||'—')}${s.nf?' · NF '+h(s.nf):''}${s.tipo==='importado'?' · '+ico('download'):''}
+            ${h(s.forn||'—')}${s.nf?' · NF '+h(s.nf):''}${s.tipo==='importado'?' · 📥':''}
           </div>
           <div style="font-size:.58rem;color:var(--mu2);margin-top:2px">
             ${qtdRefs} referência${qtdRefs!==1?'s':''} · ${qtdPc} pç · desde ${h(s.start||'')}
@@ -2804,30 +2749,6 @@
       }
       el.appendChild(row);
     });
-  }
-
-  // Card "Última Contagem" — mostra a contagem finalizada mais recente
-  // (independente de filtros/turno da tela de Estatísticas) e leva
-  // direto pro detalhe dela ao tocar.
-  function _renderUltimaContagemCard(){
-    const fornEl = document.getElementById('db-ultima-forn');
-    const subEl  = document.getElementById('db-ultima-sub');
-    if(!fornEl || !subEl) return;
-    const hist = histLoad(); // já vem com a mais recente em [0] (histAdd usa unshift)
-    if(!hist.length){
-      fornEl.textContent = 'Última Contagem';
-      subEl.textContent  = 'Nenhuma ainda';
-      return;
-    }
-    const ult   = hist[0];
-    const peças = Object.values(ult.grouped||{}).reduce((s,r)=>s+(r.qty||0),0);
-    fornEl.textContent = ult.forn || '—';
-    subEl.textContent  = (ult.end || ult.start || '—') + ' · ' + peças + ' pç';
-  }
-  function _openUltimaContagem(){
-    const hist = histLoad();
-    if(!hist.length){ navTo('pg-hist'); return; }
-    openHistDet(hist[0].id);
   }
 
   /* ═══════════════════════════════════════════════
@@ -2928,9 +2849,6 @@
     // Outras contagens em andamento (múltiplas sessões em paralelo)
     try{ renderSessionsList(); }catch(e){ console.error('renderSessionsList falhou:', e); }
 
-    // Card "Última Contagem" — atalho pra contagem finalizada mais recente
-    try{ _renderUltimaContagemCard(); }catch(e){ console.error('_renderUltimaContagemCard falhou:', e); }
-
     const dot  = document.getElementById('sdot');
     const name = document.getElementById('sname');
     const det  = document.getElementById('sdet');
@@ -2941,7 +2859,7 @@
     const scanIco = document.getElementById('dbtn-scan-ico');
     if(session){
       dot.classList.add('live');
-      name.innerHTML = h(session.forn) + (session.nf?' · '+h(session.nf):'') + (session.tipo==='importado'?' · '+ico('download')+' Importada':'');
+      name.textContent = session.forn + (session.nf?' · '+session.nf:'') + (session.tipo==='importado'?' · 📥 Importada':'');
       det.textContent  = 'Iniciada '+session.start+' · '+items.length+' scan'+(items.length!==1?'s':'')+'  →  Ver lista';
       if(arrow){ arrow.style.color='var(--gr)'; arrow.textContent='›'; }
       if(scanLbl) scanLbl.textContent = 'Continuar';
@@ -4172,7 +4090,7 @@
 
     document.getElementById('inp-forn').value = forn;
     document.getElementById('inp-nf').value   = nf;
-    _applyImportPendingUI(ico('camera')+' <b style="color:var(--tx)">Extraído por foto (IA)</b>');
+    _applyImportPendingUI('📸 <b style="color:var(--tx)">Extraído por foto (IA)</b>');
     sessStart();
 
     if(duplicadas>0) toast(`${duplicadas} referência(s) repetida(s) foram somadas`);
@@ -4468,7 +4386,7 @@
         throw new Error('Não encontrei colunas de Referência/Quantidade na planilha. Verifique os cabeçalhos (ex: "Referência", "Quantidade").');
       }
       importPending = { expected: product.expected, order: product.order, meta: notaMeta, fileName: file.name };
-      _applyImportPendingUI(ico('download')+` <b style="color:var(--tx)">${h_(file.name)}</b>`);
+      _applyImportPendingUI(`📥 <b style="color:var(--tx)">${h_(file.name)}</b>`);
       toast('Planilha importada: '+product.order.length+' referências');
     }catch(err){
       console.error('Import XLSX:', err);
@@ -4667,7 +4585,7 @@
     };
     cloudModalClose();
     navTo('pg-scan');
-    _applyImportPendingUI(ico('cloud')+' <b style="color:var(--tx)">Recebido da nuvem</b>');
+    _applyImportPendingUI('☁ <b style="color:var(--tx)">Recebido da nuvem</b>');
     // Fluxo "Em Nuvem": fornecedor e NF já vêm preenchidos pelo item da
     // nuvem, então a sessão inicia direto, sem passar pelo formulário
     // manual (que só é usado no fluxo "QR Code").
@@ -4699,17 +4617,14 @@
      planilha importada (nuvem/Excel) que já trouxe essa informação
      (ex.: "MH", "CX", "UN"). Fora desse caso, ou se a planilha não
      informou, cai de volta para "pç" (peças), como sempre foi. */
-  function _unidLabel(ref, expectedOverride){
+  function _unidLabel(ref){
     try{
-      // Prioriza um mapa "expected" explícito (usado ao visualizar uma
-      // contagem finalizada no Histórico, onde não há — ou pode haver
-      // outra — sessão ativa) e cai para a sessão em andamento como
-      // antes, mantendo compatibilidade com todos os outros usos.
-      const exp = (expectedOverride && expectedOverride[ref]) ||
-        (session && session.tipo==='importado' && session.expected && session.expected[ref]);
-      if(exp && exp.unidade){
-        const u = String(exp.unidade).trim();
-        if(u) return u;
+      if(session && session.tipo==='importado' && session.expected){
+        const exp = session.expected[ref];
+        if(exp && exp.unidade){
+          const u = String(exp.unidade).trim();
+          if(u) return u;
+        }
       }
     }catch(e){}
     return 'pç';
@@ -4833,7 +4748,7 @@
     if(contado <= 0){
       statusHTML = `<div style="font-size:.58rem;color:var(--mu2);margin-bottom:8px">Conte a quantidade primeiro — o lote é informado na hora de confirmar.</div>`;
     } else if(alocado > 0){
-      statusHTML = `<div style="font-size:.6rem;color:var(--cy);font-weight:600;margin-bottom:8px">${ico('tag')} ${alocado} de ${contado} pç com lote registrado</div>`;
+      statusHTML = `<div style="font-size:.6rem;color:var(--cy);font-weight:600;margin-bottom:8px">🏷 ${alocado} de ${contado} pç com lote registrado</div>`;
     } else {
       statusHTML = `<div style="font-size:.58rem;color:var(--mu2);margin-bottom:8px">Nenhum lote registrado ainda (opcional).</div>`;
     }
@@ -5127,37 +5042,32 @@
 
       const info=document.createElement('div'); info.style.cssText='flex:1;min-width:0';
       const refEl=document.createElement('div'); refEl.className='iref'; refEl.textContent=ref;
-      const metaText = exp && exp.desc ? exp.desc : '';
+      let metaText = exp && exp.desc ? exp.desc : '';
+      if(pinnedMult) metaText += ' · 📌 '+pinnedMult+'/vol';
       info.append(refEl);
       if(metaText){
         const meta=document.createElement('div'); meta.className='imeta';
         meta.textContent = metaText;
         info.append(meta);
       }
-      if(pinnedMult){
-        const pinEl=document.createElement('div');
-        pinEl.className='imeta';
-        pinEl.innerHTML = ico('pin')+' '+pinnedMult+'/vol';
-        info.append(pinEl);
-      }
       if(g && g.obs){
         const obsEl=document.createElement('div');
         obsEl.style.cssText='font-size:.55rem;color:var(--wa);margin-top:2px;font-style:italic';
-        obsEl.innerHTML=ico('pencil')+' '+h_(g.obs);
+        obsEl.textContent='📝 '+g.obs;
         info.appendChild(obsEl);
       }
       const hist = session.blindHistory && session.blindHistory[ref];
-      if(hist && hist.length){
+      if(isFlagged && hist && hist.length){
         const histEl=document.createElement('div');
         histEl.style.cssText='font-size:.55rem;color:var(--re);margin-top:2px;font-weight:600';
-        histEl.innerHTML=ico('undo')+' Recontagem · anterior'+(hist.length>1?'es':'')+': '+hist.map(h=>h.qty+' '+_unidLabel(ref)).join(', ');
+        histEl.textContent='↺ Recontagem · anterior'+(hist.length>1?'es':'')+': '+hist.map(h=>h.qty+' '+_unidLabel(ref)).join(', ');
         info.appendChild(histEl);
       }
       if(session.rastrearLoteValidade && isCounted && g.lotes && g.lotes.length){
         const alocado = _loteAlocado(ref);
         const loteEl=document.createElement('div');
         loteEl.style.cssText='font-size:.55rem;color:var(--cy);margin-top:2px;font-weight:600';
-        loteEl.innerHTML=ico('tag')+' '+g.lotes.length+' lote'+(g.lotes.length>1?'s':'')+' · '+alocado+' '+_unidLabel(ref)+' registrada'+(alocado!==1?'s':'');
+        loteEl.textContent='🏷 '+g.lotes.length+' lote'+(g.lotes.length>1?'s':'')+' · '+alocado+' '+_unidLabel(ref)+' registrada'+(alocado!==1?'s':'');
         info.appendChild(loteEl);
       }
 
@@ -5168,7 +5078,7 @@
       qtyEl.textContent = (g?g.qty:0)+' '+_unidLabel(ref);
       const editBtn=document.createElement('button');
       editBtn.className='idel';
-      editBtn.innerHTML=ico('pencil');
+      editBtn.textContent='✎';
       editBtn.style.cssText='color:var(--wa);font-size:.85rem';
       editBtn.title='Editar contagem / observação';
       editBtn.onclick=(ev)=>{ ev.stopPropagation(); blindEditToggle(ref); };
@@ -5292,10 +5202,7 @@
     // Descartar é definitivo — assim como finalizar, libera/consome o
     // item na nuvem (diferente de pausar/voltar, que preserva o item lá
     // pra retomar depois).
-    if(discardCloudId){
-      _cloudConsume(discardCloudId);
-      _notificarDescarteNoPainel(discardCloudId);
-    }
+    if(discardCloudId) _cloudConsume(discardCloudId);
     sessStateSave();
     resetScanUI();
     updateDash();
@@ -5349,7 +5256,7 @@
   function _lotesResumoHTML(lotes){
     if(!lotes || !lotes.length) return '';
     const linhas = lotes.map(l => 'Lote '+h_(l.lote)+' · Val '+h_(l.validade)+' · '+(Number(l.quantidade)||0)+' pç').join('<br>');
-    return `<div style="font-size:.56rem;color:var(--cy);margin-top:3px">${ico('tag')} ${linhas}</div>`;
+    return `<div style="font-size:.56rem;color:var(--cy);margin-top:3px">🏷 ${linhas}</div>`;
   }
 
   function _resumoRowHTML(r, kind){
@@ -5377,7 +5284,34 @@
     const hasIssues = data.div.length>0 || data.pend.length>0;
     _lastResumoData = data; // usado por resumoRetomar() para marcar divergentes em vermelho
 
-    let html = `<div class="rr"><span class="rk">✔ Convergentes</span><span class="rv" style="color:var(--gr)">${data.conv.length}</span></div>`;
+    const totalConferido = data.conv.length + data.div.length + data.extra.length;
+
+    // Cabeçalho com ícone + status geral da contagem
+    const headHTML = hasIssues ? `
+      <div class="ico warn">!</div>
+      <div class="txt">
+        <div class="t1">Revise antes de finalizar</div>
+        <div class="t2">Há referências divergentes ou pendentes na contagem abaixo.</div>
+      </div>` : `
+      <div class="ico ok">✓</div>
+      <div class="txt">
+        <div class="t1">Conferência concluída</div>
+        <div class="t2">Todos os itens contados estão convergentes.</div>
+      </div>`;
+    document.getElementById('resumo-head').innerHTML = headHTML;
+
+    // Cards de estatística: Conferidos / Convergentes / Divergentes, e
+    // Pendentes só aparece se houver referências ainda não contadas.
+    let statsHTML = `
+      <div class="rstat"><div class="n" style="color:var(--tx)">${totalConferido}</div><div class="l">Conferidos</div></div>
+      <div class="rstat"><div class="n" style="color:var(--gr)">${data.conv.length}</div><div class="l">Convergentes</div></div>
+      <div class="rstat"><div class="n" style="color:var(--re)">${data.div.length}</div><div class="l">Divergentes</div></div>`;
+    if(data.pend.length){
+      statsHTML += `<div class="rstat"><div class="n" style="color:var(--mu2)">${data.pend.length}</div><div class="l">Pendentes</div></div>`;
+    }
+    document.getElementById('resumo-stats').innerHTML = statsHTML;
+
+    let html = '';
 
     if(data.div.length){
       html += `<div style="margin-top:12px;font-family:var(--R);font-weight:700;font-size:.6rem;
@@ -5397,7 +5331,7 @@
 
     if(data.lotesAll && data.lotesAll.length){
       html += `<div style="margin-top:12px;font-family:var(--R);font-weight:700;font-size:.6rem;
-        letter-spacing:1px;color:var(--cy);text-transform:uppercase">${ico('tag')} Lotes Registrados (${data.lotesAll.length})</div>`;
+        letter-spacing:1px;color:var(--cy);text-transform:uppercase">🏷 Lotes Registrados (${data.lotesAll.length})</div>`;
       html += data.lotesAll.map(item => `
         <div class="ic" style="margin-top:4px;flex-wrap:wrap;gap:4px">
           <div style="flex:1;min-width:0">
@@ -5408,7 +5342,7 @@
     }
 
     document.getElementById('resumo-body').innerHTML = html;
-    document.getElementById('resumo-ok').style.display   = hasIssues ? 'none'  : 'block';
+    document.getElementById('resumo-ok').style.display   = hasIssues ? 'none'  : 'flex';
     document.getElementById('resumo-warn').style.display = hasIssues ? 'block' : 'none';
     document.getElementById('mdl-resumo').classList.add('on');
   }
@@ -5472,153 +5406,6 @@
     sessSave();
   }
 
-  /* ═══════════════════════════════════════════════════════════════
-     NUVEM — avisa o site de Conferência de Nota Fiscal (tela Painel)
-     quando uma contagem vinda de lá é finalizada aqui. A ligação entre
-     os dois registros é feita pelo campo "pendenteDocId", gravado pelo
-     site de conferência dentro do próprio documento de
-     "historico_envios" no momento do envio (é o id do documento em
-     "pendentes" — o mesmo que chega aqui como session.cloudDocId).
-     Só existe o que notificar quando a contagem veio da nuvem
-     (session.cloudDocId preenchido); contagens via QR Code ou Excel não
-     têm nada a atualizar no Painel.
-  ════════════════════════════════════════════════════════════════ */
-  const HISTORICO_ENVIOS_COLLECTION = 'historico_envios';
-
-  // Monta, a partir da entrada já salva no Histórico local (mesmo
-  // formato de sessSave/histAdd), o mesmo conjunto de informações
-  // exibido na tela de Detalhe do Histórico (renderHistDet) — pra que o
-  // Painel do site de conferência possa mostrar exatamente o que se vê
-  // aqui quando se abre uma contagem finalizada.
-  function _buildResultadoParaPainel(entry){
-    const isImport = entry.tipo === 'importado';
-    const grouped  = entry.grouped  || {};
-    const expected = entry.expected || {};
-    const order    = entry.expectedOrder || Object.keys(expected);
-
-    let rows;
-    if(isImport){
-      const extras = Object.keys(grouped).filter(r => !expected[r]);
-      rows = [...order, ...extras].map(ref => {
-        const g   = grouped[ref];
-        const exp = expected[ref];
-        const base = g ? {...g} : {ref, desc:(exp&&exp.desc)||'', qty:0, vols:0, scans:0};
-        base.ref = ref;
-        base.status = computeStatus(expected, grouped, ref) || 'pend';
-        const rhist = entry.blindHistory && entry.blindHistory[ref];
-        base.recontagens = rhist ? rhist.map(h => ({ qty: h.qty||0 })) : [];
-        return base;
-      });
-    } else {
-      rows = Object.values(grouped).map(g => ({...g, status:null, recontagens:[]}));
-    }
-    rows.sort((a,b) => (b.qty||0) - (a.qty||0));
-
-    let conv=0, div=0, pend=0, extra=0;
-    if(isImport){
-      rows.forEach(r => {
-        if(r.status==='conv') conv++;
-        else if(r.status==='div') div++;
-        else if(r.status==='pend') pend++;
-        else if(r.status==='extra') extra++;
-      });
-    }
-
-    const totalVolumes = (entry.items||[]).reduce((s,it) => s+(it.vols||1), 0);
-
-    return {
-      scans: entry.scans || 0,
-      start: entry.start || '',
-      end:   entry.end   || '',
-      tipo:  entry.tipo  || 'padrao',
-      origem: entry.origem || null,
-      totalVolumes,
-      reconResumo: isImport ? {conv, div, pend, extra} : null,
-      rows: rows.map(r => ({
-        ref: r.ref,
-        desc: r.desc || '',
-        qty: r.qty || 0,
-        vols: r.vols || 0,
-        scans: r.scans || 0,
-        obs: r.obs || '',
-        lotes: r.lotes || [],
-        multiplos: r.multiplos || [],
-        status: r.status || null,
-        recontagens: r.recontagens || [],
-      })),
-    };
-  }
-
-  // Best-effort: se essa contagem veio do site de conferência (tem
-  // cloudDocId), procura o registro correspondente em
-  // "historico_envios" e o marca como finalizado, gravando o resultado
-  // completo. Se falhar (sem internet, doc não encontrado etc.), não
-  // interrompe o fluxo local — a contagem já foi salva no Histórico
-  // deste aparelho, que é o que importa de verdade; o Painel só deixa
-  // de mostrar "Finalizada" até a próxima tentativa.
-  async function _notificarFinalizacaoNoPainel(cloudDocId, entry){
-    if(!cloudDocId) return;
-    if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
-    const usuario = firebase.auth().currentUser;
-    if(!usuario) return; // sem login não há como passar nas regras de segurança (nem faz sentido tentar)
-    try{
-      const db = firebase.firestore();
-      // O filtro por "criadoPorUid" é obrigatório aqui — além de reforçar
-      // o isolamento entre contas, é o que permite essa consulta passar
-      // pelas regras de segurança do Firestore (que só liberam a leitura
-      // de "historico_envios" quando a própria query já vem restrita a
-      // documentos do dono logado). Mesmo padrão já usado na consulta de
-      // "pendentes" (ver cloudInit()).
-      const snap = await db.collection(HISTORICO_ENVIOS_COLLECTION)
-        .where('criadoPorUid', '==', usuario.uid)
-        .where('pendenteDocId', '==', cloudDocId)
-        .limit(1)
-        .get();
-      if(snap.empty) return;
-      await snap.docs[0].ref.update({
-        status: 'finalizada',
-        finalizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
-        finalizadoPorUid: usuario.uid,
-        finalizadoPorEmail: usuario.email || null,
-        finalizadoPorPerfil: perfilDispositivoLoad() || null,
-        resultado: _buildResultadoParaPainel(entry),
-      });
-    }catch(err){
-      console.error('Falha ao notificar finalização da contagem no Painel:', err);
-    }
-  }
-
-  // Mesma ideia de _notificarFinalizacaoNoPainel, mas para quando a
-  // contagem é DESCARTADA antes de finalizar (sessCancel /
-  // sessionsDiscardPrompt) — em vez de "finalizada" com o resultado
-  // completo, marca "descartada" pra o Painel exibir essa linha
-  // esmaecida em cinza, deixando claro que ela nunca chegou a ser
-  // concluída.
-  async function _notificarDescarteNoPainel(cloudDocId){
-    if(!cloudDocId) return;
-    if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
-    const usuario = firebase.auth().currentUser;
-    if(!usuario) return;
-    try{
-      const db = firebase.firestore();
-      const snap = await db.collection(HISTORICO_ENVIOS_COLLECTION)
-        .where('criadoPorUid', '==', usuario.uid)
-        .where('pendenteDocId', '==', cloudDocId)
-        .limit(1)
-        .get();
-      if(snap.empty) return;
-      await snap.docs[0].ref.update({
-        status: 'descartada',
-        descartadoEm: firebase.firestore.FieldValue.serverTimestamp(),
-        descartadoPorUid: usuario.uid,
-        descartadoPorEmail: usuario.email || null,
-        descartadoPorPerfil: perfilDispositivoLoad() || null,
-      });
-    }catch(err){
-      console.error('Falha ao notificar descarte da contagem no Painel:', err);
-    }
-  }
-
   function sessSave(){
     if(!session){ toast('Nenhuma sessão ativa',true); return; }
     if(!Object.keys(grouped).length){ toast('Nenhum item para salvar',true); return; }
@@ -5646,13 +5433,7 @@
     // Histórico, o item é removido da coleção "pendentes" da nuvem —
     // enquanto isso, pausar/voltar/recarregar mantinha o item lá,
     // disponível pra retomar.
-    if(session.cloudDocId){
-      _cloudConsume(session.cloudDocId);
-      // Avisa o site de conferência (tela Painel) que essa contagem foi
-      // finalizada, com o resultado completo — não bloqueia o
-      // salvamento local, que já aconteceu logo acima.
-      _notificarFinalizacaoNoPainel(session.cloudDocId, entry);
-    }
+    if(session.cloudDocId) _cloudConsume(session.cloudDocId);
 
     camStop();
     const finishedId = session.id;
@@ -6523,7 +6304,7 @@
             lotesExistentes.map((l,idx)=>
               `<span onclick="selecionarLoteExistente(${idx})" style="cursor:pointer;background:var(--s3);
                 border:1px solid var(--bd);border-radius:20px;padding:5px 10px;font-size:.6rem;color:var(--tx)">
-                ${ico('tag')} ${h_(l.lote)} · ${Number(l.quantidade)||0} pç</span>`
+                🏷 ${h_(l.lote)} · ${Number(l.quantidade)||0} pç</span>`
             ).join('')+
             '</div>';
         } else {
@@ -6831,7 +6612,7 @@
       if(r.obs){
         const obsEl=document.createElement('div');
         obsEl.style.cssText='font-size:.55rem;color:var(--wa);margin-top:2px;font-style:italic';
-        obsEl.innerHTML=ico('pencil')+' '+h_(r.obs);
+        obsEl.textContent='📝 '+r.obs;
         info.append(ref, meta, obsEl);
       } else {
         info.append(ref, meta);
@@ -6852,7 +6633,7 @@
       // Botão observação
       const obsBtn=document.createElement('button');
       obsBtn.className='idel';
-      obsBtn.innerHTML=ico('pencil');
+      obsBtn.textContent='📝';
       obsBtn.style.cssText='font-size:.85rem;opacity:'+(r.obs?'1':'.45');
       obsBtn.title='Adicionar observação';
       obsBtn.onclick=()=>openObsInline(r.ref, wrap);
@@ -6860,7 +6641,7 @@
       // Botão editar quantidade
       const editBtn=document.createElement('button');
       editBtn.className='idel';
-      editBtn.innerHTML=ico('pencil');
+      editBtn.textContent='✎';
       editBtn.style.cssText='color:var(--cy);font-size:.9rem';
       editBtn.onclick=()=>openEdit(r.ref);
 
@@ -7169,14 +6950,12 @@
     document.getElementById('hdet-title').textContent=hs.forn;
     document.getElementById('hdet-info').innerHTML=
       `Fornecedor: <b style="color:var(--cy)">${h_(hs.forn)}</b>${hs.nf?` · NF: ${h_(hs.nf)}`:''}`+
-      `${hs.origem==='foto_ia'?' · <span style="color:var(--gr)">'+ico('camera')+' Foto + IA</span>':(hs.tipo==='importado'?' · <span style="color:#a78bfa">'+ico('download')+' Importada</span>':'')}<br>`+
+      `${hs.origem==='foto_ia'?' · <span style="color:var(--gr)">📸 Foto + IA</span>':(hs.tipo==='importado'?' · <span style="color:#a78bfa">📥 Importada</span>':'')}<br>`+
       `Início: ${hs.start}  ·  Fim: ${hs.end||'—'}`;
 
     document.getElementById('btn-hdet-edit').style.display='block';
     document.getElementById('btn-hdet-edit').textContent='Editar';
     document.getElementById('hdet-edit-bar').style.display='none';
-    const searchEl = document.getElementById('hdet-search');
-    if(searchEl) searchEl.value='';
 
     renderHistDet();
     navTo('pg-hist-det');
@@ -7207,14 +6986,6 @@
 
     const listEl=document.getElementById('hdet-list');
     listEl.innerHTML='';
-
-    // Filtro de pesquisa (referência ou descrição) — só afeta a lista
-    // exibida; totais/estatísticas do topo continuam sobre tudo.
-    const searchEl = document.getElementById('hdet-search');
-    const searchTerm = searchEl ? searchEl.value.trim().toUpperCase() : '';
-    const visibleRows = searchTerm
-      ? rows.filter(r => (r.ref||'').toUpperCase().includes(searchTerm) || (r.desc||'').toUpperCase().includes(searchTerm))
-      : rows;
 
     // Totais de volumes da contagem
     const totalVols = (viewHist.items||[]).reduce((s,it)=>s+(it.vols||1),0);
@@ -7255,14 +7026,7 @@
       }
     }
 
-    if(searchTerm && !visibleRows.length){
-      const empty=document.createElement('div');
-      empty.style.cssText='text-align:center;color:var(--mu2);font-size:.65rem;padding:14px 0';
-      empty.textContent='Nenhuma referência encontrada para "'+searchTerm+'"';
-      listEl.appendChild(empty);
-    }
-
-    visibleRows.forEach(r=>{
+    rows.forEach(r=>{
       const st = isImport ? (computeStatus(viewHist.expected, viewHist.grouped, r.ref)||'pend') : null;
       const wrap=document.createElement('div');
       wrap.style.cssText='margin-bottom:6px';
@@ -7293,28 +7057,17 @@
       if(r.obs){
         const obsEl=document.createElement('div');
         obsEl.style.cssText='font-size:.55rem;color:var(--wa);margin-top:2px;font-style:italic';
-        obsEl.innerHTML=ico('pencil')+' '+h_(r.obs);
+        obsEl.textContent='📝 '+r.obs;
         info.append(ref, meta, obsEl);
       } else {
         info.append(ref, meta);
-      }
-
-      // Histórico de recontagem (refs que foram recontadas — ver
-      // resumoRetomar) — mantido e exibido mesmo após a contagem ser
-      // finalizada, pra nunca "sumir" da vista.
-      const rhist = viewHist.blindHistory && viewHist.blindHistory[r.ref];
-      if(rhist && rhist.length){
-        const histEl=document.createElement('div');
-        histEl.style.cssText='font-size:.55rem;color:var(--re);margin-top:2px;font-weight:600';
-        histEl.innerHTML=ico('undo')+' Recontagem · anterior'+(rhist.length>1?'es':'')+': '+rhist.map(h=>h.qty+' '+_unidLabel(r.ref, viewHist.expected)).join(', ');
-        info.appendChild(histEl);
       }
 
       // Lote(s)/Validade (se existir) — cada lote com sua quantidade
       if(r.lotes && r.lotes.length){
         const lotesEl=document.createElement('div');
         lotesEl.style.cssText='font-size:.55rem;color:var(--cy);margin-top:2px;line-height:1.6';
-        lotesEl.innerHTML = ico('tag') + ' ' + r.lotes.map(l =>
+        lotesEl.innerHTML = '🏷 ' + r.lotes.map(l =>
           `Lote ${h_(l.lote)}${l.validade?' · Val '+h_(l.validade):''} · ${Number(l.quantidade)||0} pç`
         ).join('<br>');
         info.append(lotesEl);
@@ -7324,7 +7077,7 @@
       if(r.multiplos && r.multiplos.length){
         const multEl=document.createElement('div');
         multEl.style.cssText='font-size:.55rem;color:var(--mu2);margin-top:2px;line-height:1.6';
-        multEl.innerHTML = ico('box') + ' ' + r.multiplos.map(m =>
+        multEl.innerHTML = '📦 ' + r.multiplos.map(m =>
           `${m.qtyPerVol} pç/vol × ${m.vols} vol = ${m.qty} pç`
         ).join('<br>');
         info.append(multEl);
@@ -7633,6 +7386,13 @@
   /* ═══════════════════════════════════════════════
      EXPORTAR DO DASHBOARD (botão rápido)
   ═══════════════════════════════════════════════ */
+  function dashExport(){
+    if(!session || !Object.keys(grouped).length){
+      toast('Nenhuma sessão ativa para exportar', true);
+      return;
+    }
+    exportSessAtiva();
+  }
   function h(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   const e=h;
   function ea(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
@@ -7722,7 +7482,7 @@
   /* ── Analisar etiqueta ── */
   async function aiAnalyze(){
     const key  = (typeof EMBEDDED_OPENAI_KEY==='string'&&EMBEDDED_OPENAI_KEY.trim().length>10?EMBEDDED_OPENAI_KEY.trim():(localStorage.getItem('rcb_openai_key')||''));
-    if(!key){ toast('Configure a chave OpenAI em Configurações',true); return; }
+    if(!key){ toast('Configure a chave OpenAI em Configurações ⚙',true); return; }
 
     const raw   = document.getElementById('ai-label-raw').value.trim();
     const forn  = document.getElementById('ai-forn-nome').value.trim();
@@ -7832,7 +7592,7 @@
       card.style.display = 'none';
     } finally {
       document.getElementById('ai-analyze-btn').disabled = false;
-      document.getElementById('ai-analyze-btn').innerHTML = ico('robot') + ' Analisar com IA';
+      document.getElementById('ai-analyze-btn').textContent = '🤖 Analisar com IA';
     }
   }
 
@@ -8165,7 +7925,7 @@
   async function aiChatSend(){
     if(_aiChatBusy) return;
     const key = (typeof EMBEDDED_OPENAI_KEY==='string'&&EMBEDDED_OPENAI_KEY.trim().length>10?EMBEDDED_OPENAI_KEY.trim():(localStorage.getItem('rcb_openai_key')||''));
-    if(!key){ toast('Configure a chave OpenAI em Configurações',true); return; }
+    if(!key){ toast('Configure a chave OpenAI em Configurações ⚙',true); return; }
 
     const inp = document.getElementById('ai-chat-input');
     const msg = inp.value.trim();
@@ -8278,7 +8038,7 @@
         const saveEl = document.createElement('div');
         saveEl.className = 'ai-msg sys';
         saveEl.style.cssText = 'align-self:stretch;text-align:center;cursor:pointer;background:rgba(0,245,160,.14);border-color:var(--gr);font-size:.64rem;padding:11px';
-        saveEl.innerHTML = ico('save') + ' Tudo certo! Toque aqui para <b style="color:var(--gr)">Salvar Fornecedor</b>';
+        saveEl.innerHTML = '💾 Tudo certo! Toque aqui para <b style="color:var(--gr)">Salvar Fornecedor</b>';
         saveEl.onclick = () => fornSave();
         box.appendChild(saveEl);
         setTimeout(()=>{ box.scrollTop = box.scrollHeight; }, 60);
@@ -8336,45 +8096,7 @@
   /* ═══════════════════════════════════════════════
      CONFIGURAÇÕES — pg-config
   ═══════════════════════════════════════════════ */
-  /* ═══════════════════════════════════════════════
-     PERFIL DESTE APARELHO — nome/apelido guardado só neste dispositivo
-     (localStorage), independente da conta da empresa usada no login.
-     Enviado junto quando esse aparelho finaliza ou descarta uma
-     contagem vinda da nuvem, pra o Painel do site de conferência
-     mostrar qual conferente foi o responsável por aquela ação — sem
-     precisar de um login individual por pessoa.
-  ═══════════════════════════════════════════════ */
-  const PERFIL_DISPOSITIVO_KEY = 'rcb_perfil_nome';
-
-  function perfilDispositivoLoad(){
-    try{ return localStorage.getItem(PERFIL_DISPOSITIVO_KEY) || ''; }catch(e){ return ''; }
-  }
-
-  function perfilDispositivoSalvar(){
-    const input = document.getElementById('cfg-perfil-nome');
-    const statusEl = document.getElementById('cfg-perfil-status');
-    const nome = input ? input.value.trim() : '';
-    try{
-      if(nome) localStorage.setItem(PERFIL_DISPOSITIVO_KEY, nome);
-      else localStorage.removeItem(PERFIL_DISPOSITIVO_KEY);
-      if(statusEl){
-        statusEl.textContent = nome
-          ? 'Salvo — esse nome vai junto nas próximas finalizações/descartes.'
-          : 'Nome removido — as próximas ações aparecerão sem responsável identificado.';
-      }
-      toast(nome ? 'Perfil do aparelho salvo' : 'Perfil do aparelho removido');
-    }catch(e){
-      console.error('Falha ao salvar perfil do aparelho:', e);
-      toast('Não foi possível salvar o perfil deste aparelho', true);
-    }
-  }
-
   function cfgPageOpen(){
-    const perfilInput = document.getElementById('cfg-perfil-nome');
-    if(perfilInput) perfilInput.value = perfilDispositivoLoad();
-    const perfilStatus = document.getElementById('cfg-perfil-status');
-    if(perfilStatus) perfilStatus.textContent = '';
-
     // Status Vision
     const embVision = typeof EMBEDDED_VISION_KEY==='string' && EMBEDDED_VISION_KEY.trim().length>10;
     const lsVision  = localStorage.getItem('rcb_vision_key') || '';
@@ -8628,7 +8350,7 @@
     if(_dashFiltroAtivo === 'tudo')  return 'EXIBINDO TODOS OS REGISTROS';
     if(_dashFiltroAtivo === 'dia')   return `HOJE — ${now.toLocaleDateString('pt-BR')}`;
     if(_dashFiltroAtivo === 'turno'){
-      const nomes = {manha:ico('sun')+' MANHÃ (06h–14h)', tarde:ico('cloudSun')+' TARDE (14h–22h)', noite:ico('moon')+' NOITE (22h–06h)'};
+      const nomes = {manha:'☀️ MANHÃ (06h–14h)', tarde:'🌤 TARDE (14h–22h)', noite:'🌙 NOITE (22h–06h)'};
       return 'TURNO ' + (nomes[_dashTurnoAtivo] || '');
     }
     if(_dashFiltroAtivo === 'range' && _dashRangeDe && _dashRangeAte){
@@ -8643,7 +8365,7 @@
 
     // Label do filtro
     const labelEl = document.getElementById('dash-filtro-label');
-    if(labelEl) labelEl.innerHTML = _labelFiltro();
+    if(labelEl) labelEl.textContent = _labelFiltro();
 
     // ── Calcular totais ──────────────────────────────────────
     let totalVols = 0, totalPecas = 0;
@@ -8680,7 +8402,7 @@
 
     // ── Última contagem ──────────────────────────────────────
     if(hist.length){
-      const ult  = hist[0]; // histAdd usa unshift, então o índice 0 é sempre o mais recente
+      const ult  = hist[hist.length-1];
       const ultV = (ult.items||[]).reduce((s,it)=>s+(it.vols||1),0);
       const ultP = Object.values(ult.grouped||{}).reduce((s,r)=>s+(r.qty||0),0);
       _s('da-ultima-forn', ult.forn||'—');
@@ -8703,7 +8425,7 @@
         fl.innerHTML = sorted.map(([nome,d],i)=>{
           const pct = Math.round((d.vols/maxV)*100);
           const cor = CORES[i%CORES.length];
-          const medal = _rankBadge(i);
+          const medal = ['🥇','🥈','🥉','',''][i]||'';
           return `<div style="margin-bottom:${i<sorted.length-1?'9':'0'}px">
             <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
               <div style="font-size:.65rem;font-family:var(--R);font-weight:700;color:var(--tx)">${medal} ${nome}</div>
@@ -8812,6 +8534,19 @@
   function initTheme(){
     const saved = localStorage.getItem('rcb_theme') || 'dark';
     applyTheme(saved);
+  }
+
+
+  /* Exportar — abre a sessão ativa ou avisa que não há sessão */
+  function dashExportMenu(){
+    if(session && Object.keys(grouped).length){
+      dashExport();
+    } else if(histLoad().length){
+      navTo('pg-hist');
+      toast('Selecione uma contagem para exportar');
+    } else {
+      toast('Nenhuma sessão ou contagem para exportar', true);
+    }
   }
 
 </script>
