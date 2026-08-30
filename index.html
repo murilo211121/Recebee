@@ -1126,11 +1126,13 @@
 <!-- MODAL RESUMO — revisão obrigatória antes de finalizar a contagem às cegas -->
 <div class="mbg" id="mdl-resumo">
   <div class="md" style="max-width:420px;max-height:82vh;overflow-y:auto">
-    <h3>Resumo da Contagem</h3>
+    <h3 style="display:flex;align-items:center;gap:7px">
+      <span id="resumo-titulo-ico" style="display:inline-flex"></span> Resumo da Contagem
+    </h3>
     <div id="resumo-ok" style="display:none;text-align:center;color:var(--gr);font-size:.68rem;
-      margin-bottom:12px;line-height:1.6">✔ Tudo convergente — pronto para salvar.</div>
+      margin-bottom:12px;line-height:1.6">Tudo convergente — pronto para salvar.</div>
     <div id="resumo-warn" style="display:none;font-size:.6rem;color:var(--re);line-height:1.7;margin-bottom:12px">
-      ⚠ Há referências divergentes ou pendentes. Revise abaixo — você pode retomar a contagem
+      Há referências divergentes ou pendentes. Revise abaixo — você pode retomar a contagem
       para corrigir, ou finalizar assim mesmo. Ao retomar, os itens convergentes ficam ocultos
       (dá pra reexibi-los) e a contagem dos divergentes zera para a recontagem, mantendo o
       histórico das tentativas anteriores.
@@ -2511,7 +2513,8 @@
     x:       '<path d="M5 5l14 14M19 5 5 19"/>',
     warning: '<path d="M12 3 22 20H2z"/><path d="M12 9.5v5M12 17.5v.1"/>',
     pause:   '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
-    play:    '<path d="M6 4l14 8-14 8z"/>'
+    play:    '<path d="M6 4l14 8-14 8z"/>',
+    plus:    '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>'
   };
   function ico(name, opts){
     opts = opts || {};
@@ -5372,32 +5375,75 @@
       </div>`;
   }
 
+  function _dashResumoParseDataHoraPtBR(str){
+    if(!str) return null;
+    const m = String(str).match(/^(\d{2})\/(\d{2})\/(\d{4}),?\s*(\d{2}):(\d{2}):(\d{2})/);
+    if(!m) return null;
+    const [, dia, mes, ano, hora, min, seg] = m;
+    const dt = new Date(Number(ano), Number(mes)-1, Number(dia), Number(hora), Number(min), Number(seg));
+    return isNaN(dt.getTime()) ? null : dt.getTime();
+  }
+
+  function _resumoFmtDuracao(ms){
+    if(ms==null || !isFinite(ms) || ms<0) return '—';
+    const totalSeg = Math.round(ms/1000);
+    const h = Math.floor(totalSeg/3600), min = Math.floor((totalSeg%3600)/60), seg = totalSeg%60;
+    if(h>0) return `${h}h ${String(min).padStart(2,'0')}min`;
+    if(min>0) return `${min}min ${String(seg).padStart(2,'0')}s`;
+    return `${seg}s`;
+  }
+
   function openResumoModal(){
     const data = _buildResumoData();
     const hasIssues = data.div.length>0 || data.pend.length>0;
     _lastResumoData = data; // usado por resumoRetomar() para marcar divergentes em vermelho
 
-    let html = `<div class="rr"><span class="rk">✔ Convergentes</span><span class="rv" style="color:var(--gr)">${data.conv.length}</span></div>`;
+    const totalRefs   = data.conv.length + data.div.length + data.pend.length + data.extra.length;
+    const totalVols    = Object.values(grouped).reduce((s,g)=>s+(Number(g.vols)||0), 0);
+    const inicioMs      = session && session.start ? _dashResumoParseDataHoraPtBR(session.start) : null;
+    const duracao       = inicioMs!=null ? _resumoFmtDuracao(Date.now()-inicioMs) : '—';
+
+    // Cards de estatística — só contagens/totais que não revelam a
+    // quantidade esperada da nota (mantém a contagem às cegas intacta
+    // até finalizar de verdade).
+    const statCard = (n, l, cor) => `
+      <div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:10px 6px;text-align:center">
+        <div style="font-size:1.15rem;font-weight:700;font-family:var(--R);color:${cor||'var(--tx)'}">${n}</div>
+        <div style="font-size:.56rem;color:var(--mu2);text-transform:uppercase;letter-spacing:.4px;margin-top:2px">${l}</div>
+      </div>`;
+    let html = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
+      ${statCard(items.length, 'Scans', null)}
+      ${statCard(totalRefs, 'Referências', null)}
+      ${statCard(totalVols, 'Volumes', null)}
+      ${statCard(duracao, 'Duração', null)}
+    </div>`;
+
+    html += `<div style="display:grid;grid-template-columns:repeat(${data.extra.length ? 4 : 3},1fr);gap:8px;margin-bottom:14px">
+      ${statCard(data.conv.length, 'Convergentes', 'var(--gr)')}
+      ${statCard(data.div.length, 'Divergentes', data.div.length ? 'var(--re)' : 'var(--mu2)')}
+      ${statCard(data.pend.length, 'Pendentes', data.pend.length ? 'var(--wa)' : 'var(--mu2)')}
+      ${data.extra.length ? statCard(data.extra.length, 'Fora da lista', 'var(--cy)') : ''}
+    </div>`;
 
     if(data.div.length){
       html += `<div style="margin-top:12px;font-family:var(--R);font-weight:700;font-size:.6rem;
-        letter-spacing:1px;color:var(--re);text-transform:uppercase">⚠ Divergentes (${data.div.length})</div>`;
+        letter-spacing:1px;color:var(--re);text-transform:uppercase;display:flex;align-items:center;gap:5px">${ico('warning',{size:12})} Divergentes (${data.div.length})</div>`;
       html += data.div.map(r=>_resumoRowHTML(r,'div')).join('');
     }
     if(data.pend.length){
       html += `<div style="margin-top:12px;font-family:var(--R);font-weight:700;font-size:.6rem;
-        letter-spacing:1px;color:var(--mu2);text-transform:uppercase">○ Pendentes (${data.pend.length})</div>`;
+        letter-spacing:1px;color:var(--mu2);text-transform:uppercase;display:flex;align-items:center;gap:5px">${ico('clock',{size:12})} Pendentes (${data.pend.length})</div>`;
       html += data.pend.map(r=>_resumoRowHTML(r,'pend')).join('');
     }
     if(data.extra.length){
       html += `<div style="margin-top:12px;font-family:var(--R);font-weight:700;font-size:.6rem;
-        letter-spacing:1px;color:var(--cy);text-transform:uppercase">＋ Fora da lista (${data.extra.length})</div>`;
+        letter-spacing:1px;color:var(--cy);text-transform:uppercase;display:flex;align-items:center;gap:5px">${ico('plus',{size:12})} Fora da lista (${data.extra.length})</div>`;
       html += data.extra.map(r=>_resumoRowHTML(r,'extra')).join('');
     }
 
     if(data.lotesAll && data.lotesAll.length){
       html += `<div style="margin-top:12px;font-family:var(--R);font-weight:700;font-size:.6rem;
-        letter-spacing:1px;color:var(--cy);text-transform:uppercase">${ico('tag')} Lotes Registrados (${data.lotesAll.length})</div>`;
+        letter-spacing:1px;color:var(--cy);text-transform:uppercase;display:flex;align-items:center;gap:5px">${ico('tag',{size:12})} Lotes Registrados (${data.lotesAll.length})</div>`;
       html += data.lotesAll.map(item => `
         <div class="ic" style="margin-top:4px;flex-wrap:wrap;gap:4px">
           <div style="flex:1;min-width:0">
@@ -5408,6 +5454,9 @@
     }
 
     document.getElementById('resumo-body').innerHTML = html;
+    document.getElementById('resumo-titulo-ico').innerHTML = hasIssues
+      ? ico('warning', { size: 16, style: 'color:var(--re)' })
+      : ico('check', { size: 16, style: 'color:var(--gr)' });
     document.getElementById('resumo-ok').style.display   = hasIssues ? 'none'  : 'block';
     document.getElementById('resumo-warn').style.display = hasIssues ? 'block' : 'none';
     document.getElementById('mdl-resumo').classList.add('on');
