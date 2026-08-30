@@ -1126,21 +1126,12 @@
 <!-- MODAL RESUMO — revisão obrigatória antes de finalizar a contagem às cegas -->
 <div class="mbg" id="mdl-resumo">
   <div class="md" style="max-width:420px;max-height:82vh;overflow-y:auto">
-    <h3 style="display:flex;align-items:center;gap:7px">
-      <span id="resumo-titulo-ico" style="display:inline-flex"></span> Resumo da Contagem
-    </h3>
-    <div id="resumo-ok" style="display:none;text-align:center;color:var(--gr);font-size:.68rem;
-      margin-bottom:12px;line-height:1.6">Tudo convergente — pronto para salvar.</div>
-    <div id="resumo-warn" style="display:none;font-size:.6rem;color:var(--re);line-height:1.7;margin-bottom:12px">
-      Há referências divergentes ou pendentes. Revise abaixo — você pode retomar a contagem
-      para corrigir, ou finalizar assim mesmo. Ao retomar, os itens convergentes ficam ocultos
-      (dá pra reexibi-los) e a contagem dos divergentes zera para a recontagem, mantendo o
-      histórico das tentativas anteriores.
-    </div>
+    <h3>Resumo da Contagem</h3>
+    <div id="resumo-header"></div>
     <div id="resumo-body"></div>
     <div class="mrow">
       <button class="btn btn-x"  onclick="resumoRetomar()">Retomar Contagem</button>
-      <button class="btn btn-gr" onclick="resumoConfirmar()">Finalizar e Salvar</button>
+      <button class="btn btn-gr" onclick="resumoConfirmar()"><span id="resumo-btn-ico" style="display:inline-flex;margin-right:4px;vertical-align:-2px"></span>Finalizar e Salvar</button>
     </div>
   </div>
 </div>
@@ -5398,33 +5389,69 @@
     const hasIssues = data.div.length>0 || data.pend.length>0;
     _lastResumoData = data; // usado por resumoRetomar() para marcar divergentes em vermelho
 
-    const totalRefs   = data.conv.length + data.div.length + data.pend.length + data.extra.length;
-    const totalVols    = Object.values(grouped).reduce((s,g)=>s+(Number(g.vols)||0), 0);
-    const inicioMs      = session && session.start ? _dashResumoParseDataHoraPtBR(session.start) : null;
-    const duracao       = inicioMs!=null ? _resumoFmtDuracao(Date.now()-inicioMs) : '—';
+    // "Conferidos" conta só os itens da lista esperada (checklist) —
+    // convergentes + divergentes + pendentes. "Fora da lista" fica de
+    // fora dessa soma porque não são itens que a nota previa.
+    const conferidos = data.conv.length + data.div.length + data.pend.length;
+
+    // ── Cabeçalho: ícone + título + subtítulo, estilo "card de status" ──
+    const corIcone = hasIssues ? 'var(--re)' : 'var(--gr)';
+    const bgIcone  = hasIssues ? 'rgba(225,75,75,.15)' : 'rgba(31,169,113,.15)';
+    const iconeNome = hasIssues ? 'warning' : 'check';
+    const titulo = hasIssues ? 'Conferência com pendências' : 'Conferência concluída';
+    const totalProblemas = data.div.length + data.pend.length;
+    const subtitulo = hasIssues
+      ? `${totalProblemas} referência${totalProblemas!==1?'s':''} ainda precisa${totalProblemas!==1?'m':''} de atenção.`
+      : 'Todos os itens contados estão convergentes.';
+
+    let headerHtml = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:44px;height:44px;border-radius:50%;background:${bgIcone};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        ${ico(iconeNome, { size: 22, style: `color:${corIcone}` })}
+      </div>
+      <div>
+        <div style="font-family:var(--R);font-weight:700;font-size:.92rem;color:var(--tx)">${titulo}</div>
+        <div style="font-size:.7rem;color:var(--mu2);margin-top:2px">${subtitulo}</div>
+      </div>
+    </div>`;
 
     // Cards de estatística — só contagens/totais que não revelam a
     // quantidade esperada da nota (mantém a contagem às cegas intacta
     // até finalizar de verdade).
     const statCard = (n, l, cor) => `
-      <div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:10px 6px;text-align:center">
-        <div style="font-size:1.15rem;font-weight:700;font-family:var(--R);color:${cor||'var(--tx)'}">${n}</div>
-        <div style="font-size:.56rem;color:var(--mu2);text-transform:uppercase;letter-spacing:.4px;margin-top:2px">${l}</div>
+      <div style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 6px;text-align:center">
+        <div style="font-size:1.3rem;font-weight:700;font-family:var(--R);color:${cor||'var(--tx)'}">${n}</div>
+        <div style="font-size:.58rem;color:var(--mu2);text-transform:uppercase;letter-spacing:.4px;margin-top:3px">${l}</div>
       </div>`;
-    let html = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
-      ${statCard(items.length, 'Scans', null)}
-      ${statCard(totalRefs, 'Referências', null)}
-      ${statCard(totalVols, 'Volumes', null)}
-      ${statCard(duracao, 'Duração', null)}
-    </div>`;
 
-    html += `<div style="display:grid;grid-template-columns:repeat(${data.extra.length ? 4 : 3},1fr);gap:8px;margin-bottom:14px">
+    const extrasCols = (data.pend.length ? 1 : 0) + (data.extra.length ? 1 : 0);
+    headerHtml += `<div style="display:grid;grid-template-columns:repeat(${3 + extrasCols},1fr);gap:8px;margin-bottom:14px">
+      ${statCard(conferidos, 'Conferidos', null)}
       ${statCard(data.conv.length, 'Convergentes', 'var(--gr)')}
       ${statCard(data.div.length, 'Divergentes', data.div.length ? 'var(--re)' : 'var(--mu2)')}
-      ${statCard(data.pend.length, 'Pendentes', data.pend.length ? 'var(--wa)' : 'var(--mu2)')}
+      ${data.pend.length ? statCard(data.pend.length, 'Pendentes', 'var(--wa)') : ''}
       ${data.extra.length ? statCard(data.extra.length, 'Fora da lista', 'var(--cy)') : ''}
     </div>`;
 
+    // Faixa de status — verde quando bate tudo, âmbar com as instruções
+    // de como proceder quando há algo pra revisar.
+    if(!hasIssues){
+      headerHtml += `<div style="display:flex;align-items:center;gap:7px;background:rgba(31,169,113,.12);
+        border:1px solid var(--gr);border-radius:8px;padding:9px 12px;margin-bottom:14px;color:var(--gr);font-size:.72rem;font-weight:600">
+        ${ico('check',{size:13})} Nenhuma divergência encontrada
+      </div>`;
+    } else {
+      headerHtml += `<div style="background:rgba(224,160,32,.12);border:1px solid var(--wa);border-radius:8px;
+        padding:9px 12px;margin-bottom:14px;color:var(--tx);font-size:.62rem;line-height:1.6">
+        <div style="display:flex;align-items:center;gap:6px;color:var(--wa);font-weight:700;margin-bottom:3px">
+          ${ico('warning',{size:12})} Revise abaixo antes de finalizar
+        </div>
+        Você pode retomar a contagem para corrigir, ou finalizar assim mesmo. Ao retomar, os itens
+        convergentes ficam ocultos (dá pra reexibi-los) e a contagem dos divergentes zera para a
+        recontagem, mantendo o histórico das tentativas anteriores.
+      </div>`;
+    }
+
+    let html = '';
     if(data.div.length){
       html += `<div style="margin-top:12px;font-family:var(--R);font-weight:700;font-size:.6rem;
         letter-spacing:1px;color:var(--re);text-transform:uppercase;display:flex;align-items:center;gap:5px">${ico('warning',{size:12})} Divergentes (${data.div.length})</div>`;
@@ -5453,12 +5480,9 @@
         </div>`).join('');
     }
 
+    document.getElementById('resumo-header').innerHTML = headerHtml;
     document.getElementById('resumo-body').innerHTML = html;
-    document.getElementById('resumo-titulo-ico').innerHTML = hasIssues
-      ? ico('warning', { size: 16, style: 'color:var(--re)' })
-      : ico('check', { size: 16, style: 'color:var(--gr)' });
-    document.getElementById('resumo-ok').style.display   = hasIssues ? 'none'  : 'block';
-    document.getElementById('resumo-warn').style.display = hasIssues ? 'block' : 'none';
+    document.getElementById('resumo-btn-ico').innerHTML = ico('check', { size: 13 });
     document.getElementById('mdl-resumo').classList.add('on');
   }
 
