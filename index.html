@@ -1234,60 +1234,60 @@
       </div>
 
       <!-- Grade 2×2 de ações secundárias -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:8px;margin-bottom:10px">
 
         <!-- Contagens -->
         <div onclick="navTo('pg-hist')"
              style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
-          padding:14px;cursor:pointer;transition:border-color .15s;
+          padding:14px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;justify-content:center;min-height:84px;
           -webkit-tap-highlight-color:transparent"
              onmousedown="this.style.background='var(--s2)'" onmouseup="this.style.background='var(--s1)'"
              ontouchstart="this.style.background='var(--s2)'" ontouchend="this.style.background='var(--s1)'">
           <div style="font-size:.56rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Histórico</div>
           <div style="font-family:var(--R);font-weight:700;font-size:.86rem;
-            color:var(--tx);margin-bottom:3px">Contagens</div>
+            color:var(--tx);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Contagens</div>
           <div id="db-hist-sub"
-               style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px">0 contagens</div>
+               style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">0 contagens</div>
         </div>
 
         <!-- Estatísticas -->
         <div onclick="navTo('pg-stats')"
              style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
-          padding:14px;cursor:pointer;transition:border-color .15s;
+          padding:14px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;justify-content:center;min-height:84px;
           -webkit-tap-highlight-color:transparent"
              onmousedown="this.style.background='var(--s2)'" onmouseup="this.style.background='var(--s1)'"
              ontouchstart="this.style.background='var(--s2)'" ontouchend="this.style.background='var(--s1)'">
           <div style="font-size:.56rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Indicadores</div>
           <div style="font-family:var(--R);font-weight:700;font-size:.86rem;
-            color:var(--tx);margin-bottom:3px">Estatísticas</div>
-          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px"
+            color:var(--tx);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Estatísticas</div>
+          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
                id="db-stats-sub">Volumes e indicadores</div>
         </div>
 
         <!-- Fornecedores -->
         <div onclick="navTo('pg-forn')"
              style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
-          padding:14px;cursor:pointer;transition:border-color .15s;
+          padding:14px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;justify-content:center;min-height:84px;
           -webkit-tap-highlight-color:transparent"
              onmousedown="this.style.background='var(--s2)'" onmouseup="this.style.background='var(--s1)'"
              ontouchstart="this.style.background='var(--s2)'" ontouchend="this.style.background='var(--s1)'">
           <div style="font-size:.56rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Cadastro</div>
           <div style="font-family:var(--R);font-weight:700;font-size:.86rem;
-            color:var(--tx);margin-bottom:3px">Fornecedores</div>
-          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px">Padrões cadastrados</div>
+            color:var(--tx);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Fornecedores</div>
+          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Padrões cadastrados</div>
         </div>
 
         <!-- Última Contagem -->
         <div id="db-ultima-card" onclick="_openUltimaContagem()"
              style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
-          padding:14px;cursor:pointer;transition:border-color .15s;
+          padding:14px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;justify-content:center;min-height:84px;
           -webkit-tap-highlight-color:transparent"
              onmousedown="this.style.background='var(--s2)'" onmouseup="this.style.background='var(--s1)'"
              ontouchstart="this.style.background='var(--s2)'" ontouchend="this.style.background='var(--s1)'">
           <div style="font-size:.56rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Recente</div>
           <div id="db-ultima-forn" style="font-family:var(--R);font-weight:700;font-size:.86rem;
             color:var(--tx);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Última Contagem</div>
-          <div id="db-ultima-sub" style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px">Nenhuma ainda</div>
+          <div id="db-ultima-sub" style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Nenhuma ainda</div>
         </div>
 
       </div>
