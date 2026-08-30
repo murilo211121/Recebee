@@ -1140,7 +1140,7 @@
      PG: DASHBOARD
 ═══════════════════════════════════ -->
 <div class="pg" id="pg-dash">
-  <div class="body" style="padding:0;overflow-y:auto;display:flex;flex-direction:column;justify-content:space-between">
+  <div class="body" style="padding:0;overflow-y:auto">
 
     <!-- ── HERO / CABEÇALHO ──────────────────────── -->
     <div class="dash-hero">
@@ -1182,28 +1182,22 @@
     <span id="d-vols" style="display:none">0</span>
     <span id="d-hist-label" style="display:none"></span>
 
-    <!-- Agrupa sessão + menu num único bloco flexível — junto com o hero
-         (topo) e os créditos (rodapé), forma 3 grupos distribuídos pelo
-         .body (ver justify-content:space-between), preenchendo a tela
-         inteira mesmo em aparelhos com viewport mais alto, sem deixar
-         vazio nem cortar nada. -->
-    <div>
-      <!-- ── CARD DE SESSÃO ATIVA ───────────────────── -->
-      <div style="padding:10px 12px 0">
-        <div class="sess-pill" id="sess-pill" onclick="sessPillClick()"
-             style="margin-bottom:0">
-          <div class="sdot" id="sdot"></div>
-          <div class="sinfo">
-            <div class="sname" id="sname">Nenhuma sessão ativa</div>
-            <div class="sdet"  id="sdet">Inicie uma contagem para começar</div>
-          </div>
-          <div style="font-size:.65rem;color:var(--cy);font-family:var(--R);font-weight:600"
-               id="sess-arrow">›</div>
+    <!-- ── CARD DE SESSÃO ATIVA ───────────────────── -->
+    <div style="padding:10px 12px 0">
+      <div class="sess-pill" id="sess-pill" onclick="sessPillClick()"
+           style="margin-bottom:0">
+        <div class="sdot" id="sdot"></div>
+        <div class="sinfo">
+          <div class="sname" id="sname">Nenhuma sessão ativa</div>
+          <div class="sdet"  id="sdet">Inicie uma contagem para começar</div>
         </div>
+        <div style="font-size:.65rem;color:var(--cy);font-family:var(--R);font-weight:600"
+             id="sess-arrow">›</div>
       </div>
+    </div>
 
-      <!-- ── MENU PRINCIPAL ────────────────────────── -->
-      <div style="padding:10px 12px 0">
+    <!-- ── MENU PRINCIPAL ────────────────────────── -->
+    <div style="padding:10px 12px 0">
 
       <!-- Botão principal: Iniciar / Continuar Contagem (destaque máximo) -->
       <div id="dbtn-scan" onclick="navTo('pg-scan')"
@@ -1297,7 +1291,6 @@
         </div>
 
       </div>
-    </div>
     </div>
 
     <!-- Créditos -->
