@@ -1123,6 +1123,30 @@
   </div>
 </div>
 
+<!-- MODAL NOME DO CONFERENTE — obrigatório antes de finalizar qualquer
+     contagem (cega ou padrão). Pausar ou descartar não passam por aqui. -->
+<div class="mbg" id="mdl-conferente">
+  <div class="md" style="max-width:380px">
+    <h3>Nome do Conferente</h3>
+    <div style="font-size:.68rem;color:var(--mu2);line-height:1.6;margin-bottom:14px">
+      Antes de finalizar, informe quem fez essa contagem. Esse nome fica registrado
+      junto com o resultado.
+    </div>
+    <form id="conferente-form" onsubmit="event.preventDefault(); conferenteConfirmar();">
+      <input id="conferente-input" type="text" placeholder="Ex: João Silva" autocomplete="off" maxlength="60"
+             style="width:100%;box-sizing:border-box;padding:11px 13px;border-radius:10px;border:1px solid var(--bd);
+             background:var(--s2);color:var(--tx);font-size:.85rem;margin-bottom:6px">
+      <div id="conferente-erro" style="display:none;color:var(--re);font-size:.62rem;margin-bottom:8px">
+        Digite o nome do conferente para continuar.
+      </div>
+    </form>
+    <div class="mrow" style="margin-top:10px">
+      <button class="btn btn-x"  onclick="conferenteCancelar()">Cancelar</button>
+      <button class="btn btn-gr" onclick="conferenteConfirmar()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL RESUMO — revisão obrigatória antes de finalizar a contagem às cegas -->
 <div class="mbg" id="mdl-resumo">
   <div class="md" style="max-width:420px;max-height:82vh;overflow-y:auto">
@@ -2505,7 +2529,8 @@
     warning: '<path d="M12 3 22 20H2z"/><path d="M12 9.5v5M12 17.5v.1"/>',
     pause:   '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
     play:    '<path d="M6 4l14 8-14 8z"/>',
-    plus:    '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>'
+    plus:    '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+    user:    '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'
   };
   function ico(name, opts){
     opts = opts || {};
@@ -5305,11 +5330,53 @@
     if(!session){ toast('Nenhuma sessão ativa',true); return; }
     if(!Object.keys(grouped).length){ toast('Nenhum item para salvar',true); return; }
 
+    // Nome do conferente é obrigatório pra finalizar (não pra pausar ou
+    // descartar) — se ainda não foi informado nessa sessão, intercepta
+    // aqui e só prossegue depois que o usuário confirmar o nome.
+    if(!session.conferente){
+      _abrirModalConferente();
+      return;
+    }
+
     if(session.tipo==='importado' && session.expected){
       openResumoModal();
     } else {
       sessSave();
     }
+  }
+
+  function _abrirModalConferente(){
+    const input = document.getElementById('conferente-input');
+    const erro  = document.getElementById('conferente-erro');
+    if(input) input.value = perfilDispositivoLoad() || '';
+    if(erro) erro.style.display = 'none';
+    document.getElementById('mdl-conferente').classList.add('on');
+    if(input) setTimeout(()=>input.focus(), 50);
+  }
+
+  function conferenteCancelar(){
+    document.getElementById('mdl-conferente').classList.remove('on');
+  }
+
+  function conferenteConfirmar(){
+    const input = document.getElementById('conferente-input');
+    const erro  = document.getElementById('conferente-erro');
+    const nome  = input ? input.value.trim() : '';
+    if(!nome){
+      if(erro) erro.style.display = 'block';
+      if(input) input.focus();
+      return;
+    }
+    if(!session){ document.getElementById('mdl-conferente').classList.remove('on'); return; }
+
+    session.conferente = nome;
+    sessStateSave();
+    document.getElementById('mdl-conferente').classList.remove('on');
+
+    // Retoma exatamente o fluxo de finalização de onde parou — agora
+    // com session.conferente já preenchido, sessFinalizeClick segue
+    // direto pro resumo/salvamento sem pedir o nome de novo.
+    sessFinalizeClick();
   }
 
   function _buildResumoData(){
@@ -5404,7 +5471,7 @@
       ? `${totalProblemas} referência${totalProblemas!==1?'s':''} ainda precisa${totalProblemas!==1?'m':''} de atenção.`
       : 'Todos os itens contados estão convergentes.';
 
-    let headerHtml = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+    let headerHtml = `<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
       <div style="width:44px;height:44px;border-radius:50%;background:${bgIcone};display:flex;align-items:center;justify-content:center;flex-shrink:0">
         ${ico(iconeNome, { size: 22, style: `color:${corIcone}` })}
       </div>
@@ -5413,6 +5480,12 @@
         <div style="font-size:.7rem;color:var(--mu2);margin-top:2px">${subtitulo}</div>
       </div>
     </div>`;
+
+    if(session && session.conferente){
+      headerHtml += `<div style="display:flex;align-items:center;gap:6px;color:var(--mu2);font-size:.66rem;margin-bottom:14px">
+        ${ico('user',{size:12})} Conferente: <span style="color:var(--tx);font-weight:600">${h_(session.conferente)}</span>
+      </div>`;
+    }
 
     // Cards de estatística — só contagens/totais que não revelam a
     // quantidade esperada da nota (mantém a contagem às cegas intacta
@@ -5653,7 +5726,10 @@
         finalizadoEm: firebase.firestore.FieldValue.serverTimestamp(),
         finalizadoPorUid: usuario.uid,
         finalizadoPorEmail: usuario.email || null,
-        finalizadoPorPerfil: perfilDispositivoLoad() || null,
+        // Prioriza o nome do conferente digitado na hora de finalizar
+        // essa contagem específica; só cai no perfil do aparelho
+        // (Configurações) se por algum motivo não tiver sido gravado.
+        finalizadoPorPerfil: entry.conferente || perfilDispositivoLoad() || null,
         resultado: _buildResultadoParaPainel(entry),
       });
     }catch(err){
@@ -5710,7 +5786,8 @@
       expected     : session.expected || null,
       expectedOrder: session.expectedOrder || null,
       importMeta   : session.importMeta || null,
-      blindHistory : session.blindHistory || null
+      blindHistory : session.blindHistory || null,
+      conferente   : session.conferente || null
     };
     const ok = histAdd(entry);
     if(!ok){ toast('Falha ao salvar — armazenamento cheio!', true); return; }
