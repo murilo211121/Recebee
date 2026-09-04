@@ -1885,8 +1885,6 @@
         </div>
       </div>
 
-      <div style="font-family:var(--R);font-weight:700;font-size:.62rem;letter-spacing:1px;
-        text-transform:uppercase;color:var(--mu2);margin-bottom:8px">Checklist da Planilha</div>
       <div class="ilist" id="blind-status-ilist"></div>
     </div>
 
@@ -4639,7 +4637,7 @@
             ${badge ? `<span class="status-badge status-conv" style="flex-shrink:0">${badge}</span>` : ''}
           </div>
           <div style="font-size:.62rem;color:var(--mu2);margin-top:3px">
-            ${d.nf ? 'NF '+h(d.nf)+' · ' : ''}${qtdRefs} referência${qtdRefs!==1?'s':''} · ${qtdTotal} pç
+            ${d.nf ? 'NF '+h(d.nf)+' · ' : ''}${qtdRefs} referência${qtdRefs!==1?'s':''}
           </div>
           ${quando ? `<div style="font-size:.54rem;color:var(--mu2);margin-top:2px;opacity:.7">${h(quando)}</div>` : ''}
         </div>`;
