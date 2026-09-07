@@ -99,6 +99,7 @@
         spinnerEl.style.display = 'block';
         try{
           await auth.signInWithEmailAndPassword(email, senha);
+          registrarEvento('USUARIO_LOGIN', {});
         } catch (err){
           console.error(err);
           const mensagens = {
@@ -116,7 +117,61 @@
       });
     }
 
+    /* ═══════════════════════════════════════════════════════════════
+       EVENTOS — camada de auditoria/monitoramento (Etapa 1 do projeto
+       RecebeMais Intelligence). Cada evento importante do fluxo grava
+       um registro em "eventos", sempre best-effort — nunca trava nem
+       quebra o fluxo principal se a gravação falhar, porque é um log,
+       não uma operação crítica. Isolado por "criadoPorUid", mesmo
+       padrão de segurança já usado no resto do app.
+       ═══════════════════════════════════════════════════════════════ */
+    async function registrarEvento(tipoEvento, dados){
+      dados = dados || {};
+      try{
+        const usuario = firebase.auth().currentUser;
+        if (!usuario) return;
+        const db = firebase.firestore();
+        await db.collection('eventos').add({
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          tipoEvento,
+          usuarioId: usuario.uid,
+          usuarioNome: (typeof perfilDispositivoLoad === 'function' ? perfilDispositivoLoad() : '') || usuario.email || null,
+          origem: 'recebemais',
+          criadoPorUid: usuario.uid,
+          ...dados,
+        });
+      }catch(err){
+        console.error('Falha ao registrar evento:', tipoEvento, err);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MONITORAMENTO TÉCNICO (Etapa 4) — mesma rede de segurança do
+       Extrator NF: captura erro de JS não tratado e Promise rejeitada
+       sem catch, grava como ERRO_SISTEMA. Deduplicado por sessão pra
+       não inundar "eventos" com o mesmo erro repetido.
+       ═══════════════════════════════════════════════════════════════ */
+    (function _instalarCapturaDeErrosRecebeMais(){
+      const jaLogados = new Set();
+      function _logErroAutomatico(mensagem, extra){
+        const chave = String(mensagem || 'Erro desconhecido').slice(0, 200);
+        if (jaLogados.has(chave)) return;
+        jaLogados.add(chave);
+        if (typeof registrarEvento === 'function'){
+          registrarEvento('ERRO_SISTEMA', { mensagem: chave, setor: 'recebemais', metadata: extra || null });
+        }
+      }
+      window.addEventListener('error', (event) => {
+        _logErroAutomatico(event.message, { arquivo: event.filename || null, linha: event.lineno || null });
+      });
+      window.addEventListener('unhandledrejection', (event) => {
+        const motivo = event.reason && event.reason.message ? event.reason.message : String(event.reason);
+        _logErroAutomatico('Promise rejeitada: ' + motivo, null);
+      });
+    })();
+
     function fazerLogout(){
+      registrarEvento('USUARIO_LOGOUT', {});
       firebase.auth().signOut();
     }
 
@@ -2712,6 +2767,10 @@
   // outra contagem em paralelo.
   function _parkCurrentSession(){
     if(!session) return;
+    registrarEvento('CONFERENCIA_PAUSADA', {
+      nfId: session.cloudDocId || null,
+      fornecedor: session.forn || null,
+    });
     sessStateSave();
     camStop();
     session = null; items = []; grouped = {}; pending = null;
@@ -2737,6 +2796,10 @@
     if(session) sessStateSave(); // guarda a atual antes de trocar, nada se perde
     const rec = sessionsLoadAll().find(r=>r.id===id);
     if(!rec){ toast('Contagem não encontrada — pode ter sido removida', true); return; }
+    registrarEvento('CONFERENCIA_RETOMADA', {
+      nfId: (rec.session && rec.session.cloudDocId) || null,
+      fornecedor: (rec.session && rec.session.forn) || null,
+    });
     camStop();
     session = rec.session; items = rec.items||[]; grouped = rec.grouped||{}; pending = rec.pending||null;
     _blindRestoreFromSession();
@@ -2762,6 +2825,10 @@
       ? 'Esta contagem em andamento será removida permanentemente e o item também sairá da nuvem.'
       : 'Esta contagem em andamento será removida permanentemente.';
     mc('Descartar Contagem', msg, ()=>{
+      registrarEvento('OPERACAO_CANCELADA', {
+        nfId: cloudDocId || null,
+        fornecedor: (rec && rec.session && rec.session.forn) || (session && session.forn) || null,
+      });
       sessionsRemove(id);
       if(cloudDocId){
         _cloudConsume(cloudDocId);
@@ -5275,6 +5342,12 @@
     } else {
       session.origem = 'qr';
     }
+    registrarEvento('CONFERENCIA_INICIADA', {
+      nfId: session.cloudDocId || null,
+      fornecedor: session.forn || null,
+      status: session.tipo || 'padrao',
+      origem: session.origem || null,
+    });
     _applyFornBadges(forn);
     _populateOcrFornSelect(forn);
     document.getElementById('sess-tag').textContent    = forn.toUpperCase();
@@ -5301,6 +5374,10 @@
     camStop();
     const discardId     = session && session.id;
     const discardCloudId = session && session.cloudDocId;
+    registrarEvento('OPERACAO_CANCELADA', {
+      nfId: discardCloudId || null,
+      fornecedor: session && session.forn || null,
+    });
     session = null; items = []; grouped = {}; pending = null;
     _blindDivergentRefs = new Set();
     _blindHiddenRefs = new Set();
@@ -5789,6 +5866,14 @@
     };
     const ok = histAdd(entry);
     if(!ok){ toast('Falha ao salvar — armazenamento cheio!', true); return; }
+
+    registrarEvento('CONFERENCIA_FINALIZADA', {
+      nfId: session.cloudDocId || null,
+      fornecedor: session.forn || null,
+      quantidade: entry.scans,
+      status: entry.tipo,
+      metadata: { conferente: entry.conferente || null, totalReferencias: Object.keys(entry.grouped || {}).length },
+    });
 
     // Só agora, com a contagem efetivamente finalizada e salva no
     // Histórico, o item é removido da coleção "pendentes" da nuvem —
