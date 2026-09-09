@@ -70,7 +70,44 @@
       }
       const auth = firebase.auth();
 
+      // ─────────────────────────────────────────────────────────────
+      // ABERTURA OTIMISTA — resolve o problema de internet lenta (não
+      // totalmente offline) deixando a tela de login travada: nesse
+      // cenário, o Firebase Auth fica tentando validar/renovar a sessão
+      // pela rede e demora a chamar onAuthStateChanged, e enquanto isso
+      // a tela de login (visível por padrão) bloqueia o app inteiro —
+      // mesmo pra quem já estava logado. Sem internet nenhuma, o SDK
+      // desiste rápido e usa a sessão local, por isso "funciona melhor
+      // sem internet do que com internet ruim".
+      //
+      // Se este aparelho já teve um login bem-sucedido antes (flag
+      // "rcb_sessao_ativa"), dá um prazo curto pro onAuthStateChanged
+      // responder; se ele não responder a tempo, abre o app mesmo assim
+      // (otimista) — só a parte de nuvem (Contagens da Nuvem,
+      // finalizar/descartar sincronizando com o Painel) depende de
+      // internet de verdade; o resto do app (contagem local, checklist,
+      // etc.) não precisa. Se depois disso o Firebase confirmar que a
+      // sessão não é mais válida (onAuthStateChanged chega com null),
+      // a tela de login aparece normalmente.
+      const TIMEOUT_ABERTURA_OTIMISTA_MS = 2500;
+      let authStateResolvido = false;
+      let sessaoJaAbertaOtimisticamente = false;
+
+      let sessaoAtivaAntes = false;
+      try{ sessaoAtivaAntes = localStorage.getItem('rcb_sessao_ativa') === '1'; }catch(e){}
+
+      if (sessaoAtivaAntes){
+        setTimeout(() => {
+          if (authStateResolvido) return; // onAuthStateChanged já respondeu a tempo, nada a fazer
+          sessaoJaAbertaOtimisticamente = true;
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('appRoot').style.display = 'block';
+          console.warn('Rede lenta pra confirmar a sessão — abrindo o app otimisticamente com o login salvo.');
+        }, TIMEOUT_ABERTURA_OTIMISTA_MS);
+      }
+
       auth.onAuthStateChanged((user) => {
+        authStateResolvido = true;
         const loginScreen = document.getElementById('loginScreen');
         const appRoot = document.getElementById('appRoot');
         if (user){
@@ -82,6 +119,14 @@
           // logado — a lista só deve trazer os itens desse usuário.
           if (typeof cloudInit === 'function') cloudInit();
         } else {
+          try{ localStorage.removeItem('rcb_sessao_ativa'); }catch(e){}
+          // Se a abertura otimista já tinha acontecido (o usuário já
+          // está usando o app) e SÓ AGORA o Firebase confirma que não
+          // há sessão válida, avisa antes de travar de volta na tela de
+          // login — evita um "sumiço" abrupto no meio do uso.
+          if (sessaoJaAbertaOtimisticamente && typeof toast === 'function'){
+            toast('Sessão expirada — faça login novamente.', true);
+          }
           appRoot.style.display = 'none';
           loginScreen.style.display = 'flex';
           if (typeof cloudUnsub === 'function'){ cloudUnsub(); cloudUnsub = null; }
@@ -100,6 +145,11 @@
         try{
           await auth.signInWithEmailAndPassword(email, senha);
           registrarEvento('USUARIO_LOGIN', {});
+          // Marca que já houve login bem-sucedido neste aparelho — é
+          // essa marca que permite abrir o app direto, sem esperar a
+          // rede confirmar a sessão, nas próximas vezes (ver
+          // _initAuthRecebeMais / TIMEOUT_ABERTURA_OTIMISTA abaixo).
+          try{ localStorage.setItem('rcb_sessao_ativa', '1'); }catch(e){}
         } catch (err){
           console.error(err);
           const mensagens = {
@@ -172,6 +222,7 @@
 
     function fazerLogout(){
       registrarEvento('USUARIO_LOGOUT', {});
+      try{ localStorage.removeItem('rcb_sessao_ativa'); }catch(e){}
       firebase.auth().signOut();
     }
 
