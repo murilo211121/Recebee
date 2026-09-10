@@ -1978,6 +1978,19 @@
              autocorrect="off" autocapitalize="characters" oninput="renderBlindStatus()"
              style="margin-bottom:10px">
 
+      <!-- Nome do fornecedor, editável — logo depois da pesquisa, sempre
+           visível no topo. Existe principalmente pra destravar contagens
+           vindas da nuvem sem fornecedor identificado (o extrator não
+           conseguiu ler o nome do PDF): antes disso travava sem
+           explicação clara; agora abre normalmente e o nome pode ser
+           preenchido/corrigido aqui, a qualquer momento da contagem. -->
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px">
+        <input id="blind-forn-input" type="text" placeholder="Nome do fornecedor" autocomplete="off"
+               style="flex:1">
+        <button type="button" class="btn btn-cy" style="padding:7px 12px;font-size:.62rem;flex-shrink:0"
+                onclick="atualizarFornecedorSessao()">Salvar</button>
+      </div>
+
       <!-- Progresso da contagem (mesmo cálculo já existente — só visual) -->
       <div style="margin-bottom:12px">
         <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px">
@@ -4803,6 +4816,17 @@
     cloudModalClose();
     navTo('pg-scan');
     _applyImportPendingUI(ico('cloud')+' <b style="color:var(--tx)">Recebido da nuvem</b>');
+    // Garante que sessStart() nunca bloqueie por falta de fornecedor
+    // nesse fluxo — diferente do fluxo manual/QR (onde o campo é
+    // preenchido pelo próprio usuário antes de clicar em "Iniciar"),
+    // aqui a contagem já vem da nuvem e deve abrir de qualquer jeito;
+    // se o extrator não conseguiu identificar o fornecedor no PDF, essa
+    // NF entra com um nome genérico, editável depois em "Fornecedor" no
+    // topo da tela de contagem (ver atualizarFornecedorSessao()).
+    const fornInputEl = document.getElementById('inp-forn');
+    if(fornInputEl && !fornInputEl.value.trim()){
+      fornInputEl.value = doc.forn || 'Fornecedor não identificado';
+    }
     // Fluxo "Em Nuvem": fornecedor e NF já vêm preenchidos pelo item da
     // nuvem, então a sessão inicia direto, sem passar pelo formulário
     // manual (que só é usado no fluxo "QR Code").
@@ -5200,6 +5224,24 @@
      Durante a contagem NÃO se compara com o esperado — isso só acontece
      no resumo, ao finalizar (ver _buildResumoData / openResumoModal).
      Aqui só é exibido se a referência já tem alguma quantidade contada. */
+  // Atualiza o nome do fornecedor da sessão ativa — usado principalmente
+  // pra corrigir/preencher um "Fornecedor não identificado" vindo da
+  // nuvem, sem precisar descartar e recomeçar a contagem.
+  function atualizarFornecedorSessao(){
+    const input = document.getElementById('blind-forn-input');
+    const novoNome = input ? input.value.trim() : '';
+    if(!novoNome){ toast('Digite um nome antes de salvar', true); return; }
+    if(!session){ toast('Nenhuma sessão ativa', true); return; }
+    session.forn = novoNome;
+    const tagEl = document.getElementById('sess-tag');
+    if(tagEl) tagEl.textContent = novoNome.toUpperCase();
+    const mForn = document.getElementById('m-forn');
+    if(mForn) mForn.value = novoNome;
+    if(typeof _applyFornBadges === 'function') _applyFornBadges(novoNome);
+    sessStateSave();
+    toast('Fornecedor atualizado');
+  }
+
   function renderBlindStatus(){
     const card = document.getElementById('card-blind-status');
     const el   = document.getElementById('blind-status-ilist');
@@ -5207,6 +5249,14 @@
     if(!card || !el) return;
     if(!session || session.tipo!=='importado' || !session.expected){ card.style.display='none'; return; }
     card.style.display='block';
+
+    // Mantém o campo de fornecedor sincronizado com a sessão — só
+    // quando o usuário não está digitando nele agora (evita apagar o
+    // que ele está escrevendo a cada re-render).
+    const fornInputEl = document.getElementById('blind-forn-input');
+    if(fornInputEl && document.activeElement !== fornInputEl){
+      fornInputEl.value = (session.forn && session.forn !== 'Fornecedor não identificado') ? session.forn : '';
+    }
 
     const order  = session.expectedOrder || Object.keys(session.expected);
     const extras = Object.keys(grouped).filter(r=>!session.expected[r]);
