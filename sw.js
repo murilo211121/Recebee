@@ -11,10 +11,14 @@
    worker só cuida dos ARQUIVOS do app, não dos dados.
    ===================================================================== */
 
-// Suba este número sempre que publicar uma nova versão do index.html —
-// isso força os dispositivos a baixarem a versão nova em vez de ficarem
-// presos numa versão antiga em cache.
-const CACHE_VERSION = "v1";
+// Suba este número (ou a data) SEMPRE que publicar uma nova versão do
+// index.html/RecebeMais.html — sem isso, o Service Worker continua
+// servindo a versão antiga em cache pros usuários que já tinham o app
+// aberto antes, mesmo depois de você subir o arquivo novo no servidor.
+// Esquecer de bumpar essa linha foi exatamente o que fez uma correção
+// recente (login travando com internet instável) parecer que "não
+// funcionou" — na verdade nunca chegou a ser carregada.
+const CACHE_VERSION = "v2";
 const CACHE_NAME = `recebemais-${CACHE_VERSION}`;
 
 // Arquivos do próprio app (mesma origem) — sempre cacheados.
