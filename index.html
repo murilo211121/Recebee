@@ -1988,22 +1988,22 @@
         O valor da nota não é exibido durante a contagem. A conferência (o que bateu e o que
         divergiu) só aparece no resumo, ao finalizar a contagem.
       </div>
+      <!-- Nome do fornecedor, editável — discreto, acima da pesquisa.
+           Existe principalmente pra destravar contagens vindas da
+           nuvem sem fornecedor identificado (o extrator não conseguiu
+           ler o nome do PDF): antes disso travava sem explicação
+           clara; agora abre normalmente e o nome pode ser
+           preenchido/corrigido aqui, a qualquer momento da contagem. -->
+      <div style="display:flex; align-items:center; gap:5px; margin-bottom:10px; opacity:.75">
+        <input id="blind-forn-input" type="text" placeholder="Nome do fornecedor" autocomplete="off"
+               style="flex:1 1 0%; min-width:0; font-size:.66rem; padding:6px 8px; background:transparent; border:1px solid var(--bd)">
+        <button type="button" class="btn btn-x" style="width:auto;flex:0 0 auto;padding:5px 9px;font-size:.58rem;white-space:nowrap"
+                onclick="atualizarFornecedorSessao()">Salvar</button>
+      </div>
+
       <input id="blind-search" type="text" placeholder="Pesquisar referência..." autocomplete="off"
              autocorrect="off" autocapitalize="characters" oninput="renderBlindStatus()"
              style="margin-bottom:10px">
-
-      <!-- Nome do fornecedor, editável — logo depois da pesquisa, sempre
-           visível no topo. Existe principalmente pra destravar contagens
-           vindas da nuvem sem fornecedor identificado (o extrator não
-           conseguiu ler o nome do PDF): antes disso travava sem
-           explicação clara; agora abre normalmente e o nome pode ser
-           preenchido/corrigido aqui, a qualquer momento da contagem. -->
-      <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px">
-        <input id="blind-forn-input" type="text" placeholder="Nome do fornecedor" autocomplete="off"
-               style="flex:1 1 0%; min-width:0">
-        <button type="button" class="btn btn-cy" style="width:auto;flex:0 0 auto;padding:7px 12px;font-size:.62rem;white-space:nowrap"
-                onclick="atualizarFornecedorSessao()">Salvar</button>
-      </div>
 
       <!-- Progresso da contagem (mesmo cálculo já existente — só visual) -->
       <div style="margin-bottom:12px">
