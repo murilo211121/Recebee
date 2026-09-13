@@ -18,7 +18,7 @@
 // Esquecer de bumpar essa linha foi exatamente o que fez uma correção
 // recente (login travando com internet instável) parecer que "não
 // funcionou" — na verdade nunca chegou a ser carregada.
-const CACHE_VERSION = "v5";
+const CACHE_VERSION = "v6";
 const CACHE_NAME = `recebemais-${CACHE_VERSION}`;
 
 // Arquivos do próprio app (mesma origem) — sempre cacheados.
