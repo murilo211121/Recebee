@@ -4751,16 +4751,22 @@
       const qtdTotal = validos.reduce((s,p)=>s+(Number(p.quantidade)||0),0);
       let quando = '';
       try{ if(d.criadoEm && d.criadoEm.toDate) quando = d.criadoEm.toDate().toLocaleString('pt-BR'); }catch(e){}
-      // Contagem já iniciada localmente — sinaliza sem excluir da nuvem,
-      // disponível pra retomar. Distingue a que está aberta na tela
-      // agora da que só ficou pausada (estacionada) em paralelo.
+      // Contagem já iniciada localmente (neste mesmo aparelho) — sinaliza
+      // sem excluir da nuvem, disponível pra retomar. Distingue a que
+      // está aberta na tela agora da que só ficou pausada (estacionada)
+      // em paralelo.
       const isOpenNow = !!(session && session.cloudDocId === d.id);
       const isParked  = !isOpenNow && allSessRecords.some(r => r.session && r.session.cloudDocId === d.id);
-      const badge = isOpenNow ? '▶ Em andamento' : (isParked ? '⏸ Pausada' : '');
-      const borderColor = (isOpenNow||isParked) ? 'var(--cy)' : 'var(--bd)';
+      // Em conferência em OUTRO aparelho (mesma conta) — vem direto do
+      // Firestore em tempo real, não é algo que este aparelho controla.
+      // Só conta como "outro" quando NÃO é a própria sessão local acima
+      // (senão a pessoa veria "em conferência" na própria contagem dela).
+      const emOutroAparelho = !!d.emConferenciaPor && !isOpenNow && !isParked;
+      const badge = isOpenNow ? '▶ Em andamento' : (isParked ? '⏸ Pausada' : (emOutroAparelho ? `Em conferência (${h(d.emConferenciaPor)})` : ''));
+      const borderColor = (isOpenNow||isParked) ? 'var(--cy)' : (emOutroAparelho ? 'var(--wa)' : 'var(--bd)');
       return `
-        <div style="background:var(--s2);border:1px solid ${borderColor};border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer"
-             onclick="cloudPickItem('${d.id}')">
+        <div style="background:var(--s2);border:1px solid ${borderColor};border-radius:10px;padding:12px;margin-bottom:8px;${emOutroAparelho ? 'opacity:.6;cursor:not-allowed' : 'cursor:pointer'}"
+             ${emOutroAparelho ? `onclick="toast('Essa NF já está sendo contada em outro aparelho (${h(d.emConferenciaPor)})', true)"` : `onclick="cloudPickItem('${d.id}')"`}>
           <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
             <div style="font-family:var(--R);font-weight:700;font-size:.78rem;color:var(--tx)">
               ${h(d.forn || 'Fornecedor não identificado')}
@@ -4831,6 +4837,29 @@
     // nuvem, então a sessão inicia direto, sem passar pelo formulário
     // manual (que só é usado no fluxo "QR Code").
     sessStart();
+    _cloudMarcarEmConferencia(doc.id);
+  }
+
+  // Marca (best-effort — não trava o fluxo se falhar) que essa NF da
+  // nuvem já está sendo contada. Como o listener de cloudInit() já
+  // escuta mudanças em "pendentes" em tempo real, qualquer OUTRO
+  // aparelho logado com a mesma conta vê isso na hora, sem precisar
+  // atualizar a tela — evita duas pessoas contando a mesma NF ao mesmo
+  // tempo, e evita o Dashboard mostrar "em andamento" errado quando na
+  // verdade já foi finalizada num aparelho mas continuava "disponível"
+  // no outro.
+  function _cloudMarcarEmConferencia(pendenteId){
+    try{
+      const usuario = firebase.auth().currentUser;
+      if(!usuario) return;
+      const nomeDispositivo = (typeof perfilDispositivoLoad === 'function' ? perfilDispositivoLoad() : '') || usuario.email || 'Outro aparelho';
+      firebase.firestore().collection('pendentes').doc(pendenteId).update({
+        emConferenciaPor: nomeDispositivo,
+        emConferenciaDesde: firebase.firestore.FieldValue.serverTimestamp(),
+      }).catch((err) => console.error('Falha ao marcar NF como em conferência:', err));
+    }catch(err){
+      console.error('Falha ao marcar NF como em conferência:', err);
+    }
   }
 
   // O item só é removido da coleção "pendentes" quando a contagem é
