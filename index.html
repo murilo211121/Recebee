@@ -106,7 +106,7 @@
         }, TIMEOUT_ABERTURA_OTIMISTA_MS);
       }
 
-      auth.onAuthStateChanged((user) => {
+      auth.onAuthStateChanged(async (user) => {
         authStateResolvido = true;
         const loginScreen = document.getElementById('loginScreen');
         const appRoot = document.getElementById('appRoot');
@@ -115,8 +115,21 @@
           appRoot.style.display = 'block';
           const emailEl = document.getElementById('cfg-user-email');
           if (emailEl) emailEl.textContent = user.email || '';
+          // Busca a empresa vinculada a essa conta (Administração —
+          // Etapa 1) ANTES de iniciar o listener da nuvem — sem isso,
+          // cloudInit() não sabe se filtra por empresa (compartilhado
+          // com colegas) ou só pelo próprio uid (contas antigas, sem
+          // empresa cadastrada ainda).
+          try{
+            const doc = await firebase.firestore().collection('usuarios').doc(user.uid).get();
+            window.__minhaEmpresaId = doc.exists ? (doc.data().empresaId || null) : null;
+          }catch(err){
+            console.error('Não foi possível carregar o vínculo de empresa:', err);
+            window.__minhaEmpresaId = null;
+          }
           // (re)inicia o listener da nuvem agora que sabemos QUEM está
-          // logado — a lista só deve trazer os itens desse usuário.
+          // logado (e de qual empresa) — a lista traz os itens
+          // compartilhados com colegas da mesma empresa.
           if (typeof cloudInit === 'function') cloudInit();
         } else {
           try{ localStorage.removeItem('rcb_sessao_ativa'); }catch(e){}
@@ -131,6 +144,7 @@
           loginScreen.style.display = 'flex';
           if (typeof cloudUnsub === 'function'){ cloudUnsub(); cloudUnsub = null; }
           if (typeof cloudPendentes !== 'undefined') cloudPendentes = [];
+          window.__minhaEmpresaId = null;
         }
       });
 
@@ -4689,13 +4703,15 @@
     // de usuário sem recarregar a página)
     if (typeof cloudUnsub === 'function') { cloudUnsub(); cloudUnsub = null; }
     try{
-      // Só traz os itens ENVIADOS PELO PRÓPRIO USUÁRIO logado — isola os
-      // dados entre diferentes empresas/clientes que usem a mesma
-      // ferramenta, evitando que a contagem de uma apareça pra outra.
-      cloudUnsub = firebase.firestore().collection('pendentes')
-        .where('criadoPorUid', '==', usuario.uid)
-        .orderBy('criadoEm','desc')
-        .onSnapshot((snap) => {
+      // Empresas com múltiplos logins (Administração — Etapa 1)
+      // compartilham a mesma fila: quem envia pelo Extrator pode ser
+      // uma pessoa, quem faz a contagem física aqui pode ser outra da
+      // mesma empresa. Contas antigas/sem empresa cadastrada continuam
+      // filtrando só pelo próprio uid, como sempre foi.
+      const query = window.__minhaEmpresaId
+        ? firebase.firestore().collection('pendentes').where('empresaId', '==', window.__minhaEmpresaId).orderBy('criadoEm','desc')
+        : firebase.firestore().collection('pendentes').where('criadoPorUid', '==', usuario.uid).orderBy('criadoEm','desc');
+      cloudUnsub = query.onSnapshot((snap) => {
           cloudPendentes = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
           _cloudUpdateBadge();
           if(document.getElementById('mdl-cloud').classList.contains('on')) _cloudRenderList();
@@ -5914,17 +5930,16 @@
     if(!usuario) return; // sem login não há como passar nas regras de segurança (nem faz sentido tentar)
     try{
       const db = firebase.firestore();
-      // O filtro por "criadoPorUid" é obrigatório aqui — além de reforçar
-      // o isolamento entre contas, é o que permite essa consulta passar
-      // pelas regras de segurança do Firestore (que só liberam a leitura
-      // de "historico_envios" quando a própria query já vem restrita a
-      // documentos do dono logado). Mesmo padrão já usado na consulta de
-      // "pendentes" (ver cloudInit()).
-      const snap = await db.collection(HISTORICO_ENVIOS_COLLECTION)
-        .where('criadoPorUid', '==', usuario.uid)
-        .where('pendenteDocId', '==', cloudDocId)
-        .limit(1)
-        .get();
+      // Empresas com múltiplos logins: quem ENVIOU essa NF pelo Extrator
+      // pode ser uma pessoa, e quem está FINALIZANDO a contagem aqui
+      // pode ser outra da mesma empresa — por isso filtra por
+      // "empresaId" quando essa conta tem uma vinculada (ver
+      // souMesmaEmpresa() nas regras do Firestore). Contas antigas/sem
+      // empresa cadastrada continuam pelo "criadoPorUid" de sempre.
+      const query = window.__minhaEmpresaId
+        ? db.collection(HISTORICO_ENVIOS_COLLECTION).where('empresaId', '==', window.__minhaEmpresaId).where('pendenteDocId', '==', cloudDocId)
+        : db.collection(HISTORICO_ENVIOS_COLLECTION).where('criadoPorUid', '==', usuario.uid).where('pendenteDocId', '==', cloudDocId);
+      const snap = await query.limit(1).get();
       if(snap.empty) return;
       await snap.docs[0].ref.update({
         status: 'finalizada',
@@ -5955,11 +5970,10 @@
     if(!usuario) return;
     try{
       const db = firebase.firestore();
-      const snap = await db.collection(HISTORICO_ENVIOS_COLLECTION)
-        .where('criadoPorUid', '==', usuario.uid)
-        .where('pendenteDocId', '==', cloudDocId)
-        .limit(1)
-        .get();
+      const query = window.__minhaEmpresaId
+        ? db.collection(HISTORICO_ENVIOS_COLLECTION).where('empresaId', '==', window.__minhaEmpresaId).where('pendenteDocId', '==', cloudDocId)
+        : db.collection(HISTORICO_ENVIOS_COLLECTION).where('criadoPorUid', '==', usuario.uid).where('pendenteDocId', '==', cloudDocId);
+      const snap = await query.limit(1).get();
       if(snap.empty) return;
       await snap.docs[0].ref.update({
         status: 'descartada',
