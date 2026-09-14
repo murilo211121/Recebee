@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>RecebeMais</title>
+  <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjogIlJlY2ViZU1haXMiLCAic2hvcnRfbmFtZSI6ICJSZWNlYmVNYWlzIiwgImRlc2NyaXB0aW9uIjogIkNvbnRyb2xlIGRlIHJlY2ViaW1lbnRvIGUgY29uZmVyXHUwMGVhbmNpYSBcdTAwZTBzIGNlZ2FzIGRlIGNhcmdhcyIsICJzdGFydF91cmwiOiAiLi9pbmRleC5odG1sIiwgInNjb3BlIjogIi4vIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwYTBlMTUiLCAidGhlbWVfY29sb3IiOiAiIzBhMGUxNSIsICJpY29ucyI6IFt7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQU1BQUFBREFDQUlBQUFEZHZ2dFFBQUFKVTBsRVFWUjRuTzNkVFd3YzVSM0g4Zi9zN05xNzYxZnNKQzZFbGdnUmNKQ3BJRWtyVmFJcXRTSWlLdkVTSlNBT0hPREFoWmNEcUhlRWhLQUlLUndpTHFnOTlCUm9RZlFGRkJsQkpWSlZhZ2x2QVl2Z0FFRWdvY1N4RWpDMmR6ZTducDBlUmxwV3U3Wm5QZi9uL2ZsOWJxRForTkhPMS85bjlpV1RvRHk4bFFDeXl1bGVBTmdOQVFFTEFnSVdCQVFzQ0FoWUVCQ3dJQ0JnUVVEQWdvQ0FCUUVCQ3dJQ0ZnUUVMQWdJV0JBUXNPUjFMOEFJTzU4OGtlRlJuei94QytFcnNVN2c0ZmVCc3VYU0N3K1Q4aUtnMUdMbWp4ekk4TWRPUFByYXhnZjQwSlBMQWEzWFRiWmNlckZlVWc2WDVGcEFhMFlqcjVpTnJkbVRZekc1RTFCM09ycTY2ZFpka2pNWldSK1F5ZDEwYzY4a2l3UHFTTWZrYnJwMWxHUnZSbFlHWkhVNjdSekl5TEtBMnRPeHQ1dHU3U1habFpFMUFibWFUanNiTTdJam9GWTlycWJUcnBXUkZRMlpIcEFQZzZlYlJhUEkzSUQ4VEtlZEZSa1pHcEJYZTliR0ROL1JUUHcrRU9wcDEzb1M1SDJKZ01Pc0NZUjBObURtS0RKb0FxR2VqWms1aWt3SkNQWDB3c0NHOUc5aFNDY0RjN1l6elJNSTlXUmp6aWpTR1JEcTRUQ2tJVzBCb1I0K0V4clNFeERxRVVWN1F4b0NRajFpNlcxSWRVQ29Sd2FORFNrTkNQWElvNnNoZFFHaEh0bTBOS1FvSU5Tamh2cUdsRzVocUVjQnhVK3lpb0NTM3diVW8wenlWS3NaUXRJRFFqMWFLR3RJYmtEYVA2a0IyYWRBeFJhRzhhT0ZtcWRkWWtEWXZMUlRzSkhKQ2dqMUdFSjJRMUlDd3FXUGdTU2RGSWxiR01hUElhU2VDUEVCWWZNeWtMeU56SlF2MVlPbEJBZUU4V01zU1VOSVpFQzRkcmFDMk5Na2ZndkQrREdXakZNakxDQnNYbFlRdnBIaElocFl4QVNFOFdNUnNVTUlFd2hZQkFTRThXTWRnVU1JRXdoWXVBSGh2UityOFUrZm1BbUUvY3M2b2s0WnRqQmdZUVdFeTJlckNibVV4Z1FDbHV3QjRmTFpHWnhUeVoxQTJMK3N4ajk5Mk1LQUphOTdBV3NJd3NLMmgvNlM4Y0hOS0c2dXh2VnFzN2Jjckh3WExaMlBMbjdiV0RqVE9EY1hOMnBDbHdsRW1XL3pLL1gxRnl1ZzlUU2ordGxUdGRQL3JzMGRSMGtka3BzR1o3dGpzSWtUU0lwYzJMZDlxbS83MU9DdjdsdDU3OVhLeWRlcEdlbGVrd3U4dXdiS0ZZZUdicjUvN09EVHVZRXgzV3R4UVphQUhIai9zUENUYThjT1BwVXJqK3BlaUJFNDd5aDZONEZhd3BITFIvWS9UaFRvWG9qZHZMa0dXa3ZmbFRjVXIvdDFiZTY0dkI4eGRQUDk1WnZ1N1A3Lzh5OGNjdU1pek44SmxCalliZkZHYkFMZkE4cHYyWkcvYkx2dVZWaHMwMXVZT1ZmUUYxNTZmSFhocXgvL093aUNRaWxYR3NtUC83VC9xajNGeVZ1Q2ZGOHZmMDVoKzlUcWQ5L0tXcVVsNW84Y21IajB0WjFQbnRqc3UwRU9YUVBGY1Z5dlJQVkt0SGoyMHBsM1Y5NTdaZlRPSjNxWkx2bXhLeFdzemxYT2JtSFIwc0xpc2Vjb2psT1B4QnRDSE00R1JFU3JGNzV1bkp0TFBTekk5eXRZakt0Y0RvaUlHZ3RuVW8vQlIyTWNqZ2NVMXl2cHgxeGFWckFTVjIwdUlITmVndlVvNkI5SVBRWXZ3UkxaUHRCd2ZBSVZ0bDJUZWt6ajNHa0ZLM0dWeXdIbHQxNWRtRWdKS0ZwYWFNd2pvT3ljRFNnY25oaTk3ZmVwbjVWV1oyZDZlYWtQNjNIb2pjUWdDUEw5dWZKb2Z2eG4vVHYyRmlkdkNjTEN4bytJdmo5YitmQWZhbGJuS29zREdyLzNNT2ZoY2FPMk9ITTRqaHFpMXVNbml3UGlpQyt0ZlAvR0h4cm52OUM5RU92NUdGRGo3R2VMYno0Zi9YQmU5MEpjNEZkQWpZVXpLeWYrZXVuTC8yWjdlRGc0dnVXQlB3cFp5Y1REcjJ6cStNckh4NWJlZVZISWp4YkxsNERpZW5YcCtKK3FwOTdXdlJEWE9Qc3l2a1BRVnhyZTk4allvV2Z5VzYvV3ZSYW4rQkpRb25ENTVOamR6NVoyVGV0ZWlEdjhDb2lJZ2pBL3ZPK1I0dVJ2ZFMvRUVkNEZSRVJFd2ZEMFE2bWZja0F2TEw2SWJ2dE9kQkQwRmNQQnJZVXJKa3ZYN3l0TTdFeDliQkRtUjI1OTdNTFJ4K0xWdXV4MXVzM2lnTnJFY2IyNmV2R2IxWXZmVkdmZkxFM3RILzdOZzVRTE4zNU1PSHJGd0o2RHkvODcydnVQaVpZdmJQYXJMUGg3WWZhcHpzNHN2bldrbHlQTHUrOEtCN2ZJWG8vYkhBeUlpR3B6NzFSbloxSVBDL0o5QTcrOFI4RjZITGE1Z0pLL05KVGNUc1p3Uy8vNWMzUGxZdXBocFYzVDRmQ0VndldZTDl0ZGd0eWNRRVFVMTZ2TDc3NmNmbHd1SE5oN1VQNXluT1ZzUUVSVS9mVHRhSEUrOWJEU3J1bHdLTXR0Mm9EY0RvaWEwY3I3cjZZZmhpSEU0SFJBUk5WVC80cVdGbElQSys2YXpnMk9LMWlQZXh3UGlKcFI1ZjMwUy80Z0xPQStMOWxzT2lDTFhvZ2xxcCsrMWRQTHNhbGJmYjdqWGVZYnRibytnWWppcUxIeXdkOVNEd3ZDd3NBZURLRk5jejhnSXFyT3pqU3JpNm1IbGFiMjUwb2pDdGJqRWk4Q2lsZnJsUS8rbm5wWWtPOHY3MTdqY3l2WWdCY0JFVkhsazJQTjJsTHFZZVViYnNzVmh4U3N4eGxaQXJMdU9wcUk0a2F0OHRFL1V3OExDc1h5VFhjb1dJOVJPUC9VZ1M4VGlJZ3FKOS9vNVc0djVaLy9MdGMvcUdBOWJ2QW9vTGhlcVp4OFBmV3dvSzljdnZGMkJldHhROFovclljc3ZGY1FySW16ZjVGWEV3aGtRRURBd2czSXJ0ZGkwSUYvK3JJSGxIblhCTk53VGlXMk1HQmhCV1RqTzRyUXduejlsY0FFQWhZeEFXRUlXVWZVS2VNR2hFdHBxL0ZQSDdZd1lCRVFFQzZsclNQazhqbUJDUVFzWWdMQ0VMS0l3UEZEbUVEQUpDd2dEQ0VyaUIwL0pHTUNvU0ZqeVRnMUlnUENlMEpXRUh1YUJFOGdiR1RHRXI1NUpYQVJEU3ppQThJUU1wQ2s4VU5TSnhBYU1vVFVFeUVsSUZ4TkcwalNTWkUxZ2JDUkdVTGU1cFdRdUlXaEllMWsxME5xWG9XaElTM1VQTzF5QThMRmtIYXlUNEgwQ1lTTlRBc0ZtMWRDeFJhR2hoUlRWZzhwZmljYURTbWcrRWxXRkZEcnR3RU5TZFY2ZXBWZGZhcWJRR2hJTnZYMWtPSXREQTNKbzZVZVV2OXBQQnFTUVZjOXBPWHJIR2hJTEkzMWtLN3ZBNkVoVWZUV1F4cS9VSWFHK0xUWFEzcS9rWWlHT0V5b2g3Ui9wUlVOWldOSVBjUzV6YTlZeVUyRENmY05UbU5PT2dsVHZsU1BVZFFMMCtvaGN3SWlOSlRHd0hySW5DMnNIYmF6RG1hbWt6Qm9BclZnRkxVenVSNHljd0lsV25PSWZCMUY3YjgvWnRaREpnZVU4RE1qSzlKSm1CNVF3cXVySXNQM3JBNTJCRVIrakNLTEJrK0xOUUVsWE0zSXhuUVNsZ1dVYU0rSWJDNnA0MldtWGVra3JBd29ZWFZHRHFTVHNEaWdSRWRHWkhaSjNlOXMyWnRPd3ZxQVdrd3V5YjF1V3R3SktOR2RFZWtyYWMxMzBwMUpKK0ZhUU8zV2pJbGs5clRlWnkrT1JkUE81WUJhMWl1cEpWdFNxUi9WT2R4Tml4Y0JkVWp0S1RNZml1bmdZMERkc2lYbFlTN2RFQkN3bVBoOUlMQUlBZ0lXQkFRc0NBaFlFQkN3SUNCZ1FVREFnb0NBQlFFQkN3SUNGZ1FFTEFnSVdCQVFzQ0FnWVBrL1lMMkJuWTlIN2xzQUFBQUFTVVZPUks1Q1lJST0iLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSJ9LCB7InNyYyI6ICJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQWdBQUFBSUFDQUlBQUFCN0drT3RBQUFiTlVsRVFWUjRuTzNkZVpCbFYzM1k4ZnQ2bis3WnBXRVlKS045TVpob1E0SUFRVElPbFlWRkNFY1FVcW5ZaVYyaDRvVDhsVlNLVUdVVmxWUVJrbkp3UlU1U2ljdXBsTXZsU2xnaVFzQUJKWlpCeGhBdGFNRWlDRW1NTmh6Vk1NeElNOVBUMHozZHIxLytHRm1XUnE5ZnYzN3YzblBQOHZuOHlkTG5WazIvMy9lZWMxKy8xNW5mdWE4Q29Ed1RiVjhBQU8wUUFJQkNDUUJBb1FRQW9GQUNBRkFvQVFBb2xBQUFGRW9BQUFvbEFBQ0ZFZ0NBUWdrQVFLRUVBS0JRQWdCUUtBRUFLSlFBQUJSS0FBQUtKUUFBaFJJQWdFSUpBRUNoQkFDZ1VBSUFVQ2dCQUNpVUFBQVVTZ0FBQ2lVQUFJVVNBSUJDQ1FCQW9RUUFvRkFDQUZBb0FRQW9sQUFBRkVvQUFBb2xBQUNGRWdDQVFna0FRS0VFQUtCUUFnQlFLQUVBS0pRQUFCUnFxdTBMZ0pwZDlzbjdHdnJKajk5MmZVTS9HVnJSbWQrNXIrMXJnSzFwYnNTUFF4NUlqZ0FRcnpnSC9WWUpBOUVTQUdLUng3Z2ZoaVFRQ1FHZ05lVk0vTUgwZ0xZSUFFRVorb09KQVNFSkFNMHk4Y2VoQnpSS0FHaEV1M1AvME8yMzFQNHo5My9zanRwLzV2Q1VnQ1lJQUxVSk52U2JtTy9qQzFZSU1hQXVBc0M0R3AzN2NjNzY0VFZhQlNWZ1RBTEFpSnFZKzZtUCsyRTBrUVFsWURRQ3dOYlVPL2RMbVBpRDFkc0RKV0JMQklDaDFEWDNUZnpCNnVxQkVqQU1BV0NRV3VhK29UK2FXbUtnQkF3Z0FQUXgvdHczOU9zMWZneVVnRmNUQUY1aHpORnY3amR0ekJMSUFDOG5BRlNWdVo4Z0pXQjhBbEM2Y1VhL3VSK0RjVW9nQTRVVGdIS05QUHJOL1RpTlhBSVpLSllBRk1mY3o1NFNNQ1FCS01ob285L2NUOWRvSlpDQmNnaEFFVVlZL2VaK1RrWW9nUXlVUUFBeVovVHpFaG5nTEFLUUxhT2Z2bVNBbHdoQWhyWTYrczM5TW0yMUJES1FId0hJaXRIUFZzbEF5UVFnRTBZLzQ1Q0JNZ2xBRHJZMC9ZMStOcktsREdoQUJnUWdiVVkvdFpPQmNnaEFxb3grR2lVREpSQ0E5Qmo5QkNNRGVST0F4QXcvL1kxKzZqSjhCalFnTFFLUURLT2Zkc2xBZmdRZ0RVTk9mNk9mcGcyWkFRMUlnZ0RFenVnblFqS1FoNG0yTDRCQlRIL2lOT1N2M0poZk5VclQ3QUFpWmZTVEJGdUJwQWxBaklhWi9rWS84UmdtQXhvUUlRR0lpeHQvRW1VcmtDSUJpSWdiZjFKbks1QVdBWWlDMFU5T1pDQVYzZ1hVUHRPZnpBeno2K29OUWpHd0EyalpwaThEbzU5MGJib1ZzQTlvbHdDMHhvMC9KWEFjRkRNQmFJY2JmNHBpS3hBbnp3QmFZUHBUbWsxL3BUMFNhSVVkUUZDT2ZTaVo0NkRZQ0VBNGJ2eWhjaHdVRTBkQWdaaitjSWJqb0hnSVFBaW1QN3ljQmtUQ0VWQ3pqSDRZd0hGUXUrd0FHbVQ2dzJDMkF1MFNnS2FZL2pBTURXaVJJNkJHRFA2Vk5mcmgxUVlmQnprTGFvSWRRUDFNZnhqQjRKZUdmVUFUQktCbXBqK01UQU1DRTRBNm1mNHdKZzBJeVRPQWVuamtDelh5OXRBd0JLQUdidnloQ1I0TE44MFIwTGhNZjJpSTQ2Q21DY0JZVEg5b2xBWTBTZ0JHWi9wREFCclFIQUVZa2VrUHdXaEFRd1JnRktZL0JLWUJUUkNBTFRQOW9SVWFVRHNCMkJyVEgxcWtBZlVTZ0Mwdy9hRjFHbEFqQVJpVzZRK1IwSUM2Q01CUVRIK0lpZ2JVUWdBMlovcERoRFJnZkFJd0Z0TWZXdVFGT0NZQjJNU0Erd2kvZk5DNkFTOURtNEJOQ2NBZ3BqL0VUd05HSmdBYk12MGhGUm93R2dIb3ovU0h0R2pBQ0FTZ0Q5TWZVcVFCV3lVQVp6UDlJVjBhc0NVQzhBcW1QNlJPQTRZbkFFTXgvU0VoWHJCREVvQS80KzRBc3VkbC9uSUM4Q0tIUDVBVEIwSERFSUNxTXYwaFJ4cXdLUUV3L1NGYkdqQ1lBR3pJOUljTWVDRVBVSG9BTnJvTDhFc0QyZGpvNVd3VFVIUUEvUE5ENFFvZkF1VUd3TkUvbE1QRGdMN0tEY0JHVEgvSWtwZjJxeFVhQUVmL1VDQVBBODVTWWdDSy9jY0dObExtV0NndUFJNytvV1FlQnJ4Y2NRSFlpT2tQaGZCaWYwbFpBWEQwRDFRZUJ2eXBnZ0pRMmo4dE1JS2lCa1ZCQWRpSTIzOG9rQmQrVlU0QUhQNEFaM0VRVkVRQVRIK2dyOEliVUVRQUFIaTEvQVBnOWg4WW9PUk5RT1lCTVAyQlRSWGJnTXdEQU1CR2NnNkEyMzlnU0dWdUFySU5nT2tQYkVtQkRjZzJBQUFNbG1jQTNQNERJeWh0RTVCaEFITDlwd0phbE9WZ3lUQUFHM0g3RDJ5cXFFR1JXd0FjL2dCakt1Y2dLTGNBQURDa3JBTGc5aCtvUlNHYmdLd0NBTUR3OGdtQTIzK2dSaVZzQWpJSmdPa1AxQzc3Qm1RU0FBQzJLb2NBdVAwSEdwTDNKaUNIQUFBd2d1UUQ0UFlmYUZUR200RGtBd0RBYU5JT2dOdC9JSUJjTndGcEJ3Q0FrU1VjQUxmL1FEQlpiZ0lTRGdBQTQwZzFBRzcvZ2NEeTJ3U2tHZ0FBeHBSa0FOeitBNjNJYkJPUVpBQUFHRjk2QVhEN0Q3UW9wMDFBZWdFQW9CYVpCTUR0UHhCTU5nTW5zUUNrdU1rQ0NwSGNnRW9zQUgxbFUyTWdGWG1NblpRQ2tGeGRnZEtrTmFaU0NrQmZlWFFZU0U0R3d5ZVpBS1RWVmFCWUNRMnJaQUlBUUwzU0RrQUdXekFnWGFtUG9EUUNrTkNXQ2lDVmtaVkdBUHBLdmIxQUJwSWVSQWtFSUpXV0Fyd2tpY0dWUUFENlNycTZRRTdTSFVlcEJnQ0FNY1VlZ0NTMlVRQ3ZGdi80aWowQWZhVzc0UUt5bE9oUVNqSUFBSXd2NmdERXY0RUNHQ0R5SVJaMUFQcEtkS3NGNUMzRjBaUmVBQUNvUmJ3QmlIenJCRENNbUVkWnZBSG9LOFZORmxDSTVBWlVZZ0VBb0M2UkJpRG1UUlBBbGtRNzBDSU5RRi9KYmErQTBxUTFwcWJhdmdCZTFKbWNmczJ2ZkxidHEraW50OTViNzFiZDFWNTNyVnJ2OXRiWGVxdW4xcGNYZXl1TDY4dUx2ZVhGOWVVVDNST0h1eWQrdkg3OHg5MlRSNnRlciswckJvWVNZd0NpM1M0VnFqUFJtWnlvSnFjN1EveHZlOTIxOWNYRGEwZWVYVDE4Y08zd2sydUhEM1lYZjlMNEZVTDBMdnZrZlkvZmRuM2JWM0cyR0FQUVYxb2JxMkoxSnFjbWR4MlkzSFZnOXVJYnp2d242NmVPbi82VFIwNC84OURwWngvdUh2OXh1NWNIQVJ5Ni9aYjlIN3VqN2FzWVNqSUJJRkVUMjNiT1hmcTJ1VXZmVmxWVjk5aHp5eis4Wi9uUnI2OGRlYnJ0NndMaWV3anMvQ2RqazdzT0xGejdnWFAreHErZjg1SFB6Ri96L29tNTdXMWZFWVFUNFhDTExnQjlPZi9Kek5TNUYrNTR4OTgrOXhkL2M4ZmJmMkZpZm5mYmx3TTFTMlZrcFJFQXN0U1pucHUvOWdQbi91Si8zUEhPWCs3TXpMZDlPVkFjQWFCbG5jbnArYXZlYys3Zi9JMHp6d21BWU9JS1FOOHpzbFEyVTR4alltSFByci95ajNlLzUrT2QyWVcycndWcTBIZHd4ZllZSUs0QVVMalppMi9ZZSt1bkozZS9ydTBMZ1NJSUFIR1oyblBlT1IvNmx6UG52Nm50QzRIOFJSU0EyRFpIdEtVenU3RDdmWitZUG5CbDJ4Y0M5WXRxMEVVVWdMNDhBQ2hUWjJwMjkvcytNWFhPQlcxZkNJd3UvdkVWZXdBbzFzVHM5ajAzLytyRTNJNjJMd1N5SlFERWEySmg3ODUzL1VyYlZ3SFpFZ0NpTm52Slc3Zjk5TSsxZlJXUXAxZ0M0QzhBMk1pT2QvNmRpVm1mR2tTU0l2OXJBSjhHU3V3Nk0vUHoxMzVnOGR1LzAvYUZ0R242dFpmdnZmWFRJLy9mM1V2UlZ5dzdBQmhnL3FyM1RHemIxZlpWUUc0RWdBUjBwdWZtcjM1djIxY0J1WWtpQVBHY2lCR3R1U3R2cWpyRGZDc2xKQ0NTb1JkRkFQcHlhc25MVFc0LzErZERrS0tZUjFtOEFZQ3p6RjF4WTl1WEFGbnhMcUNDckJ5ODk0V3ZmR3E0LzIybk16bFZUVTVOek14MzVuWk16TytaMm4xZ2NzOTUwL3N2bXpyM29zNWtPNzgyczYrL3BwVjFJVmNDUUYrOVhuZTE2cTUyVDUrcUZvOVUxVk9ubjNud3pIL1JtWjZidmVEYXVTdHVuTDNvelZVbjZBNXlZbUhQNUs0RDNXUFBoVndVTXRiK0VWQWtEME1ZVW05MWVmbUpiNzN3bFUvOTVMZi8zdkpqZnhoNDlabnozaEI0UldoSURLT3YvUUQwRmZOakU4N29Idi94c2EvOTZ4ZSsvS25leXNsZ2kvcU1hRklVN1VDTE5BQ2tZdVhKZTQvZThhdnJ5NHRobHZObFlWQWpBV0JjYTRjUEh2dmFyMVc5WG9DMXBuYnVEN0FLRkVJQXFNSHBaeDQ2OWIwN0F5dzBzWDF2WjNJNndFSlFBZ0dnSG92LzUzZDczZFhtMStsTTdueE44NnRBRVZvT1FBelB3YW5GK3Fuank0L2RIV0NoenN4OGdGVWdnTllIWUl3N2dHaWZtRFBZOHVOL0ZHQ1Z6dlJjZ0ZXZ1huR090UmdEUUtKV2YvUklnRk9nenRSTTAwdEFJUVNBMnZTNnEydEhubTU2RlRzQXFJc0FVS2UxSTg4MHY0Z1BoWVo2Q0FCMVdsODgwdlFTdmU3cHBwZUFRZ2dBZFZwZmVxSHBKWHByQWQ1c0NrVVFBT29VNENGdzczUzRqeDZDdkxVWmdMN3ZnWTN6elZJTXFkZGRhM3FKOVpQUE43MEVOS0h2Y0d2M1R3SHNBS2hUWjZyeHoybFlYeElBcUljQVVLZk8xR3lqUDcrN2VDVEFKZ01LSVFEVWFXSmhUNk0vdnh2aWJhWlFDZ0dnVHBQYjl6WDY4OWVPQ2dEVVJnQ28wOVM1RnpUNjgwOC85MmlqUHgrS0lnRFVwak16UDdYbnZDWlg2SzMreWZlYS9QbFFGZ0dnTnJPdnY3cnFOUGdidFhyNHlmWGxFODM5ZkNpTkFGQ2J1U3R1YlBUbnJ3VDV1R2tvaHdCUWo4bWQrMmN2ZW5PalN5dy9JUUJRcDlZQzBQcFg0VkN2N1cvL1c0MmUvNXgrOXVIdXNVUE4vWHhvUzR2RE1LNGRnTStCU05UYzVlK1l1L1J0alM2eDlPQ1hHdjM1RUVCc0l5NnVBSkNpbWZQZXVQTmRmNy9SSmRaKzh0VEswdzgydWdRVWFLcnRDeUJ0YzFmKzdNNmYvV2pUbndCeDRwdi91YXA2alM0QkJSSUFSalMxOS96dGIvK0YyUXViZmZCYlZkWEtVL2VmZnZiaHBsZUJBZ2tBVzlPWm1aKzk4TTNicnJ4cDVvS3JBM3c3NC9ySzR2RzcvbjNUcTBDWkJJRCtPcE5UMWNSVVoyWitZdHZPaVlVOVU3c09UTzQ5ZjNyLzVkUG5YbGhOVEFhN2pCTmYvdy9ySjQ4R1d3NktJZ0FGbWIzNGh2MGZ1NlB0cTlpQ3BRZSt1UHpZTjl1K0NzaVdkd0VScVpXRDk1NzQxbSszZlJXUU13RWdSaXRQZmVmWVYvOVYxZlBPSDJpUUl5Q2lzL3pFdDQ3ZitSbmYvQVZORXdEaWN2TCt6eTkrKzNlOTZ4OENFQUJpc1g3cStQRzcvdDNLd1h2YXZoQW9oUUFRaFpXbnZuUDhybis3ZnZMNXRpK2tqeDN2L0tYNXE5N2I5bFdNSllaM2Z4Mjc4OWVYZi9DTnRxK0NWeEFBV3RZOWZ1akVILzZubFlQM3RuMGhVQndCb0RYcmkwZE9QbkRIcVVmdTdIVlgyNzRXS0pFQTBJSzFJMDh2ZmZkL0xuLy9McU1mV2lRQWhOTTd2YlQ4dzN1V3YvLzdwMzIzTzBSQUFBaGsrYkZ2bnJqN045ZFBIVy83UW9BWENRQ0J6RjMranRsTDNuTDYyZTh1LytBYnk0Ly9VZFZiYi91S29IUUNRRGlkeWVuWkM2K2J2ZkM2N1cvOXlNbjd2M0RxMGE5WDY5MjJMd3JLNWJPQWFNSGtyZ003Zis0Zm5QT1J6MHkvNXBLMnJ3WEtKUUMwWm1ydlQrMjk5ZFBiMy9MWFEzN0JBUEFTQWFCVkU1TUxOM3g0ejgyM2RXYm0yNzRVS0k0QTBMNlo4OSswOTRQL2ZHSitkOXNYQW1VUkFLSXd0ZStpdmJmK2k4a2QrOXErRUNpSUFCQ0x5WjM3ZDk5ODI4UzJuVzFmQ0pSQ0FJakkxSjd6ZHIvbjQ1MUo3MDZHRUFTQXVFd2Z1SExIalgrMzdhdUFJc1FWZ0JnK3RaeldiWHZqdStldXZLbnRxNEQ2eFRiaVd0dHJQMzdiOVpkOThyNjJWaS9UeXNGN1gvaktwemI2Ynp1VDA1M1poYzdNL01Uc3d1U2U4NmYzWFRTMTcrTHAvWmQycG1aRFh1UVpPMi82Nk9welArZ2VleTc4MGhEWTQ3ZGQzOWJTRGx0NVVhKzcybHQ2b1ZwNm9WdFZxNGNlWDM3MEQ2cXE2a3pQelYzNjUrZXV1R25tL0RkVm5VNndpK2xNeisxNjl6ODgrb1YvV3ZWOE9UQTBKYTRqSUdMVFcxMCs5ZjAvZVA2THR4MzVyLzlvOWJsSFF5NDlmZURLK2F2ZkYzSkZLSTBkQUVOWk8zenc2T2MvUG5mbFRUdHYrbWhuZWk3TW90dmY4cEdWSjc3ZFBYRTR6SEliT1hIM2I1MjQrN2ZhdllicDExNis5OVpQai94L1AzVDdMVFZlRE5td0EyQUxsaC85K3RIUC9wUHU0cEV3eTNXbTUzYmMrTXRoMW9JQ0NRQmJzM2IwbWVlLzhJbGdkK1d6RjkwdzgvcHJ3cXdGcFJFQXRxeDcvTkFMWC9wbjZ5dUxZWmJiOGM1ZjhuR2gwQVFCWUJSclI1ODk5dFZmQy9NV25hazk1MjE3NDdzRExBU2xFUUJHZFBxWmgwN2U5OWt3YTIyLzRjUEJuanhET1FTQTBTM2U5N25WUTQ4SFdHaGlmcmUzaEVMdDJneEEzNzkvaSsxUHBSbGt2WHY4Zi8rYk1OL3JPMy9OKzMxcERFbnJPOXhhL0RQZ3lnNkFNYTBkL2RISkIwSTBlMkoyKzhJMTd3K3dFSlJEQUJqWHlmcytGK1l2QSthdmZsOW5kaUhBUWxBSUFXQmN2YlhUaTkvK25RQUxkV2JtNTY5NmI0Q0ZvQkFDUUEyV0gvM0cydUVuQXl3MGYvVjdQUW1BdWdnQXRlZ3Qzdk5mQWl3ek1idDkvcXEvR21BaEtJRUFVSStWSis5ZFBmUkVnSVhtcjM2L3Z3bUFXc1FZQU84RVRWU1l2d3VibU5zeC8rZHNBa2hNbkdPdDVRQzAreDVZNnJYeTVIMXJodzhHV0dqK21wdHRBc2hBNndNd3hoMEE2VnE4NzNNQlZwbll0blBibS81eWdJVWdid0pBblZaK2VNL2FrYWNETExSd3pjMmRxWmtBQzBIR0JJQjY5VTZHMlFUTTc5NzJNMzhwd0VLUU1RR2dac3RQZkd2dDZJOENMTFJ3N1MyZHlla0FDMEd1SWcxQW5FL01HVXF2ZC9MK0lKdUFoVDIrSjRBa1JEdlEyZzlBNjgvQnFkM3lZOS9zdnZEL0FpdzBmOTBITzVOVEFSYUMyc1V3K3RvUEFCbnFyWis4Ly9NQjFwbmNmczdjRy81aWdJVWdTd0pBSTA3OTRPN3VzVU1CRmxxNDdvTytNUmhHSXdBMFk3MTc4anRmQ0xETzVJNTkyMzc2WFFFV2d2ekVHNEJvSDVzd3BGUGZ2NnQ3NG5DQWhSYmUvUE0yQVVRcjVsRVdSUUJpZUJoQy9kYTdKNy96M3dLc003bHovN1lyYmdxd0VOUWxrcUVYUlFESTFmTC8vZjMxSUY4V3RuRDl6MWNkdjh5d05WNHpOS2pYWFEzempjR1R1dzdNWFhGamdJVWdKd0pBczA0OWN1ZjYwZ3NCRnRwKy9WK3JPcDBBQzBFMllnbEEzeE94bUIrZU1LUndtNERkcjV1NzdDOEVXQWlHMTNlSVJmSUFvSW9uQUdUczFCOS9iZjNVOFFBTExWeC9xMDBBREU4QWFGeHZiV1hwd2Y4ZVlLR3B2ZWZQWGZxMkFBdEJIZ1NBRUphKyszdnJ5eWNDTExSdy9hMVZaUk1BUTRrOUFCNEQ1S0czdXJ6MDBQOElzTkRVT1JmTVh2TFdBQXZCcHVJZlh4RUZJSjRISXpSaDZlR3Y5RlpPQmxobyt3MGZzZ2tnV2xFTnVvZ0NRTjU2cDVlV0h2NXlnSVdtenIxdzl1S0lYbU1RTFFFZ25LV0h2dHc3dlJSZ29ZWHJQeFJnRlVoZFhBSHcxd0I1VzE5WlhQcnU3d1ZZYVBvMWw4eGVlRjJBaFdBamtmOEZ3Qmx4QllEc0xUMzRwZDdxY29DRkZtNzRjSUJWSUdrQ1FGRHJ5eWVXL3ZpckFSYWEzbi9aekFYWEJGZ0kwcFZHQUp3QzVXVHBnUy8yMWxZQ0xMVGRKb0NXcERLeW9ndEFiR2RrMUc3OTFMRlRqM3d0d0VMVHI3MWk1cWV1Q3JBUURDUEM0UlpkQUNqQnlRZSsyT3V1QmxobzRRWnZCNElOSlJPQVZMWlVER1A5NVBPbnZ2ZS9BaXcwODdvM3pKejNNd0VXZ3Bja05LdzY4enYzdFgwTmZWejJ5ZnRlL1I4ZXV2Mlc4RmNDc0NWSnZBSDBqR1IyQUFEVUs2VUFKTFN4QXNxVTFwaUtOQUJ4YnBjQVJoRHRRSXMwQUFBMExiRUFwTFc5QW9xUzNJQ0tOd0RSYnBvQWhoZnpLSXMzQUFBMEtyMEFKTGZKQWtxUTRtaUtPZ0F4YjUwQU5oWDVFSXM2QUFBMEo4a0FwTGpWQWpLVzZGQ0tQUUNSYjZBQU5oTC8rSW85QUFBMEpOVUFKTHJoQXZLVDdqaEtJQUR4YjZNQXpwTEU0RW9nQUJ0SnQ3cEFOcEllUkdrRUlJbVdBcHlSeXNoS0l3QWJTYnE5UU9wU0gwRnBCd0NBa1NVVGdGUzJWRURoRWhwV3lRUmdJNmx2d1lCRVpUQjhVZ3BBUWwwRnlwVFdtRW9wQUJ2Sm9NTkFXdklZTzRrRklLMjZBa1ZKYmtBbEZvQ041RkZqSUFuWkRKeE1BZ0RBVnFVWGdJMDJXZGswR1lqWlJxTW11Zk9mS3NVQUFGQ0xKQU5nRXdDMElxZmIveXJSQUFBd3ZsUURZQk1BQkpiWjdYK1ZiZ0FBR0ZQQ0FiQUpBSUxKNy9hL1Nqb0FBSXdqN1FEWUJBQUJaSG43WDZVZUFBQkdsbndBYkFLQVJ1VjYrMTlsRUFBQVJwTkRBR3dDZ0laa2ZQdGY1UkVBQUVhUVNRQnNBb0RhNVgzN1gyVVRnRW9EZ0ZwbFAvMnJuQUlBd0paa0ZRQ2JBS0FXSmR6K1Y1a0ZBSURoNVJZQW13QmdUSVhjL2xmNUJXQUFEUUEyVmRTZ3lEQUErVlVhYUYyV2d5WERBRlFPZ29DUmxIUDRjMGFlQVFCZ1U5a0d3Q1lBMkpMU2J2K3JqQU5RYVFBd3RBS25mNVYzQUFBWUlQTUEyQVFBbXlyejlyL0tQZ0NWQmdBREZUdjlxeElDQUVCZlJRVEFKZ0RvcStUYi82cVFBRlFhQUx4SzRkTy9LaWNBQTJnQUZNZ0x2eW9xQU9WVUhSaFpVWU9pb0FCVURvS0FxcW9jL3Z5cHNnSXdnQVpBSWJ6WVgxSmNBQVlVM3E4RlpHL0F5N3kwMi8rcXdBQlVSZjR6QTRPVk9SWktERURsWVFBVXlkSC9XUW9Od0FBYUFGbnkwbjYxY2dQZ1lRQ1V3OUYvWCtVR29DcjdIeDZvaWg4Q1JRZWc4akFBQ3VEb2Z5T2xCMkFBRFlBTWVDRVBJQUFlQmtDMkhQMFBKZ0JWcFFHUUk5Ti9Vd0x3SWcyQW5Kait3eENBUCtQWEFyTG5aZjV5QWpBVW13QklpQmZza0FUZ0ZSd0VRZW9jL2d4UEFNNm1BWkF1MDM5TEJLQVBEWUFVbWY1YkpRRDlhUUNreGZRZmdRQnNTQU1nRmFiL2FBUmdFQTJBK0puK0l4T0FUV2dBeE16MEg0Y0FqRVVEb0VWZWdHTVNnTTBOdm8vd0t3aXRHUHpTYy9zL0RBRVlpZ1pBVkV6L1dnakFzRFFBSW1INjEwVUF0a0FEb0hXbWY0MEVZR3MwQUZwayt0ZExBTFpNQTZBVnBuL3RCR0FVR2dDQm1mNU5FSUFSYVFBRVkvbzNSQUJHcHdFUWdPbmZIQUVZaXdaQW8wei9SZ25BdURRQUdtTDZONjB6djNOZjI5ZVFnOHMrZWQvZy84R2gyMjhKY3lXUWdVM3ZuRXovV2doQW5RWm5RQU5nR0c3OGczRUVWQ2ZIUVRBbTB6OGtBYWlaQnNESVRQL0FCS0IrR2dBak1QM0Q4d3lnS1I0THc1QTg4bTJMSFVCVE52MlZ0UldBeXZSdmxRQTBTQU5nTU5PL1hZNkFRbkFjQkdjeCttTmdCeENDclFDOG5Pa2ZDUUVJUkFQZ0ROTS9IbzZBZ3RyMExLaHlIRVMraHJuTE1mMURFb0FXZUNSQWdkejRSOGdSVUFzY0IxRWEwejlPZGdDdGNSeEVDUno3eEV3QVd1WTRpSXk1OFkrY0FMVFBWb0Q4dVBGUGdtY0E3UnZtWmVDcEFBa3gvVk5oQnhBUld3RlNaL1NuUlFEaU1rd0RLaGtnUGtOdVVrMy9xQWhBakd3RlNJc2IvMFFKUUtSc0JVaUNHLytrQ1VEVVpJQm9HZjBaOEM2Z3FBMzU0dkVlSVFJei9mTmdCNUFHV3dFaVlmVG5SQUNTTVdRREtobWdHY052TkUzL1ZBaEFZbVNBOEl6K1hBbEFlb1p2UUNVRGpHZExqNWRNLytRSVFLcGtnRVlaL1NVUWdMVEpBTFV6K3NzaEFEbVFBV3BoOUpkR0FES3hwUVpVTXNBcmJmVlBTVXovUEFoQVZtU0FyVEw2U3lZQUdaSUJobUgwSXdEWjJtb0dLaVVvd3dnZkhHTDA1MG9BTWljRHZNVG81eXdDVUFRWktKelJUMThDVUpBUk1sQXBRY3BHKzVoWW83OGNBbENjMFRKUUtVRTZSdjU0Y0tPL05BSlFMaVhJakxuUFZnbEE2VWJPUUtVRWNSam42NENNL3NJSkFGVTFYZ1lxSldqRG1GOERaL1JUQ1FCblVZTEltZnZVU0FEb1k4d01WRXBRdC9HLzl0bm81OVVFZ0VIR0wwRWxCcU1hZitoWDVqNERDUUJEcWFVRWxSaHNwcGFoWDVuN0RFY0EySnE2U25DR0h0UTE4Yzh3OTlrU0FXQkU5WmJnakJKNlVPL0VQOFBjWnpRQ3dMaWFLTUZMVWs5Q0UrUCtKZVkrWXhJQWF0Tm9DVjR1emlvME91dGZ6dHluTGdKQUk0TEZvSzhtQ2hGc3Z2ZGw2Tk1FQWFCWjdaWWdkZVkralJJQWd0S0R3VXg4UWhJQVdpTUdaeGo2dEVVQWlFVTVQVER4aVlRQUVLODhrbURjRXkwQklEMXhoc0dnSnprQ1FHNmF5NE1SVDJZRUFLQlFFMjFmQUFEdEVBQ0FRZ2tBUUtFRUFLQlFBZ0JRS0FFQUtKUUFBQlJLQUFBS0pRQUFoUklBZ0VJSkFFQ2hCQUNnVUFJQVVDZ0JBQ2lVQUFBVVNnQUFDaVVBQUlVU0FJQkNDUUJBb1FRQW9GQUNBRkFvQVFBb2xBQUFGRW9BQUFvbEFBQ0ZFZ0NBUWdrQVFLRUVBS0JRQWdCUUtBRUFLSlFBQUJSS0FBQUtKUUFBaFJJQWdFSUpBRUNoQkFDZ1VBSUFVQ2dCQUNpVUFBQVU2djhEYUxuNG9VcFZmVU1BQUFBQVNVVk9SSzVDWUlJPSIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIn1dfQ==">
+  <meta name="theme-color" content="#0a0e15">
+  <link rel="icon" href="data:image/png;base64,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">
+  <link rel="apple-touch-icon" href="data:image/png;base64,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">
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       FIREBASE (recebimento da nuvem — integração com o extrator de NF-e)
+       Use o MESMO projeto/config do extrator de NF-e, para ler a mesma
+       coleção "pendentes". Console: https://console.firebase.google.com
+  ════════════════════════════════════════════════════════════════ -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script>
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyBTjq1CzNj_wm6xwFLDEUbGGYNpFDxfe6A",
+      authDomain: "recebemais-340ea.firebaseapp.com",
+      projectId: "recebemais-340ea",
+      storageBucket: "recebemais-340ea.firebasestorage.app",
+      messagingSenderId: "154000900066",
+      appId: "1:154000900066:web:677ed6caeeb633cc1783bb"
+    };
+    try{
+      firebase.initializeApp(FIREBASE_CONFIG);
+
+      // Mantém a sessão salva localmente no dispositivo (login só uma
+      // vez). Essencial no app Android (WebView/Capacitor), onde o
+      // padrão pode não persistir entre aberturas do app.
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .catch((e) => console.warn('Não foi possível fixar a persistência do login:', e));
+
+      // Habilita cache offline do Firestore: os dados da nuvem (lista de
+      // "pendentes") ficam salvos no dispositivo e continuam disponíveis
+      // mesmo sem internet, sincronizando sozinhos quando a conexão volta.
+      firebase.firestore().enablePersistence({ synchronizeTabs: true })
+        .catch((e) => {
+          if (e.code === 'failed-precondition'){
+            console.warn('Persistência offline do Firestore: já habilitada em outra aba.');
+          } else if (e.code === 'unimplemented'){
+            console.warn('Persistência offline do Firestore: não suportada neste navegador.');
+          } else {
+            console.warn('Não foi possível habilitar persistência offline do Firestore:', e);
+          }
+        });
+    }catch(e){
+      console.error('Firebase init falhou (verifique FIREBASE_CONFIG):', e);
+    }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       AUTENTICAÇÃO — protege o acesso com login por e-mail/senha
+       (Firebase Authentication, mesmo projeto acima). A sessão fica
+       salva no navegador até fazer logout.
+       ════════════════════════════════════════════════════════════════ -->
+  <script>
+    function _initAuthRecebeMais(){
+      if (typeof firebase === 'undefined'){
+        const el = document.getElementById('loginError');
+        el.textContent = 'Não foi possível carregar a biblioteca de login. Verifique sua conexão.';
+        el.style.display = 'block';
+        return;
+      }
+      const auth = firebase.auth();
+
+      // ─────────────────────────────────────────────────────────────
+      // ABERTURA OTIMISTA — resolve o problema de internet lenta (não
+      // totalmente offline) deixando a tela de login travada: nesse
+      // cenário, o Firebase Auth fica tentando validar/renovar a sessão
+      // pela rede e demora a chamar onAuthStateChanged, e enquanto isso
+      // a tela de login (visível por padrão) bloqueia o app inteiro —
+      // mesmo pra quem já estava logado. Sem internet nenhuma, o SDK
+      // desiste rápido e usa a sessão local, por isso "funciona melhor
+      // sem internet do que com internet ruim".
+      //
+      // Se este aparelho já teve um login bem-sucedido antes (flag
+      // "rcb_sessao_ativa"), dá um prazo curto pro onAuthStateChanged
+      // responder; se ele não responder a tempo, abre o app mesmo assim
+      // (otimista) — só a parte de nuvem (Contagens da Nuvem,
+      // finalizar/descartar sincronizando com o Painel) depende de
+      // internet de verdade; o resto do app (contagem local, checklist,
+      // etc.) não precisa. Se depois disso o Firebase confirmar que a
+      // sessão não é mais válida (onAuthStateChanged chega com null),
+      // a tela de login aparece normalmente.
+      const TIMEOUT_ABERTURA_OTIMISTA_MS = 2500;
+      let authStateResolvido = false;
+      let sessaoJaAbertaOtimisticamente = false;
+
+      let sessaoAtivaAntes = false;
+      try{ sessaoAtivaAntes = localStorage.getItem('rcb_sessao_ativa') === '1'; }catch(e){}
+
+      if (sessaoAtivaAntes){
+        setTimeout(() => {
+          if (authStateResolvido) return; // onAuthStateChanged já respondeu a tempo, nada a fazer
+          sessaoJaAbertaOtimisticamente = true;
+          document.getElementById('loginScreen').style.display = 'none';
+          document.getElementById('appRoot').style.display = 'block';
+          console.warn('Rede lenta pra confirmar a sessão — abrindo o app otimisticamente com o login salvo.');
+        }, TIMEOUT_ABERTURA_OTIMISTA_MS);
+      }
+
+      auth.onAuthStateChanged(async (user) => {
+        authStateResolvido = true;
+        const loginScreen = document.getElementById('loginScreen');
+        const appRoot = document.getElementById('appRoot');
+        if (user){
+          loginScreen.style.display = 'none';
+          appRoot.style.display = 'block';
+          const emailEl = document.getElementById('cfg-user-email');
+          if (emailEl) emailEl.textContent = user.email || '';
+          // Busca a empresa vinculada a essa conta (Administração —
+          // Etapa 1) ANTES de iniciar o listener da nuvem — sem isso,
+          // cloudInit() não sabe se filtra por empresa (compartilhado
+          // com colegas) ou só pelo próprio uid (contas antigas, sem
+          // empresa cadastrada ainda).
+          try{
+            const doc = await firebase.firestore().collection('usuarios').doc(user.uid).get();
+            window.__minhaEmpresaId = doc.exists ? (doc.data().empresaId || null) : null;
+          }catch(err){
+            console.error('Não foi possível carregar o vínculo de empresa:', err);
+            window.__minhaEmpresaId = null;
+          }
+          // (re)inicia o listener da nuvem agora que sabemos QUEM está
+          // logado (e de qual empresa) — a lista traz os itens
+          // compartilhados com colegas da mesma empresa.
+          if (typeof cloudInit === 'function') cloudInit();
+        } else {
+          try{ localStorage.removeItem('rcb_sessao_ativa'); }catch(e){}
+          // Se a abertura otimista já tinha acontecido (o usuário já
+          // está usando o app) e SÓ AGORA o Firebase confirma que não
+          // há sessão válida, avisa antes de travar de volta na tela de
+          // login — evita um "sumiço" abrupto no meio do uso.
+          if (sessaoJaAbertaOtimisticamente && typeof toast === 'function'){
+            toast('Sessão expirada — faça login novamente.', true);
+          }
+          appRoot.style.display = 'none';
+          loginScreen.style.display = 'flex';
+          if (typeof cloudUnsub === 'function'){ cloudUnsub(); cloudUnsub = null; }
+          if (typeof cloudPendentes !== 'undefined') cloudPendentes = [];
+          window.__minhaEmpresaId = null;
+        }
+      });
+
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const senha = document.getElementById('loginPassword').value;
+        const erroEl = document.getElementById('loginError');
+        const spinnerEl = document.getElementById('loginSpinner');
+        erroEl.style.display = 'none';
+        spinnerEl.style.display = 'block';
+        try{
+          await auth.signInWithEmailAndPassword(email, senha);
+          registrarEvento('USUARIO_LOGIN', {});
+          // Marca que já houve login bem-sucedido neste aparelho — é
+          // essa marca que permite abrir o app direto, sem esperar a
+          // rede confirmar a sessão, nas próximas vezes (ver
+          // _initAuthRecebeMais / TIMEOUT_ABERTURA_OTIMISTA abaixo).
+          try{ localStorage.setItem('rcb_sessao_ativa', '1'); }catch(e){}
+        } catch (err){
+          console.error(err);
+          const mensagens = {
+            'auth/invalid-email': 'E-mail inválido.',
+            'auth/user-not-found': 'Usuário não encontrado.',
+            'auth/wrong-password': 'Senha incorreta.',
+            'auth/invalid-credential': 'E-mail ou senha incorretos.',
+            'auth/too-many-requests': 'Muitas tentativas — aguarde um pouco e tente de novo.',
+          };
+          erroEl.textContent = mensagens[err.code] || 'Não foi possível entrar. Tente novamente.';
+          erroEl.style.display = 'block';
+        } finally {
+          spinnerEl.style.display = 'none';
+        }
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       EVENTOS — camada de auditoria/monitoramento (Etapa 1 do projeto
+       RecebeMais Intelligence). Cada evento importante do fluxo grava
+       um registro em "eventos", sempre best-effort — nunca trava nem
+       quebra o fluxo principal se a gravação falhar, porque é um log,
+       não uma operação crítica. Isolado por "criadoPorUid", mesmo
+       padrão de segurança já usado no resto do app.
+       ═══════════════════════════════════════════════════════════════ */
+    async function registrarEvento(tipoEvento, dados){
+      dados = dados || {};
+      try{
+        const usuario = firebase.auth().currentUser;
+        if (!usuario) return;
+        const db = firebase.firestore();
+        await db.collection('eventos').add({
+          timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+          tipoEvento,
+          usuarioId: usuario.uid,
+          usuarioNome: (typeof perfilDispositivoLoad === 'function' ? perfilDispositivoLoad() : '') || usuario.email || null,
+          origem: 'recebemais',
+          criadoPorUid: usuario.uid,
+          ...dados,
+        });
+      }catch(err){
+        console.error('Falha ao registrar evento:', tipoEvento, err);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MONITORAMENTO TÉCNICO (Etapa 4) — mesma rede de segurança do
+       Extrator NF: captura erro de JS não tratado e Promise rejeitada
+       sem catch, grava como ERRO_SISTEMA. Deduplicado por sessão pra
+       não inundar "eventos" com o mesmo erro repetido.
+       ═══════════════════════════════════════════════════════════════ */
+    (function _instalarCapturaDeErrosRecebeMais(){
+      const jaLogados = new Set();
+      function _logErroAutomatico(mensagem, extra){
+        const chave = String(mensagem || 'Erro desconhecido').slice(0, 200);
+        if (jaLogados.has(chave)) return;
+        jaLogados.add(chave);
+        if (typeof registrarEvento === 'function'){
+          registrarEvento('ERRO_SISTEMA', { mensagem: chave, setor: 'recebemais', metadata: extra || null });
+        }
+      }
+      window.addEventListener('error', (event) => {
+        _logErroAutomatico(event.message, { arquivo: event.filename || null, linha: event.lineno || null });
+      });
+      window.addEventListener('unhandledrejection', (event) => {
+        const motivo = event.reason && event.reason.message ? event.reason.message : String(event.reason);
+        _logErroAutomatico('Promise rejeitada: ' + motivo, null);
+      });
+    })();
+
+    function fazerLogout(){
+      registrarEvento('USUARIO_LOGOUT', {});
+      try{ localStorage.removeItem('rcb_sessao_ativa'); }catch(e){}
+      firebase.auth().signOut();
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // OFFLINE — o app precisa funcionar sem internet (será empacotado
+    // como APK); só a nuvem (enviar/receber contagem) depende de rede.
+    // ═══════════════════════════════════════════════════════════════
+    function _atualizarAvisoOffline(){
+      const el = document.getElementById('offline-warn');
+      if (!el) return;
+      el.classList.toggle('on', !navigator.onLine);
+    }
+    window.addEventListener('online', () => {
+      _atualizarAvisoOffline();
+      if (typeof cloudInit === 'function') cloudInit(); // reconecta a nuvem sozinho
+    });
+    window.addEventListener('offline', _atualizarAvisoOffline);
+
+    // Registra o Service Worker (cache offline-first dos arquivos do
+    // app) — sem isso, o app não abre sem internet quando instalado.
+    if ('serviceWorker' in navigator){
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch((err) => {
+          console.warn('Falha ao registrar Service Worker:', err);
+        });
+      });
+    }
+
+    // Espera o HTML da página terminar de carregar antes de tentar achar
+    // os elementos da tela de login (esse bloco roda no <head>, antes do
+    // <body> existir — sem esperar, addEventListener falha com "null").
+    if (document.readyState === "loading"){
+      document.addEventListener("DOMContentLoaded", () => { _initAuthRecebeMais(); _atualizarAvisoOffline(); });
+    } else {
+      _initAuthRecebeMais();
+      _atualizarAvisoOffline();
+    }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       MODO OFFLINE — bibliotecas QR embutidas (sem internet necessária)
+       ZXing e jsQR são implementados como wrappers sobre BarcodeDetector
+       (API nativa do Android/Chrome). Fallback via análise de canvas puro.
+  ════════════════════════════════════════════════════════════════ -->
+  <script>
+    /* ── ZXing offline stub ──────────────────────────────────────────
+       Implementa exatamente a API usada pelo RecebeMais:
+         ZXing.DecodeHintType.TRY_HARDER
+         ZXing.BrowserQRCodeReader(hints)     → reader.decodeBitmap(bmp)
+         ZXing.RGBLuminanceSource(data,w,h)
+         ZXing.BinaryBitmap(source)
+         ZXing.HybridBinarizer(source)
+
+       No Android/Chrome o BarcodeDetector já resolve tudo no caminho
+       principal (1º decoder). Este stub garante que os caminhos ZXing
+       e jsQR nunca quebrem por ReferenceError mesmo sem internet.
+    ──────────────────────────────────────────────────────────────── */
+    (function(){
+      'use strict';
+
+      // Converte ImageData RGBA → canvas reutilizável
+      function rgbaToCanvas(rgbaData, w, h) {
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        const ctx = cv.getContext('2d');
+        const img = ctx.createImageData(w, h);
+        const src = (rgbaData instanceof Uint8ClampedArray)
+          ? rgbaData
+          : (rgbaData.buffer ? new Uint8ClampedArray(rgbaData.buffer) : rgbaData);
+        img.data.set(src.subarray ? src.subarray(0, w*h*4) : src.slice(0, w*h*4));
+        ctx.putImageData(img, 0, 0);
+        return cv;
+      }
+
+      // ─── DecodeHintType ───────────────────────────────────────────
+      const DecodeHintType = { TRY_HARDER: 'TRY_HARDER' };
+
+      // ─── RGBLuminanceSource — armazena pixels para BinaryBitmap ──
+      class RGBLuminanceSource {
+        constructor(rgbaData, w, h) {
+          // Aceita Uint8ClampedArray, Uint8Array ou Array
+          if (rgbaData instanceof Uint8ClampedArray) {
+            this._rgba = rgbaData;
+          } else if (rgbaData && rgbaData.buffer) {
+            this._rgba = new Uint8ClampedArray(rgbaData.buffer);
+          } else {
+            this._rgba = new Uint8ClampedArray(rgbaData || []);
+          }
+          this._w = w; this._h = h;
+        }
+        getWidth()  { return this._w; }
+        getHeight() { return this._h; }
+        getRGBA()   { return this._rgba; }
+        // Cria canvas para usar com BarcodeDetector
+        toCanvas()  { return rgbaToCanvas(this._rgba, this._w, this._h); }
+      }
+
+      // ─── HybridBinarizer ─────────────────────────────────────────
+      class HybridBinarizer {
+        constructor(source) { this._src = source; }
+        getSource() { return this._src; }
+      }
+
+      // ─── BinaryBitmap ────────────────────────────────────────────
+      class BinaryBitmap {
+        constructor(binarizer) { this._bin = binarizer; }
+        getBinarizer() { return this._bin; }
+        // Atalho conveniente
+        getSource() { return this._bin.getSource(); }
+      }
+
+      // ─── BrowserQRCodeReader ─────────────────────────────────────
+      // O app chama decodeBitmap() dentro de um try/catch:
+      //   try{ const res=_zxingReader.decodeBitmap(bmp); if(res&&res.getText()) return res.getText(); }catch(e){}
+      // Portanto podemos lançar exceção para indicar "não encontrado" (comportamento original do ZXing).
+      // Usamos BarcodeDetector via OffscreenCanvas quando disponível.
+      class BrowserQRCodeReader {
+        constructor(hints) {
+          this._hints = hints || new Map();
+          this._bd = null;
+          // Pré-inicializar BarcodeDetector
+          if ('BarcodeDetector' in window) {
+            BarcodeDetector.getSupportedFormats().then(fmts => {
+              this._bd = new BarcodeDetector({ formats: fmts });
+            }).catch(() => {});
+          }
+        }
+
+        // decodeBitmap retorna um objeto com getText() ou lança erro.
+        // Como o BarcodeDetector é async, este método acumula resultados
+        // via detecção no frame anterior (pipeline de 1 frame de atraso).
+        decodeBitmap(bitmap) {
+          const src = bitmap.getSource();
+          // Resultado do disparo anterior disponível?
+          if (this._lastResult) {
+            const r = this._lastResult;
+            this._lastResult = null;
+            return { getText: () => r };
+          }
+          // Disparar detecção async para o próximo frame
+          if (this._bd && !this._detecting) {
+            this._detecting = true;
+            const cv = src.toCanvas();
+            this._bd.detect(cv).then(results => {
+              if (results && results.length) this._lastResult = results[0].rawValue;
+              this._detecting = false;
+            }).catch(() => { this._detecting = false; });
+          }
+          throw new Error('QR_NOT_FOUND'); // sinaliza "tente jsQR"
+        }
+      }
+
+      // ─── Expor namespace global ZXing ────────────────────────────
+      window.ZXing = {
+        DecodeHintType,
+        RGBLuminanceSource,
+        HybridBinarizer,
+        BinaryBitmap,
+        BrowserQRCodeReader
+      };
+    })();
+
+    /* ── jsQR offline stub ──────────────────────────────────────────
+       jsQR(imageData, width, height, opts) → {data: string} | null
+       Usa BarcodeDetector via canvas. Resultado entregue no frame seguinte
+       (pipeline idêntico ao real jsQR que também é chamado a cada frame).
+    ──────────────────────────────────────────────────────────────── */
+    (function(){
+      let _lastResult = null;
+      let _detecting  = false;
+      let _bd         = null;
+
+      // Inicializar BarcodeDetector
+      if ('BarcodeDetector' in window) {
+        BarcodeDetector.getSupportedFormats().then(fmts => {
+          _bd = new BarcodeDetector({ formats: fmts });
+        }).catch(() => {});
+      }
+
+      window.jsQR = function(imageData, width, height /*, opts */) {
+        // 1. Retornar resultado do frame anterior
+        if (_lastResult) {
+          const r = { data: _lastResult };
+          _lastResult = null;
+          return r;
+        }
+        // 2. Disparar detecção async
+        if (_bd && !_detecting) {
+          _detecting = true;
+          const cv = document.createElement('canvas');
+          cv.width = width; cv.height = height;
+          const ctx = cv.getContext('2d');
+          const img = ctx.createImageData(width, height);
+          // imageData pode ser Uint8ClampedArray diretamente ou ImageData
+          const src = imageData instanceof Uint8ClampedArray ? imageData
+                    : (imageData.data || imageData);
+          img.data.set(src.subarray ? src.subarray(0, width*height*4)
+                                    : src.slice(0, width*height*4));
+          ctx.putImageData(img, 0, 0);
+          _bd.detect(cv).then(results => {
+            if (results && results.length) _lastResult = results[0].rawValue;
+            _detecting = false;
+          }).catch(() => { _detecting = false; });
+        }
+        return null;
+      };
+    })();
+  </script>
+  <!-- Google Cloud Vision é usado via fetch, sem biblioteca extra -->
+  <!-- ╔══════════════════════════════════════════════════════════╗ -->
+  <!-- ║  CHAVE DA API GOOGLE CLOUD VISION — edite aqui          ║ -->
+  <!-- ║  Obtenha em: console.cloud.google.com → Vision API      ║ -->
+  <!-- ╚══════════════════════════════════════════════════════════╝ -->
+  <script>
+    // ═══════════════════════════════════════════════════════════
+    //  CHAVES DE API — edite aqui e recompile o APK
+    // ═══════════════════════════════════════════════════════════
+    const EMBEDDED_VISION_KEY = '';   // Google Cloud Vision  → AIzaSy...
+    const EMBEDDED_OPENAI_KEY = '';   // OpenAI               → sk-...
+    // ═══════════════════════════════════════════════════════════
+  </script>
+  <!-- Fontes do sistema — sem necessidade de internet -->
+  <!-- Android: Roboto (sans), Roboto Mono (mono) | iOS: SF Pro, SF Mono -->
+  <link rel="manifest" href="data:application/json,{%22name%22:%22RecebeMais%22,%22short_name%22:%22RecebeMais%22,%22display%22:%22standalone%22,%22background_color%22:%22%2307090f%22,%22theme_color%22:%22%2300d8ff%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%253Csvg%2520xmlns%3D'http%3A//www.w3.org/2000/svg'%2520viewBox%3D'0%25200%252032%252032'%253E%253Crect%2520width%3D'32'%2520height%3D'32'%2520fill%3D'%252307090f'/%253E%253Ctext%2520x%3D'4'%2520y%3D'24'%2520font-size%3D'22'%2520fill%3D'%252300d8ff'%253ER%252B%253C/text%253E%253C/svg%253E%22,%22sizes%22:%22any%22,%22type%22:%22image/svg+xml%22}]}">
+  <meta name="theme-color" content="#00d8ff">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    /* ── TEMA ESCURO (padrão) — paleta corporativa: grafite/azul-marinho
+         com azul de ação e cores semânticas (verde=conforme, vermelho=
+         divergência, âmbar=pendência). ── */
+    :root{
+      --bg:#0a0e15;
+      --s1:#121924;
+      --s2:#182231;
+      --s3:#1f2b3c;
+      --bd:#26334a;
+      --bd2:#324260;
+      --cy:#2f8fe0;
+      --gr:#1fa971;
+      --wa:#e0a020;
+      --re:#e14b4b;
+      --tx:#e7ecf2;
+      --mu:#4f6280;
+      --mu2:#7d90a8;
+      --radius:7px;
+      --radius-sm:4px;
+      --F:'SF Mono','Roboto Mono','Consolas','Liberation Mono','Courier New',monospace;
+      --R:'Inter',-apple-system,'SF Pro Display','Segoe UI','Helvetica Neue',Arial,sans-serif;
+    }
+
+    /* ── TEMA CLARO ── */
+    [data-theme="light"]{
+      --bg:#eef1f5;
+      --s1:#ffffff;
+      --s2:#f6f8fa;
+      --s3:#e9edf2;
+      --bd:#d3dae3;
+      --bd2:#aab6c4;
+      --cy:#1d6fb8;
+      --gr:#157a54;
+      --wa:#a56a08;
+      --re:#c53030;
+      --tx:#1a2330;
+      --mu:#98a5b6;
+      --mu2:#5c6c80;
+    }
+    [data-theme="light"] .hdr{ box-shadow:0 1px 4px rgba(0,0,0,.08); }
+    [data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{
+      background:#f8fafc;
+    }
+    [data-theme="light"] .card{ box-shadow:0 1px 3px rgba(0,0,0,.06); }
+    [data-theme="light"] .qr-box{ box-shadow:0 2px 12px rgba(0,0,0,.1); }
+
+    html,body{height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothing:antialiased}
+    body{color:var(--tx);font-family:var(--R);font-size:14px;letter-spacing:0}
+
+    /* ══ PAGES ══ */
+    .pg{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--bg);
+      transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;overflow:hidden;will-change:transform}
+    .pg.out{transform:translateX(100%);opacity:0;pointer-events:none}
+    .pg.back{transform:translateX(-6%);opacity:0;pointer-events:none}
+
+    /* ══ HEADER ══ */
+    .hdr{background:var(--s1);border-bottom:1px solid var(--bd);padding:13px 16px;
+      display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:20}
+    .back-btn{background:none;border:none;color:var(--cy);font-family:var(--R);font-weight:600;
+      font-size:.78rem;letter-spacing:.2px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:4px}
+    .pg-ttl{font-family:var(--R);font-weight:700;font-size:.86rem;color:var(--tx);
+      letter-spacing:.8px;text-transform:uppercase}
+    .hdr-side{min-width:60px;display:flex;justify-content:flex-end}
+
+    /* ══ SCROLLABLE BODY ══ */
+    .body{flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch}
+    .body::-webkit-scrollbar{width:2px}
+    .body::-webkit-scrollbar-thumb{background:var(--bd)}
+
+    /* ══ CARD ══ */
+    .card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);padding:16px;margin-bottom:10px;transition:border-color .2s}
+    .card.hi{border-color:var(--bd2)}
+    .ctit{font-family:var(--R);font-weight:700;font-size:.66rem;letter-spacing:1px;
+      text-transform:uppercase;color:var(--mu2);margin-bottom:12px;display:flex;
+      align-items:center;justify-content:space-between}
+    .ctit b,.ctit strong{color:var(--tx)}
+
+    /* ══ FORMS ══ */
+    label{display:block;font-size:.6rem;color:var(--mu2);letter-spacing:.4px;
+      text-transform:uppercase;margin-bottom:4px;font-weight:600}
+    input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--bd);border-radius:var(--radius-sm);
+      color:var(--tx);font-family:var(--R);font-size:.86rem;padding:11px 13px;
+      outline:none;transition:border-color .15s,background .15s;margin-bottom:9px;-webkit-appearance:none}
+    input:focus,select:focus,textarea:focus{border-color:var(--cy);background:var(--s1)}
+    textarea{resize:none;min-height:60px}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+
+    /* ══ BUTTONS ══ */
+    .btn{width:100%;padding:12px;border-radius:var(--radius-sm);border:1px solid transparent;font-family:var(--R);
+      font-weight:600;font-size:.82rem;letter-spacing:.3px;
+      cursor:pointer;transition:opacity .15s,filter .1s;margin-bottom:8px;display:block}
+    .btn:last-child{margin-bottom:0}
+    .btn:active{filter:brightness(.92)}
+    .btn-cy{background:var(--cy);color:#fff}
+    .btn-gr{background:var(--gr);color:#fff}
+    .btn-re{background:var(--re);color:#fff}
+    .btn-wa{background:var(--wa);color:#0a0e15}
+    .btn-x{background:transparent;border:1px solid var(--bd);color:var(--mu2)}
+    .btn-x:active{border-color:var(--cy);color:var(--cy)}
+    .row{display:flex;gap:8px}.row .btn{margin-bottom:0;flex:1}
+
+    /* ══ DASHBOARD ══ */
+    .dash-hero{padding:22px 16px 14px;text-align:center;position:relative;
+      border-bottom:1px solid var(--bd);background:var(--s1)}
+    .dash-logo{font-family:var(--R);font-weight:800;font-size:1.5rem;
+      color:var(--tx);letter-spacing:1px;line-height:1}
+    .dash-logo span{color:var(--cy)}
+    .dash-tagline{font-size:.62rem;color:var(--mu2);letter-spacing:1.5px;margin-top:5px;text-transform:uppercase;font-weight:600}
+    .dash-time{font-family:var(--R);font-size:1.15rem;font-weight:600;
+      color:var(--mu2);letter-spacing:.5px;margin-top:10px;font-variant-numeric:tabular-nums}
+
+    /* Sessão ativa pill */
+    .sess-pill{margin:0 12px 10px;background:var(--s1);border:1px solid var(--bd);
+      border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;
+      transition:border-color .15s}
+    .sess-pill:active{background:var(--s2)}
+    .sdot{width:8px;height:8px;border-radius:50%;background:var(--mu);flex-shrink:0;
+      transition:background .3s}
+    .sdot.live{background:var(--gr)}
+    .sinfo{flex:1;min-width:0}
+    .sname{font-family:var(--R);font-weight:700;font-size:.86rem;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sdet{font-size:.58rem;color:var(--mu2);margin-top:2px;letter-spacing:.2px}
+
+    /* Contadores dash */
+    .dash-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;
+      padding:0 12px 10px}
+    .dstat{background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius-sm);
+      padding:11px 6px;text-align:center}
+    .dstat .n{font-family:var(--R);font-size:1.4rem;font-weight:700;color:var(--tx);line-height:1;font-variant-numeric:tabular-nums}
+    .dstat .l{font-size:.52rem;color:var(--mu2);letter-spacing:.6px;text-transform:uppercase;margin-top:4px;font-weight:600}
+    .dstat.g .n{color:var(--gr)}
+    .dstat.o .n{color:var(--wa)}
+
+    /* Grid botões dash */
+    .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:0 12px 10px}
+    .dbtn{background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
+      padding:13px 12px;display:flex;flex-direction:column;align-items:flex-start;
+      gap:3px;cursor:pointer;transition:border-color .15s,background .15s;text-align:left}
+    .dbtn:active{background:var(--s2)}
+    .dbtn-ico{font-size:.6rem;line-height:1;color:var(--cy);letter-spacing:1.5px;
+      text-transform:uppercase;font-weight:700;font-family:var(--R)}
+    .dbtn-lbl{font-family:var(--R);font-weight:700;font-size:.86rem;
+      letter-spacing:.2px;color:var(--tx);margin-top:2px}
+    .dbtn-sub{font-size:.56rem;color:var(--mu2);letter-spacing:.2px}
+    .dbtn-badge{background:var(--cy);color:#fff;font-size:.52rem;font-weight:700;
+      border-radius:3px;padding:2px 6px;font-family:var(--R);letter-spacing:.4px}
+
+    /* ══ CÂMERA ══ */
+    #cam-wrap{position:relative;width:100%;background:#000;border-radius:10px;
+      overflow:hidden;margin-bottom:8px;aspect-ratio:4/3}
+    #vid{width:100%;height:100%;object-fit:cover;display:block}
+    .cam-ov{position:absolute;inset:0;display:flex;align-items:center;
+      justify-content:center;pointer-events:none}
+    .sf{width:60%;aspect-ratio:1;border-radius:8px;position:relative;
+      box-shadow:0 0 0 9999px rgba(0,0,0,.55)}
+    .sf::before{content:'';position:absolute;inset:-2px;border:2px solid var(--cy);border-radius:8px}
+    .sl{position:absolute;left:4px;right:4px;height:2px;top:4px;
+      background:linear-gradient(90deg,transparent,var(--cy),transparent);
+      animation:sw 1.8s ease-in-out infinite}
+    @keyframes sw{0%{top:4px;opacity:1}88%{top:calc(100% - 6px);opacity:1}100%{top:calc(100% - 6px);opacity:0}}
+    .sc{position:absolute;width:16px;height:16px;border-color:var(--gr);border-style:solid}
+    .sc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+    .sc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+    .sc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+    .sc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+    #cam-cnt{position:absolute;bottom:7px;right:10px;font-size:.52rem;
+      color:rgba(0,216,255,.6);pointer-events:none;letter-spacing:1px}
+    .cam-ph{position:absolute;inset:0;background:var(--s2);display:flex;
+      flex-direction:column;align-items:center;justify-content:center;gap:8px;
+      transition:opacity .2s}
+    .cam-ph.off{opacity:0;pointer-events:none}
+    .cph-i{font-size:2.8rem;opacity:.12;line-height:1}
+    .cph-t{font-size:.58rem;color:var(--mu);letter-spacing:.5px}
+    #cam-st{font-size:.64rem;text-align:center;padding:4px 0;min-height:22px;letter-spacing:.3px}
+    #cam-st.ok{color:var(--gr)}
+    #cam-st.err{color:var(--re)}
+    #cam-st.wa{color:var(--wa)}
+
+    /* ══ QR RESULT — tela flutuante (bottom sheet), sobrepõe a página
+       inteira independente da posição de rolagem, para confirmar a
+       adição de peças à contagem sem precisar localizar o card na tela. ══ */
+    .qr-box{
+      display:none;
+    }
+    .qr-box.on{
+      display:flex;
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      background:rgba(0,0,0,.6);
+      align-items:flex-end;
+      justify-content:center;
+      animation:qrBoxFade .15s ease;
+    }
+    @keyframes qrBoxFade{from{opacity:0}to{opacity:1}}
+    .qr-box-panel{
+      background:var(--s2);border:1px solid var(--bd2);border-left:3px solid var(--gr);
+      border-radius:16px 16px 0 0;padding:13px 13px 18px;
+      width:100%;max-width:480px;max-height:88vh;overflow-y:auto;
+      box-shadow:0 -8px 30px rgba(0,0,0,.45);
+      animation:qrBoxSlideUp .2s ease;
+    }
+    @keyframes qrBoxSlideUp{from{transform:translateY(24px)}to{transform:translateY(0)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+    @media (min-width: 560px){
+      .qr-box.on{ align-items:center; }
+      .qr-box-panel{ border-radius:var(--radius-sm); }
+    }
+    .rr{display:flex;justify-content:space-between;align-items:center;
+      padding:7px 0;border-bottom:1px solid var(--bd)}
+    .rr:last-of-type{border:none}
+    .rk{font-size:.58rem;color:var(--mu2);letter-spacing:.4px;text-transform:uppercase;font-weight:600}
+    .rv{font-weight:500;font-size:.78rem}
+    .rv.ref{color:var(--tx);font-family:var(--R);font-weight:700;font-size:1rem}
+    .rv.qty{color:var(--gr);font-family:var(--R);font-weight:700;font-size:1.2rem;font-variant-numeric:tabular-nums}
+    .rv.tot{color:var(--wa);font-family:var(--R);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums}
+    .acc-bar{display:none;background:rgba(224,160,32,.08);border:1px solid rgba(224,160,32,.3);
+      border-radius:var(--radius-sm);padding:8px 10px;font-size:.64rem;color:var(--wa);
+      line-height:1.6;margin-bottom:8px}
+    .acc-bar.on{display:block}
+
+    /* ══ ITEM LIST ══ */
+    .ilist{display:flex;flex-direction:column;gap:6px}
+    .ic{background:var(--s1);border:1px solid var(--bd);border-left:3px solid var(--bd);border-radius:var(--radius-sm);
+      padding:11px 13px;display:flex;align-items:center;gap:10px;
+      cursor:pointer;transition:border-color .15s,background .15s}
+    .ic:active{background:var(--s2)}
+    .ic.multi{border-left-color:var(--gr)}
+    .ic.editing{border-color:var(--cy);border-left-color:var(--cy);background:var(--s2)}
+    .iref{font-family:var(--R);font-size:.88rem;font-weight:700;letter-spacing:.1px}
+    .iqty{font-family:var(--R);font-size:1.05rem;font-weight:700;color:var(--gr);
+      min-width:48px;text-align:right;font-variant-numeric:tabular-nums}
+    .itag{font-size:.5rem;color:var(--wa);background:rgba(224,160,32,.12);
+      border-radius:3px;padding:1px 5px;display:inline-block;margin-top:2px;letter-spacing:.3px}
+    .imeta{font-size:.58rem;color:var(--mu2);margin-top:2px}
+    .idel{background:none;border:none;color:var(--re);cursor:pointer;
+      font-size:.8rem;padding:5px 4px;opacity:.6;flex-shrink:0}
+    .idel:active{opacity:1}
+
+    /* Faixa lateral por status — cor com função semântica, não decoração */
+    .ic.st-pend,.ic.st-notcounted{border-left-color:var(--bd2)}
+    .ic.st-conv,.ic.st-counted{border-left-color:var(--gr)}
+    .ic.st-div{border-left-color:var(--re)}
+    .ic.st-extra{border-left-color:var(--cy)}
+
+    /* Edit inline */
+    .edit-row{display:none;border-top:1px solid var(--bd);margin-top:8px;padding-top:8px}
+    .edit-row.on{display:flex;gap:6px;align-items:center}
+    .edit-row input{margin-bottom:0;padding:7px 10px;font-size:.82rem;flex:1}
+    .edit-row .btn{padding:8px 12px;font-size:.72rem;width:auto;margin-bottom:0;letter-spacing:1px}
+
+    /* ══ STATS ══ */
+    .stats{display:flex;gap:7px;margin-bottom:10px}
+    .stat{flex:1;background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius-sm);
+      padding:10px;text-align:center}
+    .stat .n{font-family:var(--R);font-size:1.5rem;font-weight:700;color:var(--tx);line-height:1;font-variant-numeric:tabular-nums}
+    .stat .l{font-size:.52rem;color:var(--mu2);letter-spacing:.5px;text-transform:uppercase;margin-top:3px;font-weight:600}
+    .stat.g .n{color:var(--gr)}
+    .stat.o .n{color:var(--wa)}
+
+    /* ══ HISTÓRICO ══ */
+    .hcard{background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
+      padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+    .hcard:active{background:var(--s2)}
+    .hcard-head{display:flex;align-items:center;justify-content:space-between}
+    .hcard-forn{font-family:var(--R);font-weight:700;font-size:.9rem}
+    .hcard-date{font-size:.56rem;color:var(--mu2)}
+    .hcard-stats{display:flex;gap:10px;margin-top:6px}
+    .hstat{font-size:.6rem;color:var(--mu2)}
+    .hstat b{color:var(--tx);font-family:var(--R);font-size:.78rem}
+    .hdel{background:none;border:none;color:var(--re);cursor:pointer;
+      font-size:.75rem;padding:3px;opacity:.5}
+    .hdel:active{opacity:1}
+
+    /* ══ EXPORT BOX ══ */
+    .exbox{background:var(--bg);border:1px solid var(--bd);border-radius:var(--radius-sm);
+      padding:10px;font-size:.6rem;color:var(--mu2);white-space:pre;
+      overflow-x:auto;max-height:180px;margin-bottom:8px;line-height:1.9}
+
+    /* ══ INFO BOX ══ */
+    .ibox{background:var(--s2);border:1px solid var(--bd);
+      border-radius:var(--radius-sm);padding:9px 11px;font-size:.62rem;color:var(--mu2);
+      line-height:1.8;margin-bottom:8px}
+    .ibox b{color:var(--cy)}
+    .ibox code{color:var(--tx);background:var(--s3);
+      padding:1px 4px;border-radius:3px;font-size:.58rem}
+
+    /* ══ EMPTY ══ */
+    .empty{text-align:center;padding:36px 20px;color:var(--mu)}
+    .ei{letter-spacing:5px;opacity:.15;margin-bottom:10px;font-size:.8rem}
+    .et{font-size:.66rem;letter-spacing:.3px}
+
+    /* ══ WARN / ALERT ══ */
+    .wbox{display:none;padding:9px 11px;background:rgba(225,75,75,.08);
+      border:1px solid rgba(225,75,75,.3);border-radius:var(--radius-sm);
+      font-size:.64rem;color:var(--re);margin-bottom:9px;line-height:1.6}
+    .wbox.on{display:block}
+    .abox{padding:9px 11px;background:rgba(31,169,113,.06);
+      border:1px solid rgba(31,169,113,.25);border-radius:var(--radius-sm);
+      font-size:.64rem;color:var(--gr);margin-bottom:9px;line-height:1.6}
+
+    /* ══ SEPARADOR ══ */
+    .sep{height:1px;background:var(--bd);margin:10px 0}
+
+    /* ══ TOAST ══ */
+    #toast{position:fixed;bottom:20px;left:50%;
+      transform:translateX(-50%) translateY(60px);
+      background:var(--s1);border:1px solid var(--bd2);border-left:3px solid var(--gr);color:var(--tx);
+      padding:10px 18px;border-radius:var(--radius-sm);font-size:.7rem;letter-spacing:.1px;font-weight:600;
+      z-index:9999;transition:transform .2s;white-space:nowrap;max-width:88vw;
+      overflow:hidden;text-overflow:ellipsis}
+    #toast.on{transform:translateX(-50%) translateY(0)}
+    #toast.err{border-left-color:var(--re)}
+    #toast.wa{border-left-color:var(--wa)}
+
+    /* ══ FLASH ══ */
+    #flash{position:fixed;inset:0;background:rgba(31,169,113,.06);
+      pointer-events:none;z-index:9990;opacity:0;transition:opacity .12s}
+    #flash.on{opacity:1}
+
+    /* ══ MODAL ══ */
+    .mbg{display:none;position:fixed;inset:0;background:rgba(4,7,12,.78);
+      z-index:800;align-items:center;justify-content:center;padding:16px}
+    .mbg.on{display:flex}
+    .md{background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
+      padding:20px;width:100%;max-width:360px}
+    .md h3{font-family:var(--R);font-weight:700;font-size:.86rem;color:var(--tx);
+      letter-spacing:.3px;text-transform:none;margin-bottom:10px}
+    .md p{font-size:.72rem;color:var(--mu2);line-height:1.7}
+    .mrow{display:flex;gap:8px;margin-top:14px}
+    .mrow .btn{margin-bottom:0;flex:1}
+
+    /* MODAL EDIT */
+    #mdl-edit .md{max-width:380px}
+    #mdl-edit label{margin-top:4px}
+    #mdl-edit input{margin-bottom:6px}
+
+    /* Hist item edit (editable rows) */
+    .hic{background:var(--s1);border:1px solid var(--bd);border-left:3px solid var(--bd);border-radius:var(--radius-sm);
+      padding:11px 13px;display:flex;align-items:center;gap:10px;
+      cursor:pointer;transition:border-color .15s,background .15s}
+    .hic:active{background:var(--s2)}
+    .hic.multi{border-left-color:var(--gr)}
+    .hic-edit{display:none;border-top:1px solid var(--bd);margin-top:8px;padding-top:8px}
+    .hic-edit.on{display:flex;gap:6px;align-items:center}
+    .hic-edit input{margin-bottom:0;padding:7px 10px;font-size:.82rem;flex:1}
+    .hic-edit .btn{padding:8px 12px;font-size:.72rem;width:auto;margin-bottom:0;letter-spacing:1px}
+
+    /* ══ SCAN LIST COLLAPSE ══ */
+    #scan-list-body.collapsed{display:none}
+
+    /* QR manual input */
+    .qr-manual{background:rgba(0,216,255,.04);border:1px solid rgba(0,216,255,.15);
+      border-radius:8px;padding:10px 12px;margin-bottom:8px}
+    .qr-manual .ctit{margin-bottom:8px;font-size:.6rem}
+    .qr-manual input{margin-bottom:6px}
+    .qr-manual .btn{padding:9px;font-size:.75rem}
+
+    /* Engine badge */
+    #engine-badge{font-size:.46rem;color:var(--mu);letter-spacing:.8px;
+      text-align:center;padding:2px 0 4px;opacity:.6}
+
+    /* Scanning pulse quando ativo */
+    @keyframes scanPulse{0%,100%{opacity:.5}50%{opacity:1}}
+    #cam-wrap.scanning .sf::before{animation:scanPulse 1s ease-in-out infinite}
+
+    /* OCR overlay */
+    #ocr-overlay{position:absolute;inset:0;background:rgba(7,9,15,.82);
+      display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+      border-radius:10px;z-index:10}
+    #ocr-overlay.on{display:flex}
+    .ocr-spin{width:32px;height:32px;border:3px solid var(--bd);
+      border-top-color:var(--cy);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .ocr-prog{font-size:.6rem;color:var(--cy);letter-spacing:1px}
+    .ocr-hint{font-size:.52rem;color:var(--mu2);letter-spacing:.3px;text-align:center;padding:0 20px}
+
+    /* OCR mode toggle */
+    .mode-toggle{display:flex;gap:0;margin-bottom:8px;border:1px solid var(--bd);border-radius:7px;overflow:hidden}
+    .mode-btn{flex:1;padding:8px 6px;background:transparent;border:none;
+      font-family:var(--R);font-weight:700;font-size:.7rem;letter-spacing:1px;
+      text-transform:uppercase;color:var(--mu2);cursor:pointer;transition:all .15s}
+    .mode-btn.active{background:var(--s2);color:var(--cy)}
+    .mode-btn:active{opacity:.7}
+
+    /* OCR result preview */
+    #ocr-raw-box{display:none;background:var(--bg);border:1px solid var(--bd);
+      border-radius:6px;padding:8px 10px;font-size:.56rem;color:var(--mu2);
+      white-space:pre-wrap;word-break:break-all;max-height:70px;overflow-y:auto;
+      margin-bottom:6px;line-height:1.7}
+    #ocr-raw-box.on{display:block}
+
+    /* ══ OCR COUNTDOWN BAR ══ */
+    #ocr-countdown{height:2px;background:var(--bd);border-radius:1px;margin-bottom:4px;overflow:hidden;display:none}
+    #ocr-countdown.on{display:block}
+    #ocr-countdown-fill{height:100%;background:var(--cy);width:100%;
+      transition:width 1s linear;border-radius:1px}
+
+    /* ══ SORT CONTROL ══ */
+    .sort-ctrl{display:flex;gap:0;margin-bottom:8px;border:1px solid var(--bd);border-radius:7px;overflow:hidden}
+    .sort-btn{flex:1;padding:6px 4px;background:transparent;border:none;
+      font-family:var(--R);font-weight:700;font-size:.62rem;letter-spacing:.8px;
+      text-transform:uppercase;color:var(--mu2);cursor:pointer;transition:all .15s}
+    .sort-btn.active{background:var(--s2);color:var(--cy)}
+    .sort-btn:active{opacity:.7}
+
+    /* ══ HIST SEARCH ══ */
+    #hist-search{margin-bottom:8px}
+
+    /* ══ HIST FILTER TABS ══ */
+    .hist-filter{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;padding-bottom:2px}
+    .hist-filter::-webkit-scrollbar{display:none}
+    .hftab{background:var(--s1);border:1px solid var(--bd);border-radius:6px;
+      padding:5px 12px;font-family:var(--R);font-weight:700;font-size:.6rem;
+      letter-spacing:1px;text-transform:uppercase;color:var(--mu2);
+      cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+    .hftab.active{background:rgba(0,216,255,.1);border-color:var(--cy);color:var(--cy)}
+
+    /* ══ EXPORT SESSÃO ATIVA ══ */
+    #card-export-sess{display:none;margin-top:0}
+
+    /* ══ STORAGE WARNING ══ */
+    #storage-warn{display:none;background:rgba(255,140,0,.08);border:1px solid rgba(255,140,0,.3);
+      border-radius:7px;padding:8px 11px;font-size:.6rem;color:var(--wa);
+      margin:0 12px 8px;line-height:1.6}
+    #storage-warn.on{display:block}
+    #offline-warn{display:none;background:rgba(224,75,75,.08);border:1px solid rgba(224,75,75,.3);
+      border-radius:7px;padding:8px 11px;font-size:.6rem;color:var(--re);
+      margin:0 12px 8px;line-height:1.6}
+    #offline-warn.on{display:block}
+    /* ══ API KEY EMBEDED STATUS ══ */
+    .key-src{font-size:.5rem;padding:2px 7px;border-radius:4px;letter-spacing:1px;font-family:var(--R)}
+    .key-src.emb{background:rgba(0,245,160,.12);color:var(--gr)}
+    .key-src.ls {background:rgba(0,216,255,.1); color:var(--cy)}
+    .key-src.none{background:rgba(255,51,85,.15);color:var(--re)}
+
+    /* ══ DUPLICATE ALERT ══ */
+    .dup-flash{animation:dupPulse .35s ease}
+    @keyframes dupPulse{0%{background:rgba(255,140,0,.2)}100%{background:transparent}}
+
+    /* ══ FORNECEDOR CADASTRADO ══ */
+    .forn-card{background:var(--s2);border:1px solid var(--bd);border-radius:10px;
+      padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .2s}
+    .forn-card:active{background:var(--s3)}
+    .forn-card-head{display:flex;align-items:center;justify-content:space-between}
+    .forn-card-name{font-family:var(--R);font-weight:700;font-size:1rem;color:var(--cy)}
+    .forn-card-type{font-size:.5rem;padding:2px 7px;border-radius:4px;letter-spacing:1px;
+      font-family:var(--R);font-weight:700;background:rgba(0,216,255,.1);color:var(--cy)}
+    .forn-card-type.regex{background:rgba(255,140,0,.1);color:var(--wa)}
+    .forn-card-type.pipe{background:rgba(0,245,160,.1);color:var(--gr)}
+    .forn-card-type.kv{background:rgba(0,245,160,.1);color:var(--gr)}
+    .forn-card-type.json{background:rgba(0,245,160,.1);color:var(--gr)}
+    .forn-card-type.generico{background:rgba(100,100,100,.15);color:var(--mu2)}
+    .forn-card-meta{font-size:.55rem;color:var(--mu2);margin-top:5px;line-height:1.7}
+    .forn-card-del{background:none;border:none;color:var(--re);cursor:pointer;
+      font-size:.75rem;padding:3px 5px;opacity:.5}
+    .forn-card-del:active{opacity:1}
+
+    /* Tabs dentro da página forn */
+    .forn-tabs{display:flex;gap:0;border:1px solid var(--bd);border-radius:8px;overflow:hidden;margin-bottom:12px}
+    .forn-tab{flex:1;padding:9px 6px;background:transparent;border:none;
+      font-family:var(--R);font-weight:700;font-size:.68rem;letter-spacing:1px;
+      text-transform:uppercase;color:var(--mu2);cursor:pointer;transition:all .15s}
+    .forn-tab.active{background:var(--s2);color:var(--cy)}
+
+    /* Seção de campo de parser */
+    .parser-section{background:rgba(0,216,255,.03);border:1px solid rgba(0,216,255,.12);
+      border-radius:8px;padding:11px 12px;margin-bottom:8px}
+    .parser-section-title{font-family:var(--R);font-weight:700;font-size:.6rem;
+      letter-spacing:1.5px;text-transform:uppercase;color:var(--cy);margin-bottom:8px}
+    .parser-hint{font-size:.54rem;color:var(--mu2);line-height:1.7;margin-bottom:6px}
+    .parser-hint code{color:var(--tx);background:rgba(255,255,255,.06);
+      padding:1px 5px;border-radius:3px;font-size:.52rem}
+    .parser-hint b{color:var(--cy)}
+
+    /* Toggle switch */
+    .tog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .tog-lbl{font-size:.6rem;color:var(--mu2);letter-spacing:.5px}
+    .tog{position:relative;width:38px;height:20px;flex-shrink:0}
+    .tog input{opacity:0;width:0;height:0;position:absolute}
+    .tog-sl{position:absolute;inset:0;background:var(--bd);border-radius:10px;
+      cursor:pointer;transition:background .2s}
+    .tog-sl::after{content:'';position:absolute;left:3px;top:3px;width:14px;height:14px;
+      background:#fff;border-radius:50%;transition:transform .2s}
+    .tog input:checked+.tog-sl{background:var(--cy)}
+    .tog input:checked+.tog-sl::after{transform:translateX(18px)}
+
+    /* Teste de parser */
+    #forn-test-box{display:none;margin-top:8px;padding:10px 12px;background:var(--bg);
+      border:1px solid var(--bd);border-radius:7px;font-size:.6rem;line-height:1.9;color:var(--mu2)}
+    #forn-test-box.ok{border-color:var(--gr);display:block}
+    #forn-test-box.err{border-color:var(--re);display:block}
+    #forn-test-box b{color:var(--cy)}
+    #forn-test-box .ok-val{color:var(--gr)}
+    #forn-test-box .err-val{color:var(--re)}
+
+    /* ══ FIXO REFS ══ */
+    .fixo-row{display:grid;grid-template-columns:1fr 90px 32px;gap:6px;align-items:center;margin-bottom:7px}
+    .fixo-row input{margin-bottom:0;padding:9px 10px;font-size:.82rem}
+    .fixo-row .del-btn{background:none;border:1px solid rgba(255,51,85,.3);border-radius:6px;
+      color:var(--re);cursor:pointer;height:38px;font-size:.8rem;display:flex;align-items:center;justify-content:center;
+      transition:background .15s}
+    .fixo-row .del-btn:active{background:rgba(255,51,85,.15)}
+
+    /* Quick-pick fixo na tela de contagem */
+    /* ── Contagem às Cegas (importação Excel) ── */
+    .status-badge{display:inline-block;font-size:.52rem;font-family:var(--R);font-weight:700;
+      letter-spacing:.3px;padding:2px 7px;border-radius:3px;text-transform:none;white-space:nowrap}
+    .status-pend{background:rgba(224,160,32,.12);color:var(--wa);border:1px solid rgba(224,160,32,.3)}
+    .status-conv{background:rgba(31,169,113,.12);color:var(--gr);border:1px solid rgba(31,169,113,.3)}
+    .status-div {background:rgba(225,75,75,.12); color:var(--re);border:1px solid rgba(225,75,75,.3)}
+    .status-extra{background:rgba(47,143,224,.12);color:var(--cy);border:1px solid rgba(47,143,224,.3)}
+    /* status via faixa lateral (ver .ic.st-* acima) — sem duplicar borda completa */
+
+    /* ══ TOGGLE (liga/desliga) — usado para "fixar múltiplo" ══ */
+    .tgl-wrap{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;
+      -webkit-tap-highlight-color:transparent}
+    .tgl-lbl{font-size:.5rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;
+      font-family:var(--R);font-weight:700;transition:color .2s}
+    .tgl{position:relative;width:34px;height:19px;border-radius:10px;background:var(--s3);
+      border:1px solid var(--bd);transition:background .2s,border-color .2s;flex-shrink:0}
+    .tgl::after{content:'';position:absolute;top:1px;left:1px;width:15px;height:15px;
+      border-radius:50%;background:var(--mu2);transition:transform .2s,background .2s}
+    .tgl.on{background:rgba(47,143,224,.22);border-color:var(--cy)}
+    .tgl.on::after{transform:translateX(15px);background:var(--cy)}
+    .tgl-wrap:has(.tgl.on) .tgl-lbl{color:var(--cy)}
+    .hic.st-pend{border-left-color:var(--bd2)}
+    .hic.st-conv{border-left-color:var(--gr)}
+    .hic.st-div {border-left-color:var(--re)}
+    .hic.st-extra{border-left-color:var(--cy)}
+    .blind-chip{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:7px 6px;
+      cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent}
+    .blind-chip .bc-ref{font-family:var(--R);font-weight:700;font-size:.7rem;color:var(--tx)}
+    .blind-chip .bc-desc{font-size:.5rem;color:var(--mu2);margin-top:2px;white-space:nowrap;
+      overflow:hidden;text-overflow:ellipsis}
+    .import-summary{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.3);
+      border-radius:10px;padding:10px 12px;margin:8px 0;font-size:.62rem;color:var(--mu2);line-height:1.6}
+
+    .fixo-pick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .fixo-pick-btn{background:var(--s2);border:1px solid rgba(0,245,160,.25);border-radius:10px;
+      padding:11px 10px;cursor:pointer;text-align:left;transition:border-color .15s,background .12s}
+    .fixo-pick-btn:active{background:var(--s3);border-color:var(--gr)}
+    .fixo-pick-ref{font-family:var(--R);font-weight:700;font-size:.88rem;color:var(--tx);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+    .fixo-pick-qty{font-family:var(--R);font-weight:700;font-size:1.15rem;color:var(--gr)}
+    .fixo-pick-lbl{font-size:.48rem;color:var(--mu2);letter-spacing:.5px;text-transform:uppercase;margin-top:1px}
+    .ai-panel{background:linear-gradient(135deg,rgba(0,216,255,.04) 0%,rgba(0,245,160,.03) 100%);
+      border:1px solid rgba(0,216,255,.22);border-radius:12px;padding:14px;margin-bottom:10px;
+      position:relative;overflow:hidden}
+    .ai-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,var(--cy),var(--gr));opacity:.5}
+    .ai-panel-title{font-family:var(--R);font-weight:700;font-size:.65rem;letter-spacing:2px;
+      text-transform:uppercase;color:var(--cy);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+    .ai-badge{background:linear-gradient(90deg,var(--cy),var(--gr));color:#fff;font-size:.44rem;
+      padding:2px 6px;border-radius:4px;letter-spacing:1px;font-family:var(--R);font-weight:700}
+    .ai-thinking{display:none;align-items:center;gap:8px;padding:10px 0;font-size:.6rem;color:var(--mu2)}
+    .ai-thinking.on{display:flex}
+    .ai-dots{display:flex;gap:4px}
+    .ai-dot{width:5px;height:5px;border-radius:50%;background:var(--cy);opacity:.3}
+    .ai-dot:nth-child(1){animation:aiPulse 1.2s .0s ease-in-out infinite}
+    .ai-dot:nth-child(2){animation:aiPulse 1.2s .2s ease-in-out infinite}
+    .ai-dot:nth-child(3){animation:aiPulse 1.2s .4s ease-in-out infinite}
+    @keyframes aiPulse{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+    .ai-result{display:none;margin-top:8px}
+    .ai-result.on{display:block}
+    .ai-section{margin-bottom:10px}
+    .ai-section-lbl{font-size:.52rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+    .ai-analysis{background:var(--bg);border:1px solid var(--bd);border-radius:7px;
+      padding:9px 11px;font-size:.62rem;color:var(--tx);line-height:1.8}
+    .ai-analysis b{color:var(--cy)}
+    .ai-analysis code{color:var(--gr);background:rgba(0,245,160,.07);padding:1px 5px;border-radius:3px;font-size:.58rem}
+    .ai-analysis .warn{color:var(--wa)}
+    .ai-analysis .ok{color:var(--gr)}
+    .ai-analysis .err{color:var(--re)}
+    .ai-rule-card{background:var(--s2);border:1px solid var(--bd2);border-radius:9px;
+      padding:10px 12px;margin-bottom:7px;cursor:pointer;transition:border-color .2s}
+    .ai-rule-card:hover{border-color:var(--cy)}
+    .ai-rule-card:active{background:var(--s3)}
+    .ai-rule-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+    .ai-rule-name{font-family:var(--R);font-weight:700;font-size:.78rem;color:var(--tx)}
+    .ai-rule-badge{font-size:.48rem;padding:2px 7px;border-radius:4px;letter-spacing:1px;
+      font-family:var(--R);font-weight:700;text-transform:uppercase}
+    .ai-rule-badge.r{background:rgba(255,140,0,.15);color:var(--wa)}
+    .ai-rule-badge.p{background:rgba(0,245,160,.12);color:var(--gr)}
+    .ai-rule-badge.k{background:rgba(0,245,160,.12);color:var(--gr)}
+    .ai-rule-badge.pos{background:rgba(0,216,255,.12);color:var(--cy)}
+    .ai-rule-badge.j{background:rgba(100,100,255,.15);color:#aaf}
+    .ai-rule-badge.g{background:rgba(100,100,100,.15);color:var(--mu2)}
+    .ai-rule-detail{font-size:.57rem;color:var(--mu2);line-height:1.8}
+    .ai-rule-detail code{color:var(--tx);background:rgba(255,255,255,.06);
+      padding:1px 5px;border-radius:3px;font-size:.54rem}
+    .ai-rule-apply{font-size:.52rem;color:var(--cy);font-family:var(--R);font-weight:700;
+      letter-spacing:.5px;margin-top:5px;display:flex;align-items:center;gap:4px}
+    .ai-sep{height:1px;background:linear-gradient(90deg,var(--bd),transparent);margin:8px 0}
+    .ai-key-row{display:flex;gap:7px;margin-bottom:10px;align-items:center}
+    .ai-key-input{flex:1;margin-bottom:0!important;font-family:monospace;font-size:.72rem!important}
+    .ai-key-hint{font-size:.52rem;color:var(--mu);line-height:1.6;margin-bottom:8px}
+    .ai-key-hint a{color:var(--cy)}
+    #ai-key-status{font-size:.55rem;letter-spacing:.5px;flex-shrink:0}
+    #ai-key-status.ok{color:var(--gr)}
+    #ai-key-status.miss{color:var(--wa)}
+
+    /* ══ AI INLINE CHAT (dentro do cadastro) ══ */
+    .ai-chat-panel{background:linear-gradient(135deg,rgba(0,216,255,.05) 0%,rgba(0,245,160,.04) 100%);
+      border:1px solid rgba(0,216,255,.28);border-radius:12px;margin-bottom:10px;
+      overflow:hidden;position:relative}
+    .ai-chat-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,var(--cy),var(--gr));opacity:.6}
+    .ai-chat-header{display:flex;align-items:center;justify-content:space-between;
+      padding:11px 14px 10px;cursor:pointer;user-select:none}
+    .ai-chat-header:active{background:rgba(0,216,255,.06)}
+    .ai-chat-title{font-family:var(--R);font-weight:700;font-size:.68rem;letter-spacing:1.5px;
+      text-transform:uppercase;color:var(--cy);display:flex;align-items:center;gap:8px}
+    .ai-chat-toggle{font-size:.65rem;color:var(--mu2);transition:transform .25s;line-height:1}
+    .ai-chat-toggle.open{transform:rotate(180deg)}
+    .ai-chat-body{padding:0 12px 12px;display:none}
+    .ai-chat-body.open{display:block}
+
+    /* Histórico de mensagens */
+    .ai-chat-msgs{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;
+      margin-bottom:9px;padding-right:2px}
+    .ai-chat-msgs::-webkit-scrollbar{width:2px}
+    .ai-chat-msgs::-webkit-scrollbar-thumb{background:var(--bd)}
+    .ai-msg{border-radius:9px;padding:8px 11px;font-size:.6rem;line-height:1.75;
+      max-width:92%;animation:fadeUp .15s ease}
+    .ai-msg.user{background:rgba(0,216,255,.1);border:1px solid rgba(0,216,255,.2);
+      color:var(--tx);align-self:flex-end;text-align:right}
+    .ai-msg.ai{background:var(--s2);border:1px solid var(--bd2);color:var(--tx);align-self:flex-start}
+    .ai-msg.ai b{color:var(--cy)}
+    .ai-msg.ai code{color:var(--gr);background:rgba(0,245,160,.08);
+      padding:1px 4px;border-radius:3px;font-size:.55rem}
+    .ai-msg.sys{background:rgba(0,245,160,.06);border:1px solid rgba(0,245,160,.15);
+      color:var(--gr);align-self:center;font-size:.54rem;text-align:left;letter-spacing:.3px;
+      max-width:100%;line-height:1.8}
+    .ai-msg.err{background:rgba(255,51,85,.07);border:1px solid rgba(255,51,85,.2);
+      color:var(--re);align-self:flex-start;font-size:.57rem}
+    .ai-msg-typing{display:flex;align-items:center;gap:5px;padding:7px 11px;
+      background:var(--s2);border:1px solid var(--bd2);border-radius:9px;align-self:flex-start}
+    .ai-msg-typing span{font-size:.56rem;color:var(--mu2)}
+
+    /* Input chat */
+    .ai-chat-input-row{display:flex;gap:7px;align-items:flex-end}
+    .ai-chat-input{flex:1;background:var(--bg);border:1px solid var(--bd);border-radius:8px;
+      color:var(--tx);font-family:var(--F);font-size:.78rem;padding:9px 11px;
+      outline:none;resize:none;min-height:38px;max-height:100px;line-height:1.5;
+      transition:border-color .2s;margin-bottom:0!important}
+    .ai-chat-input:focus{border-color:var(--cy)}
+    .ai-chat-send{background:var(--cy);border:none;border-radius:8px;color:#fff;
+      font-family:var(--R);font-weight:700;font-size:.72rem;padding:9px 13px;
+      cursor:pointer;flex-shrink:0;align-self:flex-end;transition:opacity .15s;
+      letter-spacing:.5px;white-space:nowrap}
+    .ai-chat-send:active{opacity:.75}
+    .ai-chat-send:disabled{opacity:.4;cursor:not-allowed}
+    .ai-chat-hints{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+    .ai-hint-chip{background:rgba(0,216,255,.08);border:1px solid rgba(0,216,255,.2);
+      border-radius:12px;padding:4px 10px;font-size:.52rem;color:var(--cy);
+      cursor:pointer;font-family:var(--R);font-weight:600;letter-spacing:.5px;
+      transition:background .15s;white-space:nowrap}
+    .ai-hint-chip:active{background:rgba(0,216,255,.18)}
+    .ai-chat-key-warn{font-size:.56rem;color:var(--wa);padding:8px 2px 4px;
+      display:flex;align-items:center;gap:6px;line-height:1.5}
+    .ai-chat-key-warn a{color:var(--cy);cursor:pointer;text-decoration:underline}
+  </style>
+</head>
+<body>
+<div id="loginScreen" style="position:fixed;inset:0;z-index:99999;display:flex;
+  align-items:center;justify-content:center;background:var(--bg);padding:20px;">
+  <div style="background:var(--s1);border:1px solid var(--bd);border-radius:12px;
+    padding:32px 26px;width:100%;max-width:360px;">
+    <h1 style="font-family:var(--R);font-weight:700;font-size:1.15rem;color:var(--tx);
+      text-align:center;margin-bottom:4px;">RecebeMais</h1>
+    <p style="color:var(--mu2);font-size:.78rem;text-align:center;margin-bottom:22px;
+      font-family:var(--R);">Faça login para acessar</p>
+    <form id="loginForm">
+      <label style="display:block;font-size:.68rem;font-weight:600;color:var(--mu2);
+        margin-bottom:5px;font-family:var(--R);">E-mail</label>
+      <input type="email" id="loginEmail" autocomplete="username" required
+        style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:7px;
+        background:var(--s2);color:var(--tx);font-size:.85rem;margin-bottom:14px;">
+      <label style="display:block;font-size:.68rem;font-weight:600;color:var(--mu2);
+        margin-bottom:5px;font-family:var(--R);">Senha</label>
+      <input type="password" id="loginPassword" autocomplete="current-password" required
+        style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:7px;
+        background:var(--s2);color:var(--tx);font-size:.85rem;">
+      <button type="submit" class="btn btn-cy" style="width:100%;margin-top:18px;">Entrar</button>
+    </form>
+    <div id="loginError" style="display:none;margin-top:12px;padding:9px 11px;border-radius:7px;
+      background:rgba(225,75,75,.12);color:var(--re);border:1px solid rgba(225,75,75,.3);
+      font-size:.72rem;font-family:var(--R);"></div>
+    <div id="loginSpinner" style="display:none;text-align:center;margin-top:12px;
+      color:var(--mu2);font-size:.72rem;font-family:var(--R);">Entrando...</div>
+  </div>
+</div>
+<div id="appRoot" style="display:none;">
+<div id="flash"></div>
+<div id="toast"></div>
+
+<!-- MODAL CONFIRMAR -->
+<div class="mbg" id="mdl-conf">
+  <div class="md">
+    <h3 id="mc-title"></h3>
+    <p id="mc-msg"></p>
+    <div class="mrow">
+      <button class="btn btn-x"  onclick="mcClose()">Cancelar</button>
+      <button class="btn btn-re" id="mc-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ITEM -->
+<div class="mbg" id="mdl-edit">
+  <div class="md">
+    <h3>Editar Item</h3>
+    <label>Referência</label>
+    <input id="ed-ref" type="text" autocomplete="off">
+    <label>Quantidade Total</label>
+    <input id="ed-qty" type="number" min="1">
+    <label>Fornecedor</label>
+    <input id="ed-forn" type="text">
+    <div class="mrow">
+      <button class="btn btn-x"  onclick="editClose()">Cancelar</button>
+      <button class="btn btn-cy" onclick="editSave()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ITEM HISTÓRICO -->
+<div class="mbg" id="mdl-hist-edit">
+  <div class="md">
+    <h3>Editar Item do Histórico</h3>
+    <label>Referência</label>
+    <input id="hed-ref" type="text" autocomplete="off">
+    <label>Quantidade Total</label>
+    <input id="hed-qty" type="number" min="1">
+    <label>Fornecedor</label>
+    <input id="hed-forn" type="text">
+    <div class="mrow">
+      <button class="btn btn-x"  onclick="histEditClose()">Cancelar</button>
+      <button class="btn btn-cy" onclick="histEditSave()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADICIONAR ITEM HISTÓRICO -->
+<div class="mbg" id="mdl-hist-add">
+  <div class="md">
+    <h3>Adicionar Item ao Histórico</h3>
+    <label>Referência</label>
+    <input id="hadd-ref" type="text" autocomplete="off" placeholder="Ex: 4901974V000">
+    <label>Quantidade</label>
+    <input id="hadd-qty" type="number" min="1" placeholder="0">
+    <label>Fornecedor</label>
+    <input id="hadd-forn" type="text" placeholder="Opcional">
+    <div class="mrow">
+      <button class="btn btn-x"  onclick="histAddClose()">Cancelar</button>
+      <button class="btn btn-gr" onclick="histAddSave()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUVEM — contagens às cegas recebidas do extrator de NF-e -->
+<div class="mbg" id="mdl-cloud">
+  <div class="md">
+    <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg> Contagens da Nuvem</h3>
+    <div style="font-size:.58rem;color:var(--mu2);margin-bottom:10px;line-height:1.5">
+      NFs enviadas pelo extrator de nota fiscal, prontas para conferência às cegas.
+      Escolha uma para revisar e iniciar a contagem. Iniciar não remove o item daqui —
+      dá pra pausar e voltar quando quiser, mesmo no meio da contagem. O item só sai
+      da nuvem quando a contagem é finalizada ou descartada.
+    </div>
+    <div id="cloud-list"></div>
+    <div class="mrow">
+      <button class="btn btn-x" onclick="cloudModalClose()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOME DO CONFERENTE — obrigatório antes de finalizar qualquer
+     contagem (cega ou padrão). Pausar ou descartar não passam por aqui. -->
+<div class="mbg" id="mdl-conferente">
+  <div class="md" style="max-width:380px">
+    <h3>Nome do Conferente</h3>
+    <div style="font-size:.68rem;color:var(--mu2);line-height:1.6;margin-bottom:14px">
+      Antes de finalizar, informe quem fez essa contagem. Esse nome fica registrado
+      junto com o resultado.
+    </div>
+    <form id="conferente-form" onsubmit="event.preventDefault(); conferenteConfirmar();">
+      <input id="conferente-input" type="text" placeholder="Ex: João Silva" autocomplete="off" maxlength="60"
+             style="width:100%;box-sizing:border-box;padding:11px 13px;border-radius:10px;border:1px solid var(--bd);
+             background:var(--s2);color:var(--tx);font-size:.85rem;margin-bottom:6px">
+      <div id="conferente-erro" style="display:none;color:var(--re);font-size:.62rem;margin-bottom:8px">
+        Digite o nome do conferente para continuar.
+      </div>
+    </form>
+    <div class="mrow" style="margin-top:10px">
+      <button class="btn btn-x"  onclick="conferenteCancelar()">Cancelar</button>
+      <button class="btn btn-gr" onclick="conferenteConfirmar()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESUMO — revisão obrigatória antes de finalizar a contagem às cegas -->
+<div class="mbg" id="mdl-resumo">
+  <div class="md" style="max-width:420px;max-height:82vh;overflow-y:auto">
+    <h3>Resumo da Contagem</h3>
+    <div id="resumo-header"></div>
+    <div id="resumo-body"></div>
+    <div class="mrow">
+      <button class="btn btn-x"  onclick="resumoRetomar()">Retomar Contagem</button>
+      <button class="btn btn-gr" onclick="resumoConfirmar()"><span id="resumo-btn-ico" style="display:inline-flex;margin-right:4px;vertical-align:-2px"></span>Finalizar e Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     PG: DASHBOARD
+═══════════════════════════════════ -->
+<div class="pg" id="pg-dash">
+  <div class="body" style="padding:0;overflow-y:auto">
+
+    <!-- ── HERO / CABEÇALHO ──────────────────────── -->
+    <div class="dash-hero">
+      <!-- Botões topo direito: tema + config -->
+      <div style="position:absolute;top:12px;right:12px;display:flex;gap:6px;align-items:center">
+        <button onclick="toggleTheme()" id="btn-theme"
+                style="background:var(--s2);border:1px solid var(--bd);color:var(--mu2);
+          cursor:pointer;padding:6px 11px;border-radius:var(--radius-sm);transition:all .15s;
+          font-family:var(--R);font-weight:600;font-size:.6rem;letter-spacing:.4px;text-transform:uppercase"
+                title="Alternar tema">Escuro</button>
+        <button onclick="openCloudModal()" id="btn-cloud"
+                style="position:relative;background:var(--s2);border:1px solid var(--bd);color:var(--mu2);font-size:.95rem;
+          cursor:pointer;padding:6px 9px;line-height:1;border-radius:var(--radius-sm)" title="Contagens recebidas da nuvem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg>
+          <span id="cloud-badge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:15px;
+            height:15px;padding:0 3px;border-radius:8px;background:var(--re);color:#fff;
+            font-family:var(--R);font-weight:700;font-size:.48rem;line-height:15px;text-align:center">0</span>
+        </button>
+        <button onclick="navTo('pg-config')"
+                style="background:var(--s2);border:1px solid var(--bd);color:var(--mu2);font-size:.95rem;cursor:pointer;
+          padding:6px 9px;line-height:1;border-radius:var(--radius-sm)" title="Configurações">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;flex-shrink:0"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v2.4M12 18.6V21M21 12h-2.4M5.4 12H3M18.1 5.9l-1.7 1.7M7.6 16.4l-1.7 1.7M18.1 18.1l-1.7-1.7M7.6 7.6 5.9 5.9"/></svg>
+        </button>
+      </div>
+
+      <div class="dash-logo">Recebe<span>+</span></div>
+      <div class="dash-tagline">Controle de Recebimento</div>
+      <div class="dash-time" id="dash-clk">--:--:--</div>
+    </div>
+
+    <!-- Aviso storage -->
+    <div id="storage-warn">⚠ Armazenamento local quase cheio. Exporte e exclua contagens antigas para continuar salvando.</div>
+    <!-- Aviso sem conexão -->
+    <div id="offline-warn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0"><path d="M7 18a4 4 0 1 1 .7-7.94A5 5 0 0 1 17 9.5a3.5 3.5 0 0 1-.5 8.5H7z"/></svg> Sem conexão — a contagem local continua funcionando normalmente. A nuvem (envio/recebimento) volta assim que a internet reconectar.</div>
+
+    <!-- IDs ocultos para compatibilidade -->
+    <span id="d-refs" style="display:none">0</span>
+    <span id="d-cxas" style="display:none">0</span>
+    <span id="d-vols" style="display:none">0</span>
+    <span id="d-hist-label" style="display:none"></span>
+
+    <!-- ── CARD DE SESSÃO ATIVA ───────────────────── -->
+    <div style="padding:10px 12px 0">
+      <div class="sess-pill" id="sess-pill" onclick="sessPillClick()"
+           style="margin-bottom:0">
+        <div class="sdot" id="sdot"></div>
+        <div class="sinfo">
+          <div class="sname" id="sname">Nenhuma sessão ativa</div>
+          <div class="sdet"  id="sdet">Inicie uma contagem para começar</div>
+        </div>
+        <div style="font-size:.65rem;color:var(--cy);font-family:var(--R);font-weight:600"
+             id="sess-arrow">›</div>
+      </div>
+    </div>
+
+    <!-- ── MENU PRINCIPAL ────────────────────────── -->
+    <div style="padding:10px 12px 0">
+
+      <!-- Botão principal: Iniciar / Continuar Contagem (destaque máximo) -->
+      <div id="dbtn-scan" onclick="navTo('pg-scan')"
+           style="background:var(--cy);border-radius:var(--radius);padding:16px 18px;
+        display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:10px;
+        transition:opacity .15s;-webkit-tap-highlight-color:transparent"
+           onmousedown="this.style.opacity='.85'" onmouseup="this.style.opacity='1'"
+           ontouchstart="this.style.opacity='.85'" ontouchend="this.style.opacity='1'">
+        <div id="dbtn-scan-ico"
+             style="font-size:1.3rem;line-height:1;color:#fff">▶</div>
+        <div style="flex:1">
+          <div id="dbtn-scan-lbl"
+               style="font-family:var(--R);font-weight:700;font-size:.98rem;
+            color:#fff;letter-spacing:.2px">Iniciar Contagem</div>
+          <div id="dbtn-scan-sub"
+               style="font-size:.6rem;color:rgba(255,255,255,.75);margin-top:2px;letter-spacing:.2px">
+            Escanear etiquetas</div>
+        </div>
+        <div style="font-size:1.1rem;color:rgba(255,255,255,.55)">›</div>
+      </div>
+
+      <!-- Iniciar outra contagem em paralelo, sem mexer na que já está em andamento -->
+      <div id="dbtn-newsess" onclick="sessStartNew()" style="display:none;text-align:center;padding:2px 0 12px;cursor:pointer">
+        <span style="font-size:.62rem;color:var(--cy);font-family:var(--R);font-weight:700;letter-spacing:.2px">
+          + Iniciar outra contagem em paralelo
+        </span>
+      </div>
+
+      <!-- Outras contagens em andamento (pausadas) — várias podem existir ao mesmo tempo -->
+      <div id="card-multi-sess" style="display:none;margin-bottom:10px">
+        <div style="font-family:var(--R);font-weight:700;font-size:.6rem;letter-spacing:1px;
+          text-transform:uppercase;color:var(--mu2);margin-bottom:6px">⏸ Outras Contagens Pausadas</div>
+        <div id="multi-sess-list"></div>
+      </div>
+
+      <!-- Grade 2×2 de ações secundárias -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:8px;margin-bottom:10px">
+
+        <!-- Contagens -->
+        <div onclick="navTo('pg-hist')"
+             style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
+          padding:14px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;justify-content:center;min-height:84px;
+          -webkit-tap-highlight-color:transparent"
+             onmousedown="this.style.background='var(--s2)'" onmouseup="this.style.background='var(--s1)'"
+             ontouchstart="this.style.background='var(--s2)'" ontouchend="this.style.background='var(--s1)'">
+          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Histórico</div>
+          <div style="font-family:var(--R);font-weight:700;font-size:.86rem;
+            color:var(--tx);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Contagens</div>
+          <div id="db-hist-sub"
+               style="font-size:.56rem;color:var(--mu2);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">0 contagens</div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div onclick="navTo('pg-stats')"
+             style="background:var(--s1);border:1px solid var(--bd);border-radius:var(--radius);
+          padding:14px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;justify-content:center;min-height:84px;
+          -webkit-tap-highlight-color:transparent"
+             onmousedown="this.style.background='var(--s2)'" onmouseup="this.style.background='var(--s1)'"
+             ontouchstart="this.style.background='var(--s2)'" ontouchend="this.style.background='var(--s1)'">
+          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:6px">Indicadores</div>
+          <div style="font-family:var(--R);font-weight:700;font-size:.86rem;
+            color:var(--tx);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Estatísticas</div>
+          <div style="font-size:.56rem;color:var(--mu2);letter-spacing:.
