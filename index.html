@@ -131,6 +131,7 @@
           // logado (e de qual empresa) — a lista traz os itens
           // compartilhados com colegas da mesma empresa.
           if (typeof cloudInit === 'function') cloudInit();
+          if (typeof _iniciarListenerHistoricoEmpresa === 'function') _iniciarListenerHistoricoEmpresa();
         } else {
           try{ localStorage.removeItem('rcb_sessao_ativa'); }catch(e){}
           // Se a abertura otimista já tinha acontecido (o usuário já
@@ -144,6 +145,8 @@
           loginScreen.style.display = 'flex';
           if (typeof cloudUnsub === 'function'){ cloudUnsub(); cloudUnsub = null; }
           if (typeof cloudPendentes !== 'undefined') cloudPendentes = [];
+          if (typeof _histNuvemUnsub === 'function'){ _histNuvemUnsub(); _histNuvemUnsub = null; }
+          if (typeof _histNuvem !== 'undefined') _histNuvem = [];
           window.__minhaEmpresaId = null;
         }
       });
@@ -252,6 +255,7 @@
     window.addEventListener('online', () => {
       _atualizarAvisoOffline();
       if (typeof cloudInit === 'function') cloudInit(); // reconecta a nuvem sozinho
+      if (typeof _iniciarListenerHistoricoEmpresa === 'function') _iniciarListenerHistoricoEmpresa();
     });
     window.addEventListener('offline', _atualizarAvisoOffline);
 
@@ -2975,7 +2979,7 @@
     const fornEl = document.getElementById('db-ultima-forn');
     const subEl  = document.getElementById('db-ultima-sub');
     if(!fornEl || !subEl) return;
-    const hist = histLoad(); // já vem com a mais recente em [0] (histAdd usa unshift)
+    const hist = histLoadMerged(); // já vem ordenada, mais recente primeiro
     if(!hist.length){
       fornEl.textContent = 'Última Contagem';
       subEl.textContent  = 'Nenhuma ainda';
@@ -2987,7 +2991,7 @@
     subEl.textContent  = (ult.end || ult.start || '—') + ' · ' + peças + ' pç';
   }
   function _openUltimaContagem(){
-    const hist = histLoad();
+    const hist = histLoadMerged();
     if(!hist.length){ navTo('pg-hist'); return; }
     openHistDet(hist[0].id);
   }
@@ -3071,7 +3075,7 @@
     const cxas = Object.values(grouped).reduce((s,r)=>s+r.qty,0);
     // Volumes: soma de vols de cada item (multiplicação manual conta como volume)
     const vols = items.reduce((s,it)=>s+(it.vols||1),0);
-    const hist = histLoad().length;
+    const hist = histLoadMerged().length;
 
     document.getElementById('d-refs').textContent = refs;
     document.getElementById('d-cxas').textContent = cxas;
@@ -5852,6 +5856,16 @@
   ════════════════════════════════════════════════════════════════ */
   const HISTORICO_ENVIOS_COLLECTION = 'historico_envios';
 
+  // Coleção nova (compartilhada por empresa) — grava um resumo de TODA
+  // contagem finalizada neste app, não só as vindas da fila em nuvem
+  // (essas já eram cobertas por HISTORICO_ENVIOS_COLLECTION, que só
+  // existe quando a contagem tem "cloudDocId"). É o que permite a tela
+  // de Histórico/Dashboard do próprio RecebeMais mostrar as contagens
+  // feitas em QUALQUER aparelho da empresa, não só neste — ver
+  // _sincronizarContagemNaEmpresa / _iniciarListenerHistoricoEmpresa /
+  // histLoadMerged (17/09/2026).
+  const HISTORICO_APP_CONTAGENS_COLLECTION = 'historico_app_contagens';
+
   // Monta, a partir da entrada já salva no Histórico local (mesmo
   // formato de sessSave/histAdd), o mesmo conjunto de informações
   // exibido na tela de Detalhe do Histórico (renderHistDet) — pra que o
@@ -5957,6 +5971,152 @@
     }
   }
 
+  // Grava um resumo da contagem recém-finalizada em
+  // HISTORICO_APP_CONTAGENS_COLLECTION, pra qualquer aparelho da mesma
+  // empresa conseguir consultá-la na própria tela de Histórico/Dashboard
+  // do RecebeMais (não só no site). Roda pra TODA contagem finalizada,
+  // não só as vindas da nuvem (diferente de _notificarFinalizacaoNoPainel,
+  // que só existe quando há "cloudDocId").
+  //
+  // Best-effort, igual ao resto das sincronizações deste arquivo: se
+  // falhar (sem internet, por exemplo), não interrompe nada — a
+  // contagem já está salva localmente (histAdd), que é o que garante
+  // que quem está contando não perde nada. Não há retentativa automática
+  // depois (evitaria duplicar); quando o aparelho reconectar, o PRÓPRIO
+  // listener em tempo real dos OUTROS aparelhos é que vai puxando as
+  // gravações deles conforme cada um sincroniza — não existe hoje uma
+  // fila de "pendente de sincronizar" pra esta gravação específica.
+  //
+  // "docId" é estável (uid do autor + id local da contagem) de propósito:
+  // se o mesmo finalize disparar de novo por qualquer motivo (retry de
+  // rede, por exemplo), grava por cima do mesmo documento em vez de
+  // duplicar a contagem na lista de todo mundo.
+  async function _sincronizarContagemNaEmpresa(entry){
+    if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+    const usuario = firebase.auth().currentUser;
+    if(!usuario) return;
+    try{
+      const db = firebase.firestore();
+      const resultado = _buildResultadoParaPainel(entry);
+      const rows = resultado.rows || [];
+      const totalPecas = rows.reduce((s,r)=>s+(r.qty||0), 0);
+      const docId = entry.syncKey || (usuario.uid + '_' + entry.id);
+      await db.collection(HISTORICO_APP_CONTAGENS_COLLECTION).doc(docId).set({
+        empresaId: window.__minhaEmpresaId || null,
+        criadoPorUid: usuario.uid,
+        criadoPorEmail: usuario.email || null,
+        conferente: entry.conferente || perfilDispositivoLoad() || null,
+        forn: entry.forn || null,
+        nf: entry.nf || null,
+        start: entry.start || null,
+        end: entry.end || null,
+        scans: entry.scans || 0,
+        tipo: entry.tipo || 'padrao',
+        origem: entry.origem || null,
+        totalPecas,
+        totalVolumes: resultado.totalVolumes || 0,
+        refsUnicas: rows.length,
+        // Detalhe por referência (qty/vols/desc/status/recontagens) —
+        // suficiente pra "Ver Detalhes" funcionar igual em outro
+        // aparelho. O log fino de cada scan individual (entry.items)
+        // não é replicado aqui de propósito, pra manter o documento
+        // pequeno — continua disponível só no aparelho de origem.
+        rows,
+        criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    }catch(err){
+      console.error('Falha ao sincronizar contagem com a empresa:', err);
+    }
+  }
+
+  // Cache local (em memória) do que o listener abaixo recebeu — não
+  // precisa persistir em localStorage porque, quando faltar rede, ele
+  // simplesmente reconecta e baixa tudo de novo (ver window.online).
+  let _histNuvem = [];
+  let _histNuvemUnsub = null;
+
+  // Listener em tempo real das contagens finalizadas por QUALQUER
+  // aparelho da mesma empresa. Mesmo padrão do cloudInit() (fila de
+  // pendentes): reabre a cada login/reconexão, filtra por empresaId, e
+  // atualiza as telas de Histórico/Dashboard sozinho quando chega algo
+  // novo. Contas sem empresa cadastrada (empresaId nulo) não têm com quem
+  // compartilhar, então nem tenta — a lista fica só com o que já vem de
+  // histLoad() (local) nesse caso.
+  function _iniciarListenerHistoricoEmpresa(){
+    if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+    if(!navigator.onLine) return; // reconecta sozinho quando a rede voltar (ver window.addEventListener('online', ...))
+    const usuario = firebase.auth().currentUser;
+    if(!usuario || !window.__minhaEmpresaId) return;
+    if(typeof _histNuvemUnsub === 'function'){ _histNuvemUnsub(); _histNuvemUnsub = null; }
+    try{
+      const query = firebase.firestore().collection(HISTORICO_APP_CONTAGENS_COLLECTION)
+        .where('empresaId', '==', window.__minhaEmpresaId)
+        .orderBy('criadoEm', 'desc')
+        .limit(200); // teto de segurança — não precisa carregar o histórico inteiro da empresa toda vez
+      _histNuvemUnsub = query.onSnapshot((snap) => {
+        _histNuvem = snap.docs.map((d) => {
+          const data = d.data();
+          return {
+            syncKey: d.id,
+            criadoPorUid: data.criadoPorUid,
+            conferente: data.conferente || null,
+            forn: data.forn || '',
+            nf: data.nf || '',
+            start: data.start || '',
+            end: data.end || '',
+            scans: data.scans || 0,
+            tipo: data.tipo || 'padrao',
+            origem: data.origem || null,
+            totalPecas: data.totalPecas || 0,
+            totalVolumes: data.totalVolumes || 0,
+            rows: data.rows || [],
+            _criadoEmMs: data.criadoEm && data.criadoEm.toMillis ? data.criadoEm.toMillis() : 0,
+          };
+        });
+        // Se as telas de Histórico/Estatísticas já estiverem abertas,
+        // atualiza na hora — sem precisar sair e voltar pra tela.
+        const paginaAtual = pageStack[pageStack.length-1];
+        if(paginaAtual==='pg-hist') renderHist();
+        if(paginaAtual==='pg-stats') _updateDashAnalytics();
+        if(paginaAtual==='pg-dash'){ _renderUltimaContagemCard(); updateDash(); }
+      }, (err) => {
+        console.error('Firestore listener (histórico da empresa):', err);
+      });
+    }catch(err){
+      console.error('Falha ao iniciar listener do histórico da empresa:', err);
+    }
+  }
+
+  // Junta o histórico local (sempre disponível, mesmo offline) com o
+  // que chegou de outros aparelhos via _iniciarListenerHistoricoEmpresa,
+  // sem duplicar: uma contagem feita NESTE aparelho aparece pela cópia
+  // local (mais completa — tem o log fino de cada scan); só entram como
+  // "remoto" as contagens cujo syncKey ainda não existe localmente.
+  function histLoadMerged(){
+    const local = histLoad();
+    const localKeys = new Set(local.map(h => h.syncKey).filter(Boolean));
+    const remotos = (_histNuvem || [])
+      .filter(r => !localKeys.has(r.syncKey))
+      .map(r => ({
+        id: r.syncKey,
+        syncKey: r.syncKey,
+        forn: r.forn, nf: r.nf, start: r.start, end: r.end, scans: r.scans,
+        tipo: r.tipo, origem: r.origem, conferente: r.conferente,
+        grouped: Object.fromEntries((r.rows||[]).map(row => [row.ref, row])),
+        items: null, // log fino de cada scan não é sincronizado (ver _sincronizarContagemNaEmpresa)
+        totalVolumesRemoto: r.totalVolumes,
+        _criadoEmMs: r._criadoEmMs,
+        __remoto: true,
+      }));
+    return [...local, ...remotos].sort((a,b) => _histSortKey(b) - _histSortKey(a));
+  }
+  // "id" local é um timestamp numérico (Date.now(), ver sessSave); um
+  // remoto usa o syncKey (string) como id, então não dá pra comparar
+  // datas por ele — usa _criadoEmMs (do servidor) nesse caso.
+  function _histSortKey(h){
+    return typeof h.id === 'number' ? h.id : (h._criadoEmMs || 0);
+  }
+
   // Mesma ideia de _notificarFinalizacaoNoPainel, mas para quando a
   // contagem é DESCARTADA antes de finalizar (sessCancel /
   // sessionsDiscardPrompt) — em vez de "finalizada" com o resultado
@@ -5991,8 +6151,16 @@
     if(!session){ toast('Nenhuma sessão ativa',true); return; }
     if(!Object.keys(grouped).length){ toast('Nenhum item para salvar',true); return; }
 
+    const agora = Date.now();
+    const usuarioAtual = (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) ? firebase.auth().currentUser : null;
     const entry = {
-      id      : Date.now(),
+      id      : agora,
+      // Chave estável usada pra casar esta contagem com a cópia
+      // compartilhada gravada em HISTORICO_APP_CONTAGENS_COLLECTION —
+      // sem login válido (não deveria acontecer em uso normal) fica
+      // null, e a contagem simplesmente não é compartilhada com outros
+      // aparelhos (mas continua salva local normalmente).
+      syncKey : usuarioAtual ? (usuarioAtual.uid + '_' + agora) : null,
       forn    : session.forn,
       nf      : session.nf,
       start   : session.start,
@@ -6010,6 +6178,11 @@
     };
     const ok = histAdd(entry);
     if(!ok){ toast('Falha ao salvar — armazenamento cheio!', true); return; }
+
+    // Compartilha esta contagem com o resto da empresa (ver
+    // _sincronizarContagemNaEmpresa) — roda pra qualquer contagem
+    // finalizada, independente de ter vindo da fila em nuvem ou não.
+    _sincronizarContagemNaEmpresa(entry);
 
     registrarEvento('CONFERENCIA_FINALIZADA', {
       nfId: session.cloudDocId || null,
@@ -7463,7 +7636,7 @@
   }
 
   function renderHist(){
-    const arr=histLoad();
+    const arr=histLoadMerged();
     document.getElementById('d-hist-label') && (document.getElementById('d-hist-label').textContent = arr.length + ' contagen'+(arr.length!==1?'s salvas':'salva'));
     _updateDashAnalytics();
 
@@ -7497,6 +7670,12 @@
     filtered.forEach(hs=>{
       const refs=Object.keys(hs.grouped||{}).length;
       const cxas=Object.values(hs.grouped||{}).reduce((s,r)=>s+r.qty,0);
+      // Contagens de outro aparelho não trazem o log fino de cada scan
+      // (hs.items fica null — ver histLoadMerged), então o total de
+      // volumes vem do resumo já calculado no momento da sincronização.
+      const vols = hs.__remoto
+        ? (hs.totalVolumesRemoto || 0)
+        : (hs.items||[]).reduce((s,it)=>s+(it.vols||1),0);
 
       const card=document.createElement('div');
       card.className='hcard';
@@ -7505,19 +7684,20 @@
         <div class="hcard-head">
           <div>
             <div class="hcard-forn">${h_(hs.forn)}${hs.nf?` <span style="font-size:.6rem;color:var(--mu2)">· ${h_(hs.nf)}</span>`:''}</div>
-            <div class="hcard-date">${hs.start} → ${hs.end||'—'}</div>
+            <div class="hcard-date">${hs.start} → ${hs.end||'—'}${hs.__remoto?` <span style="color:var(--cy)">· ${h_(hs.conferente||'outro aparelho')}</span>`:''}</div>
           </div>
-          <button class="hdel" aria-label="Excluir contagem">✕</button>
+          ${hs.__remoto ? '' : '<button class="hdel" aria-label="Excluir contagem">✕</button>'}
         </div>
         <div class="hcard-stats">
           <div class="hstat"><b>${refs}</b> refs</div>
           <div class="hstat"><b>${cxas}</b> peças</div>
-          <div class="hstat" style="border-color:var(--cy);color:var(--cy)"><b>${(hs.items||[]).reduce((s,it)=>s+(it.vols||1),0)}</b> vol</div>
+          <div class="hstat" style="border-color:var(--cy);color:var(--cy)"><b>${vols}</b> vol</div>
           <div class="hstat"><b>${hs.scans||0}</b> scans</div>
         </div>
         <button class="btn btn-x" style="margin-top:10px;margin-bottom:0;font-size:.72rem;padding:8px">Ver Detalhes / Exportar</button>
       `;
-      card.querySelector('.hdel').onclick=(e)=>{ e.stopPropagation(); delHist(hs.id); };
+      const delBtn = card.querySelector('.hdel');
+      if(delBtn) delBtn.onclick=(e)=>{ e.stopPropagation(); delHist(hs.id); };
       card.querySelector('.btn').onclick=()=>openHistDet(hs.id);
       el.appendChild(card);
     });
@@ -7536,7 +7716,7 @@
   }
 
   function openHistDet(id){
-    const arr=histLoad();
+    const arr=histLoadMerged();
     const hs=arr.find(x=>x.id===id);
     if(!hs)return;
     viewHist=hs;
@@ -7547,9 +7727,10 @@
     document.getElementById('hdet-info').innerHTML=
       `Fornecedor: <b style="color:var(--cy)">${h_(hs.forn)}</b>${hs.nf?` · NF: ${h_(hs.nf)}`:''}`+
       `${hs.origem==='foto_ia'?' · <span style="color:var(--gr)">'+ico('camera')+' Foto + IA</span>':(hs.tipo==='importado'?' · <span style="color:#a78bfa">'+ico('download')+' Importada</span>':'')}<br>`+
-      `Início: ${hs.start}  ·  Fim: ${hs.end||'—'}`;
+      `Início: ${hs.start}  ·  Fim: ${hs.end||'—'}` +
+      (hs.__remoto ? `<br>Contado por: <b style="color:var(--cy)">${h_(hs.conferente||'outro aparelho')}</b> (outro aparelho — só consulta)` : '');
 
-    document.getElementById('btn-hdet-edit').style.display='block';
+    document.getElementById('btn-hdet-edit').style.display = hs.__remoto ? 'none' : 'block';
     document.getElementById('btn-hdet-edit').textContent='Editar';
     document.getElementById('hdet-edit-bar').style.display='none';
     const searchEl = document.getElementById('hdet-search');
@@ -7561,7 +7742,7 @@
 
   function renderHistDet(){
     if(!viewHist)return;
-    const isImport = viewHist.tipo==='importado';
+    const isImport = !viewHist.__remoto && viewHist.tipo==='importado';
 
     let rows;
     if(isImport){
@@ -7594,7 +7775,7 @@
       : rows;
 
     // Totais de volumes da contagem
-    const totalVols = (viewHist.items||[]).reduce((s,it)=>s+(it.vols||1),0);
+    const totalVols = viewHist.__remoto ? (viewHist.totalVolumesRemoto||0) : (viewHist.items||[]).reduce((s,it)=>s+(it.vols||1),0);
     const elVols = document.getElementById('hd-vols');
     if(elVols) elVols.textContent = totalVols;
 
@@ -7906,7 +8087,7 @@
 
   function exportHistCSV(){
     if(!viewHist)return;
-    const isImport = viewHist.tipo==='importado';
+    const isImport = !viewHist.__remoto && viewHist.tipo==='importado';
     let rows;
     if(isImport){
       rows=[['Referencia','Descricao','Contado','Esperado','Status','Fornecedor','NF','Inicio','Fim','Observacao','Lotes','Multiplos']];
@@ -9016,7 +9197,7 @@
 
   function _updateDashAnalytics(){
     const CORES = ['#00d8ff','#00f5a0','#ff8c00','#ff3355','#a78bfa','#f472b6','#34d399','#fbbf24'];
-    const hist  = _filtrarHist(histLoad());
+    const hist  = _filtrarHist(histLoadMerged());
 
     // Label do filtro
     const labelEl = document.getElementById('dash-filtro-label');
@@ -9029,7 +9210,9 @@
 
     hist.forEach(h => {
       const pecas = Object.values(h.grouped||{}).reduce((s,r)=>s+(r.qty||0),0);
-      const vols  = (h.items||[]).reduce((s,it)=>s+(it.vols||1),0);
+      // Contagens de outro aparelho não trazem o log fino de scans (ver
+      // histLoadMerged) — usa o total já resumido na sincronização.
+      const vols  = h.__remoto ? (h.totalVolumesRemoto||0) : (h.items||[]).reduce((s,it)=>s+(it.vols||1),0);
       totalVols  += vols;
       totalPecas += pecas;
       Object.keys(h.grouped||{}).forEach(r => refSet.add(r));
@@ -9057,8 +9240,8 @@
 
     // ── Última contagem ──────────────────────────────────────
     if(hist.length){
-      const ult  = hist[0]; // histAdd usa unshift, então o índice 0 é sempre o mais recente
-      const ultV = (ult.items||[]).reduce((s,it)=>s+(it.vols||1),0);
+      const ult  = hist[0]; // histLoadMerged já vem ordenada, mais recente primeiro
+      const ultV = ult.__remoto ? (ult.totalVolumesRemoto||0) : (ult.items||[]).reduce((s,it)=>s+(it.vols||1),0);
       const ultP = Object.values(ult.grouped||{}).reduce((s,r)=>s+(r.qty||0),0);
       _s('da-ultima-forn', ult.forn||'—');
       _s('da-ultima-info', `${ult.end||ult.start||'—'} · ${_fmtN(ultP)} pç`);
