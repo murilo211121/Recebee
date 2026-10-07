@@ -1196,6 +1196,38 @@
   </div>
 </div>
 
+<!-- MODAL LEITURAS DA REFERÊNCIA (corrigir erros de leitura) -->
+<div class="mbg" id="mdl-leituras">
+  <div class="md" style="max-width:420px">
+    <h3 id="lei-title">Leituras</h3>
+    <div style="font-size:.6rem;color:var(--mu2);margin-bottom:8px">Corrija ou desfaça cada confirmação individualmente. O horário original é mantido.</div>
+    <div class="ilist" id="lei-list" style="max-height:48vh;overflow:auto"></div>
+    <div class="mrow"><button class="btn btn-x" onclick="leiClose()">Fechar</button></div>
+  </div>
+</div>
+
+<!-- MODAL CORRIGIR UMA CONFIRMAÇÃO -->
+<div class="mbg" id="mdl-conf">
+  <div class="md" style="max-width:380px">
+    <h3>Corrigir leitura</h3>
+    <div id="conf-info" style="font-size:.6rem;color:var(--mu2);margin-bottom:8px"></div>
+    <label>Referência</label>
+    <input id="conf-ref" type="text" autocomplete="off">
+    <div class="g2" style="margin:8px 0">
+      <div><label style="margin-bottom:3px">Volumes</label>
+        <input id="conf-vols" type="number" min="1" oninput="confRecalc()"></div>
+      <div><label style="margin-bottom:3px">Peças por volume</label>
+        <input id="conf-mult" type="number" min="1" oninput="confRecalc()"></div>
+    </div>
+    <label>Quantidade total (pç)</label>
+    <input id="conf-qty" type="number" min="1">
+    <div class="mrow">
+      <button class="btn btn-x"  onclick="confClose()">Cancelar</button>
+      <button class="btn btn-cy" onclick="confSave()">Salvar correção</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL EDITAR ITEM HISTÓRICO -->
 <div class="mbg" id="mdl-hist-edit">
   <div class="md">
@@ -2048,6 +2080,15 @@
               onclick="mc('Encerrar Sessão','A sessão será encerrada sem salvar. Os dados atuais serão perdidos e, se a NF veio da nuvem, ela também sairá de lá.',sessCancel)">
         Descartar Sessão
       </button>
+    </div>
+
+    <!-- Últimas 3 confirmações de contagem (com horário) -->
+    <div id="card-ultimas" style="display:none">
+      <div class="sep"></div>
+      <div style="font-family:var(--R);font-weight:700;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--cy);margin-bottom:8px">
+        Últimas confirmações
+      </div>
+      <div class="ilist" id="ultimas-list"></div>
     </div>
 
     <!-- Lista de itens bipados na tela de leitura -->
@@ -7168,7 +7209,10 @@
 
     const ref = pending.ref;
     addItem({...pending, qty: totalQty, vols, qtyPerVol: pending.qty});
-    if(precisaLoteUI && lote) _loteConsolidar(ref, lote, validade, totalQty);
+    if(precisaLoteUI && lote){
+      _loteConsolidar(ref, lote, validade, totalQty);
+      try{ const _li=items[items.length-1]; if(_li && _li.ref===ref){ _li.lote=lote; _li.validade=validade; } }catch(e){}
+    }
     doBip();
 
     pending=null;
@@ -7241,7 +7285,8 @@
   function addItem(item){
     // Garantir que o dado é persistido em memória e em disco ANTES de
     // qualquer atualização de UI/analytics que possa falhar.
-    items.push({...item,id:Date.now()});
+    const _tsConf = Math.max(Date.now(), (items.length ? (items[items.length-1].id||0)+1 : 0));
+    items.push({...item,id:_tsConf,ts:_tsConf});
     if(!grouped[item.ref])
       grouped[item.ref]={ref:item.ref,desc:item.desc||'',qty:0,vols:0,scans:0,forn:item.forn,obs:'',lastTs:Date.now()};
     grouped[item.ref].qty  +=item.qty;
@@ -7330,6 +7375,7 @@
     if(!card||!el) return;
 
     // Sessão importada (contagem às cegas): usa o checklist dedicado
+    try{ renderUltimasConfirmacoes(); }catch(e){ console.error('renderUltimasConfirmacoes falhou:', e); }
     if(session && session.tipo==='importado'){
       card.style.display='none';
       renderBlindStatus();
@@ -7492,9 +7538,163 @@
   /* ═══════════════════════════════════════════════
      EDIÇÃO DE ITEM (sessão atual)
   ═══════════════════════════════════════════════ */
+  /* ═══════════════════════════════════════════════
+     ÚLTIMAS CONFIRMAÇÕES + CORREÇÃO DE LEITURA
+     Cada confirmação (item em "items") guarda o horário (ts). Corrigir
+     uma leitura recalcula só a contribuição dela em "grouped", sem
+     perder observação, lotes, múltiplos nem as demais leituras.
+  ═══════════════════════════════════════════════ */
+  function _fmtHMS(ts){
+    try{ return new Date(ts).toLocaleTimeString('pt-BR',{hour12:false}); }catch(e){ return ''; }
+  }
+  function _confDescr(it){
+    const v = it.vols||1;
+    return (it.qtyPerVol && v>=1 && it.qtyPerVol*v===it.qty)
+      ? `${v} vol × ${it.qtyPerVol} = ${it.qty} pç`
+      : `${it.qty} pç`;
+  }
+  function _confRowHTML(it, comAcoes){
+    const hora = _fmtHMS(it.ts||it.id);
+    const corr = it.editadoTs ? `<span class="itag" style="margin-left:4px" title="Valor original: ${h_(it.orig? (it.orig.ref+' · '+it.orig.qty+' pç'):'')}">corrigida ${_fmtHMS(it.editadoTs)}</span>` : '';
+    const acoes = comAcoes ? `
+        <button class="idel" style="color:var(--cy);font-size:.9rem" title="Corrigir leitura" onclick="confOpen(${it.id})">${ico('pencil')}</button>
+        <button class="idel" title="Desfazer leitura" onclick="confUndo(${it.id})">✕</button>` : '';
+    return `<div class="ic" style="animation:none;gap:6px">
+      <div style="font-family:var(--R);font-weight:700;font-size:.7rem;color:var(--cy);flex-shrink:0;min-width:58px">${hora}</div>
+      <div style="flex:1;min-width:0">
+        <div class="iref">${h_(it.ref)}</div>
+        <div class="imeta">${h_(_confDescr(it))}${corr}</div>
+      </div>${acoes}
+    </div>`;
+  }
+  function renderUltimasConfirmacoes(){
+    const card=document.getElementById('card-ultimas'), el=document.getElementById('ultimas-list');
+    if(!card||!el) return;
+    if(!session || !items.length){ card.style.display='none'; el.innerHTML=''; return; }
+    const ult=items.slice().sort((a,b)=>(b.id||0)-(a.id||0)).slice(0,3);
+    card.style.display='block';
+    el.innerHTML=ult.map(it=>_confRowHTML(it,true)).join('');
+  }
+
+  // Remove (sinal -1) ou aplica (+1) a contribuição de uma leitura em grouped.
+  function _confAplicar(it, sinal){
+    const g=grouped[it.ref];
+    if(!g) return;
+    const v=(it.vols||1);
+    g.qty  += sinal*it.qty;
+    g.vols  = (g.vols||0) + sinal*v;
+    g.scans = (g.scans||0) + sinal;
+    if(it.qtyPerVol){
+      if(!g.multiplos) g.multiplos=[];
+      let m=g.multiplos.find(x=>x.qtyPerVol===it.qtyPerVol);
+      if(!m && sinal>0){ m={qtyPerVol:it.qtyPerVol,vols:0,qty:0}; g.multiplos.push(m); }
+      if(m){
+        m.vols += sinal*v; m.qty += sinal*it.qty;
+        if(m.vols<=0 || m.qty<=0) g.multiplos=g.multiplos.filter(x=>x!==m);
+      }
+    }
+    if(it.lote && g.lotes){
+      const ln=String(it.lote).trim().toLowerCase();
+      let l=g.lotes.find(x=>(x.lote||'').trim().toLowerCase()===ln);
+      if(!l && sinal>0){ l={lote:it.lote,validade:it.validade||'',quantidade:0}; g.lotes.push(l); }
+      if(l){
+        l.quantidade=(Number(l.quantidade)||0)+sinal*it.qty;
+        if(l.quantidade<=0) g.lotes=g.lotes.filter(x=>x!==l);
+      }
+    }
+  }
+  function _confLimpaGrupoVazio(ref){
+    const g=grouped[ref];
+    if(g && (g.scans||0)<=0 && (g.qty||0)<=0 && !items.some(i=>i.ref===ref)) delete grouped[ref];
+  }
+  function _confRefresh(){
+    sessStateSave();
+    try{ updateDash(); }catch(e){}
+    try{ renderList(); }catch(e){}
+    try{ renderScanList(); }catch(e){}
+    try{ if(session && session.tipo==='importado') renderBlindStatus(); }catch(e){}
+    if(document.getElementById('mdl-leituras').classList.contains('on')) leiRender();
+  }
+
+  let _confId=null;
+  function confOpen(id){
+    const it=items.find(i=>i.id===id); if(!it) return;
+    _confId=id;
+    document.getElementById('conf-info').textContent='Confirmada às '+_fmtHMS(it.ts||it.id)+(it.editadoTs?' · corrigida às '+_fmtHMS(it.editadoTs):'');
+    document.getElementById('conf-ref').value=it.ref;
+    document.getElementById('conf-vols').value=it.vols||'';
+    document.getElementById('conf-mult').value=it.qtyPerVol||'';
+    document.getElementById('conf-qty').value=it.qty;
+    document.getElementById('mdl-conf').classList.add('on');
+  }
+  function confClose(){ document.getElementById('mdl-conf').classList.remove('on'); _confId=null; }
+  function confRecalc(){
+    const v=parseInt(document.getElementById('conf-vols').value), m=parseInt(document.getElementById('conf-mult').value);
+    if(v>0 && m>0) document.getElementById('conf-qty').value=v*m;
+  }
+  function confSave(){
+    const it=items.find(i=>i.id===_confId); if(!it){ confClose(); return; }
+    const ref=document.getElementById('conf-ref').value.trim();
+    const qty=parseInt(document.getElementById('conf-qty').value);
+    const volsRaw=parseInt(document.getElementById('conf-vols').value);
+    const mult=parseInt(document.getElementById('conf-mult').value);
+    if(!ref){ toast('Informe a referência',true); return; }
+    if(!qty||qty<1){ toast('Quantidade inválida',true); return; }
+    const vols = volsRaw>0 ? volsRaw : (it.vols||1);
+    const novoMult = mult>0 ? mult : 0;
+    const antes={ref:it.ref,qty:it.qty,vols:it.vols,qtyPerVol:it.qtyPerVol};
+    if(ref===it.ref && qty===it.qty && vols===(it.vols||1) && novoMult===(it.qtyPerVol||0)){ confClose(); return; }
+
+    // garante o grupo de destino, aplica a nova leitura e só então retira a antiga
+    if(!grouped[ref]){
+      const exp=session && session.expected ? session.expected[ref] : null;
+      const og=grouped[it.ref]||{};
+      grouped[ref]={ref,desc:(exp&&exp.desc)||og.desc||'',qty:0,vols:0,scans:0,forn:og.forn||(session?session.forn:''),obs:'',lastTs:Date.now()};
+    }
+    const velho={...it};
+    const novo={...it,ref,qty,vols,qtyPerVol:novoMult||undefined};
+    _confAplicar(novo,+1);
+    _confAplicar(velho,-1);
+    if(velho.ref!==ref) _confLimpaGrupoVazio(velho.ref);
+    if(!it.orig) it.orig=antes;
+    it.ref=ref; it.qty=qty; it.vols=vols; it.qtyPerVol=novoMult||undefined; it.editadoTs=Date.now();
+    grouped[ref].lastTs=Date.now();
+    confClose();
+    _confRefresh();
+    toast('Leitura corrigida');
+  }
+  function confUndo(id){
+    const it=items.find(i=>i.id===id); if(!it) return;
+    mc('Desfazer leitura',`${it.ref} · ${_confDescr(it)} (${_fmtHMS(it.ts||it.id)}) será removida da contagem.`,()=>{
+      _confAplicar(it,-1);
+      items=items.filter(i=>i.id!==id);
+      _confLimpaGrupoVazio(it.ref);
+      _confRefresh();
+      toast('Leitura desfeita');
+    });
+  }
+
+  let _leiRef=null;
+  function leiRender(){
+    const el=document.getElementById('lei-list');
+    const lst=items.filter(i=>i.ref===_leiRef).sort((a,b)=>(b.id||0)-(a.id||0));
+    if(!lst.length){ leiClose(); return; }
+    el.innerHTML=lst.map(it=>_confRowHTML(it,true)).join('');
+  }
+  function leiClose(){ document.getElementById('mdl-leituras').classList.remove('on'); _leiRef=null; }
+
   function openEdit(ref){
     const r=grouped[ref];
     if(!r)return;
+    const lst=items.filter(i=>i.ref===ref);
+    if(lst.length){
+      _leiRef=ref;
+      document.getElementById('lei-title').textContent='Leituras · '+ref;
+      leiRender();
+      document.getElementById('mdl-leituras').classList.add('on');
+      return;
+    }
+    // sem leituras individuais (ex.: ajuste direto da contagem às cegas): edição simples do total
     editRef=ref;
     document.getElementById('ed-ref').value =r.ref;
     document.getElementById('ed-qty').value =r.qty;
