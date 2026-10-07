@@ -6083,6 +6083,56 @@
   // novo. Contas sem empresa cadastrada (empresaId nulo) não têm com quem
   // compartilhar, então nem tenta — a lista fica só com o que já vem de
   // histLoad() (local) nesse caso.
+  function _aplicarSnapshotHistNuvem(snap){
+      _histNuvem = snap.docs.map((d) => {
+        const data = d.data();
+        return {
+          syncKey: d.id,
+          criadoPorUid: data.criadoPorUid,
+          conferente: data.conferente || null,
+          forn: data.forn || '',
+          nf: data.nf || '',
+          start: data.start || '',
+          end: data.end || '',
+          scans: data.scans || 0,
+          tipo: data.tipo || 'padrao',
+          origem: data.origem || null,
+          totalPecas: data.totalPecas || 0,
+          totalVolumes: data.totalVolumes || 0,
+          rows: data.rows || [],
+          _criadoEmMs: data.criadoEm && data.criadoEm.toMillis ? data.criadoEm.toMillis() : 0,
+        };
+      });
+      // Se as telas de Histórico/Estatísticas já estiverem abertas,
+      // atualiza na hora — sem precisar sair e voltar pra tela.
+      const paginaAtual = pageStack[pageStack.length-1];
+      if(paginaAtual==='pg-hist') renderHist();
+      if(paginaAtual==='pg-stats') _updateDashAnalytics();
+      if(paginaAtual==='pg-dash'){ _renderUltimaContagemCard(); updateDash(); }
+  }
+
+  // Força a sincronização a cada 30s: além do listener em tempo real,
+  // busca direto do servidor (ignora cache) e reabre o listener se ele
+  // tiver caído. Só roda online, logado e com empresa vinculada.
+  const HIST_AUTO_SYNC_MS = 30000;
+  async function _forcarSyncHistoricoEmpresa(){
+    try{
+      if(!navigator.onLine) return;
+      if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
+      const usuario = firebase.auth().currentUser;
+      if(!usuario || !window.__minhaEmpresaId) return;
+      if(typeof _histNuvemUnsub !== 'function') _iniciarListenerHistoricoEmpresa();
+      const snap = await firebase.firestore().collection(HISTORICO_APP_CONTAGENS_COLLECTION)
+        .where('empresaId', '==', window.__minhaEmpresaId)
+        .orderBy('criadoEm', 'desc').limit(200).get({ source: 'server' });
+      _aplicarSnapshotHistNuvem(snap);
+    }catch(err){
+      console.warn('Sync forçado do histórico falhou (tenta de novo em 30s):', err);
+    }
+  }
+  setInterval(_forcarSyncHistoricoEmpresa, HIST_AUTO_SYNC_MS);
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) _forcarSyncHistoricoEmpresa(); });
+
   function _iniciarListenerHistoricoEmpresa(){
     if(typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length) return;
     if(!navigator.onLine) return; // reconecta sozinho quando a rede voltar (ver window.addEventListener('online', ...))
@@ -6094,33 +6144,7 @@
         .where('empresaId', '==', window.__minhaEmpresaId)
         .orderBy('criadoEm', 'desc')
         .limit(200); // teto de segurança — não precisa carregar o histórico inteiro da empresa toda vez
-      _histNuvemUnsub = query.onSnapshot((snap) => {
-        _histNuvem = snap.docs.map((d) => {
-          const data = d.data();
-          return {
-            syncKey: d.id,
-            criadoPorUid: data.criadoPorUid,
-            conferente: data.conferente || null,
-            forn: data.forn || '',
-            nf: data.nf || '',
-            start: data.start || '',
-            end: data.end || '',
-            scans: data.scans || 0,
-            tipo: data.tipo || 'padrao',
-            origem: data.origem || null,
-            totalPecas: data.totalPecas || 0,
-            totalVolumes: data.totalVolumes || 0,
-            rows: data.rows || [],
-            _criadoEmMs: data.criadoEm && data.criadoEm.toMillis ? data.criadoEm.toMillis() : 0,
-          };
-        });
-        // Se as telas de Histórico/Estatísticas já estiverem abertas,
-        // atualiza na hora — sem precisar sair e voltar pra tela.
-        const paginaAtual = pageStack[pageStack.length-1];
-        if(paginaAtual==='pg-hist') renderHist();
-        if(paginaAtual==='pg-stats') _updateDashAnalytics();
-        if(paginaAtual==='pg-dash'){ _renderUltimaContagemCard(); updateDash(); }
-      }, (err) => {
+      _histNuvemUnsub = query.onSnapshot(_aplicarSnapshotHistNuvem, (err) => {
         console.error('Firestore listener (histórico da empresa):', err);
       });
     }catch(err){
